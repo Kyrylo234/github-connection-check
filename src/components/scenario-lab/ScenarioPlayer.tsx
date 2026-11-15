@@ -223,7 +223,7 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
           </ol>
         </div>
 
-        <div className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.75fr)]">
+        <div className="relative mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.75fr)]">
           <section className="scenario-globe-frame relative min-h-[520px] overflow-hidden border border-signal/20 lg:min-h-[650px]" aria-label="Scenario world globe">
             <img src={briefingRoom} alt="" width={1920} height={1088} className="briefing-room-image" />
             <div className="briefing-room-shade pointer-events-none absolute inset-0" />
@@ -244,7 +244,9 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
             </div>
           </section>
 
-          <div className="min-w-0 xl:sticky xl:top-5">
+          <div className={session.status === "reading"
+            ? "absolute inset-x-3 top-5 z-20 min-w-0 max-h-[65vh] overflow-y-auto sm:left-auto sm:right-5 sm:w-[380px] xl:sticky xl:inset-x-auto xl:top-5 xl:max-h-none xl:w-auto xl:overflow-visible"
+            : "min-w-0 xl:sticky xl:top-5"}>
             {session.status === "standby" && (
               <aside className="flex min-h-[420px] flex-col items-center justify-center border-y border-signal/30 bg-card/50 px-7 py-10 text-center" aria-label="Global monitoring status">
                 <span className="relative flex size-24 items-center justify-center rounded-full border border-signal/30">
