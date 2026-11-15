@@ -85,6 +85,8 @@
   --color-sentiment-negative: var(--sentiment-negative);
   --color-signal: var(--signal);
   --color-surface-raised: var(--surface-raised);
+  --color-report-paper: var(--report-paper);
+  --color-report-rule: var(--report-rule);
 }
 
 :root {
@@ -128,6 +130,8 @@
   --tension-flame-orange: oklch(0.79 0.18 60);
   --signal: var(--primary);
   --surface-raised: oklch(0.265 0.02 112);
+  --report-paper: oklch(0.19 0.008 112);
+  --report-rule: oklch(0.48 0.045 112 / 55%);
   --room-shade: oklch(0.12 0.008 112 / 30%);
   --console-shadow: 0 4px 16px oklch(0.08 0.008 112 / 45%);
   --sentiment-positive-rgb: 61 227 158;
