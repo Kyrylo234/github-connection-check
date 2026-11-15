@@ -13,6 +13,7 @@ interface WorldGlobeProps {
   autoRotate: boolean;
   resetToken: number;
   onSelect: (eventId: string) => void;
+  onClose: () => void;
 }
 
 interface GlobePalette {
@@ -68,6 +69,7 @@ export default function WorldGlobe({
   autoRotate,
   resetToken,
   onSelect,
+  onClose,
 }: WorldGlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
@@ -94,14 +96,14 @@ export default function WorldGlobe({
   useEffect(() => {
     if (!globeReady || !globeRef.current) return;
     const controls = globeRef.current.controls();
-    controls.autoRotate = autoRotate;
+    controls.autoRotate = autoRotate && !selectedEventId;
     controls.autoRotateSpeed = 0.38;
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
     controls.minDistance = 145;
     controls.maxDistance = 650;
-  }, [autoRotate, globeReady]);
+  }, [autoRotate, selectedEventId, globeReady]);
 
   useEffect(() => {
     if (!globeReady || !globeRef.current) return;
@@ -179,6 +181,7 @@ export default function WorldGlobe({
             );
           }}
           onPointClick={(item) => onSelect((item as AnalyzedNewsEvent).id)}
+          onGlobeClick={onClose}
           htmlElementsData={events}
           htmlLat={(item) => (item as AnalyzedNewsEvent).location.latitude}
           htmlLng={(item) => (item as AnalyzedNewsEvent).location.longitude}
