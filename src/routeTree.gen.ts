@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ScenariosRouteImport } from './routes/scenarios'
+import { Route as ResultsIdRouteImport } from './routes/results.$id'
+import { Route as ScenariosIndexRouteImport } from './routes/scenarios.index'
+import { Route as ScenariosIdRouteImport } from './routes/scenarios.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +25,62 @@ const ScenariosRoute = ScenariosRouteImport.update({
   path: '/scenarios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResultsIdRoute = ResultsIdRouteImport.update({
+  id: '/results/$id',
+  path: '/results/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScenariosIndexRoute = ScenariosIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ScenariosRoute,
+} as any)
+const ScenariosIdRoute = ScenariosIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ScenariosRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/scenarios': typeof ScenariosRoute
+  '/scenarios': typeof ScenariosRouteWithChildren
+  '/results/$id': typeof ResultsIdRoute
+  '/scenarios/$id': typeof ScenariosIdRoute
+  '/scenarios/': typeof ScenariosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/scenarios': typeof ScenariosRoute
+  '/results/$id': typeof ResultsIdRoute
+  '/scenarios/$id': typeof ScenariosIdRoute
+  '/scenarios': typeof ScenariosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/scenarios': typeof ScenariosRoute
+  '/scenarios': typeof ScenariosRouteWithChildren
+  '/results/$id': typeof ResultsIdRoute
+  '/scenarios/$id': typeof ScenariosIdRoute
+  '/scenarios/': typeof ScenariosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/scenarios'
+  fullPaths:
+    '/' | '/scenarios' | '/results/$id' | '/scenarios/$id' | '/scenarios/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/scenarios'
-  id: '__root__' | '/' | '/scenarios'
+  to: '/' | '/results/$id' | '/scenarios/$id' | '/scenarios'
+  id:
+    | '__root__'
+    | '/'
+    | '/scenarios'
+    | '/results/$id'
+    | '/scenarios/$id'
+    | '/scenarios/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ScenariosRoute: typeof ScenariosRoute
+  ScenariosRoute: typeof ScenariosRouteWithChildren
+  ResultsIdRoute: typeof ResultsIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +99,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScenariosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/results/$id': {
+      id: '/results/$id'
+      path: '/results/$id'
+      fullPath: '/results/$id'
+      preLoaderRoute: typeof ResultsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scenarios/': {
+      id: '/scenarios/'
+      path: '/'
+      fullPath: '/scenarios/'
+      preLoaderRoute: typeof ScenariosIndexRouteImport
+      parentRoute: typeof ScenariosRoute
+    }
+    '/scenarios/$id': {
+      id: '/scenarios/$id'
+      path: '/$id'
+      fullPath: '/scenarios/$id'
+      preLoaderRoute: typeof ScenariosIdRouteImport
+      parentRoute: typeof ScenariosRoute
+    }
   }
 }
 
+interface ScenariosRouteChildren {
+  ScenariosIdRoute: typeof ScenariosIdRoute
+  ScenariosIndexRoute: typeof ScenariosIndexRoute
+}
+
+const ScenariosRouteChildren: ScenariosRouteChildren = {
+  ScenariosIdRoute: ScenariosIdRoute,
+  ScenariosIndexRoute: ScenariosIndexRoute,
+}
+
+const ScenariosRouteWithChildren = ScenariosRoute._addFileChildren(
+  ScenariosRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ScenariosRoute: ScenariosRoute,
+  ScenariosRoute: ScenariosRouteWithChildren,
+  ResultsIdRoute: ResultsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

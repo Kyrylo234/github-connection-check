@@ -39,3 +39,4 @@ use the editor.
 - Keep the briefing-room image as a non-interactive backdrop behind the transparent globe canvas; room styling must not intercept globe interaction.
 - Detect new live hotspots against the unfiltered source snapshot in pure logic; defer camera focus during event reading or pause, and never treat filter changes as arrivals.
 - Ignore renderer pointer callbacks originating from HTML hotspots; the renderer defers pointer-up handling and can otherwise undo the hotspot's selection.
+- Keep Scenario Lab definitions, deterministic scoring and session transitions in pure TypeScript with regression tests; store progress only in tab-local browser storage and keep AI, authentication and hiring recommendations out of the exercise.

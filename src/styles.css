@@ -408,6 +408,52 @@ aside[aria-label="The Briefing"] > div:first-child {
   }
 }
 
+.scenario-report {
+  --foreground: var(--bunker-green);
+  --background: var(--document-ivory);
+  --report-paper: var(--document-ivory);
+  --report-rule: color-mix(in oklab, var(--bunker-green) 28%, transparent);
+  --muted-foreground: color-mix(in oklab, var(--bunker-green) 82%, var(--document-ivory));
+  --signal: var(--bunker-green);
+  --secondary: color-mix(in oklab, var(--bunker-green) 10%, var(--document-ivory));
+  color: var(--foreground);
+  background-image: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in oklab, var(--bunker-green) 2%, transparent) 3px 4px);
+  box-shadow: var(--bunker-edge-shadow);
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: var(--document-ivory) !important;
+    color: var(--bunker-green) !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .scenario-print-hidden {
+    display: none !important;
+  }
+
+  .scenario-report-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .scenario-report {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .print-break-avoid {
+    break-inside: avoid;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

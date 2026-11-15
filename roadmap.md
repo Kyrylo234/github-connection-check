@@ -36,3 +36,10 @@
 
 - [x] Separate recent-news tension from map filters and explain its 24-hour demo window
 - [x] Verify severity and other map filters leave the tension reading unchanged
+
+## Scenario Lab
+
+- [x] Add two fictional scenarios with three linked decisions and three choices per scene
+- [x] Add deterministic weighted scoring, local session persistence and clean replay
+- [x] Build playable briefings, consequence views, final reports and browser PDF printing
+- [x] Test both complete paths, branching, replay, report contents and home navigation
