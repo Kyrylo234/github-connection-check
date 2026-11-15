@@ -38,3 +38,4 @@ use the editor.
 - Crossfade the aligned calm/fiery Earth assets using a tested pure tension-to-intensity function; visual changes must not alter the tension calculation.
 - Keep the briefing-room image as a non-interactive backdrop behind the transparent globe canvas; room styling must not intercept globe interaction.
 - Detect new live hotspots against the unfiltered source snapshot in pure logic; defer camera focus during event reading or pause, and never treat filter changes as arrivals.
+- Ignore renderer pointer callbacks originating from HTML hotspots; the renderer defers pointer-up handling and can otherwise undo the hotspot's selection.

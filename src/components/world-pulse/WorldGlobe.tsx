@@ -6,6 +6,7 @@ import earthAsset from "@/assets/world-pulse-earth.asset.json";
 import { getPrimaryArticle } from "@/data/demoNews";
 import { getHotspotIntensity, getSentiment } from "@/lib/news-analysis";
 import { useHotspotFocus } from "@/hooks/use-hotspot-focus";
+import { isHotspotPointerEvent } from "@/lib/globe-interaction";
 import type { AnalyzedNewsEvent, Sentiment } from "@/types/news";
 
 interface WorldGlobeProps {
@@ -195,8 +196,12 @@ export default function WorldGlobe({
               createElement("p", { className: "mt-2 text-[11px] text-muted-foreground" }, `${event.location.name} · ${event.articleCount} article${event.articleCount === 1 ? "" : "s"}`),
             );
           }}
-          onPointClick={(item) => onSelect((item as AnalyzedNewsEvent).id)}
-          onGlobeClick={onClose}
+          onPointClick={(item, pointerEvent) => {
+            if (!isHotspotPointerEvent(pointerEvent)) onSelect((item as AnalyzedNewsEvent).id);
+          }}
+          onGlobeClick={(_, pointerEvent) => {
+            if (!isHotspotPointerEvent(pointerEvent)) onClose();
+          }}
           htmlElementsData={events}
           htmlLat={(item) => (item as AnalyzedNewsEvent).location.latitude}
           htmlLng={(item) => (item as AnalyzedNewsEvent).location.longitude}

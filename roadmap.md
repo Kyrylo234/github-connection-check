@@ -26,3 +26,8 @@
 
 - [x] Collapse filters behind a right-hand control and add minimum severity
 - [x] Test combined filtering and verify expansion on desktop and phone
+
+## Briefing click stability
+
+- [x] Isolate HTML hotspot presses from deferred globe dismissal
+- [x] Test pointer isolation and verify hotspot opening and click-off dismissal
