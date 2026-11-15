@@ -325,6 +325,7 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
                   <p className="mt-1 text-[10px] font-medium leading-4">Core situation · Priority risk · Decisions and next steps · Stakeholders · Uncertainty · Concise length</p>
                 </div>
                 <SituationReportFields
+                  scenarioId={scenario.id}
                   value={session.situationReport}
                   onChange={updateReportDraft}
                 />
