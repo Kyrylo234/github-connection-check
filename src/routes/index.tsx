@@ -124,8 +124,7 @@ function Index() {
               <SlidersHorizontal className="size-3.5 text-signal" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="font-display text-lg font-medium uppercase">Global situation</h1>
-              <p className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.13em] text-muted-foreground" aria-live="polite">
+              <p className="font-mono text-xs uppercase leading-5 text-muted-foreground" aria-live="polite">
                 DEMO DATA · {filteredEvents.length} fictional events · {tension.totalArticles} sample articles
               </p>
             </div>
