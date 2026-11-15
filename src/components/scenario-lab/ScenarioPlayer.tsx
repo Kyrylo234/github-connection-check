@@ -244,7 +244,7 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
             </div>
           </section>
 
-          <div className={session.status === "reading"
+          <div className={session.status === "reading" || session.status === "decision"
             ? "absolute inset-x-3 top-5 z-20 min-w-0 max-h-[65vh] overflow-y-auto sm:left-auto sm:right-5 sm:w-[380px] xl:sticky xl:inset-x-auto xl:top-5 xl:max-h-none xl:w-auto xl:overflow-visible"
             : "min-w-0 xl:sticky xl:top-5"}>
             {session.status === "standby" && (
