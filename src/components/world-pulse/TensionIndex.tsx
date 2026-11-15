@@ -19,7 +19,9 @@ export function TensionIndex({ reading, eventCount }: TensionIndexProps) {
       <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" className="h-auto gap-1 p-0 hover:bg-transparent sm:gap-2" aria-label={`World Tension Index: ${reading.score} out of 100. View calculation`}>
-                <span className="tension-earth relative block size-11 shrink-0 overflow-hidden sm:size-16" role="img" aria-label={fireIntensity === 0 ? "Calm Earth" : `Earth with ${Math.round(fireIntensity * 100)} percent fire intensity`}>
+                <span className="relative block size-11 shrink-0 sm:size-16" style={{ "--tension-heat": `${fireIntensity * 100}%`, "--tension-glow-opacity": 0.12 + fireIntensity * 0.38 } as CSSProperties} role="img" aria-label={fireIntensity === 0 ? "Calm Earth" : `Earth with ${Math.round(fireIntensity * 100)} percent fire intensity`}>
+                  <span className="tension-earth-glow pointer-events-none absolute rounded-full" aria-hidden="true" />
+                  <span className="tension-earth absolute inset-0 overflow-hidden">
                   <img src={calmEarth} alt="" width={816} height={816} className="absolute inset-0 size-full object-contain" />
                   <img src={fieryEarth} alt="" width={816} height={816} className="absolute inset-0 size-full object-contain transition-opacity duration-700" style={{ opacity: fireIntensity }} data-testid="tension-fire" />
                   {fireIntensity > 0 && (
@@ -29,6 +31,7 @@ export function TensionIndex({ reading, eventCount }: TensionIndexProps) {
                       ))}
                     </span>
                   )}
+                  </span>
                 </span>
                 <span className="block text-left">
                   <span className="hidden font-mono text-[9px] uppercase leading-4 text-muted-foreground sm:block">World Tension</span>

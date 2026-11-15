@@ -140,6 +140,15 @@
   mix-blend-mode: screen;
 }
 
+.tension-earth-glow {
+  inset: 16%;
+  background: color-mix(in oklab, var(--signal), var(--sentiment-negative) var(--tension-heat));
+  box-shadow: 0 0 12px 5px color-mix(in oklab, var(--signal), var(--sentiment-negative) var(--tension-heat));
+  filter: blur(7px);
+  opacity: var(--tension-glow-opacity);
+  transition: opacity 700ms var(--ease-out-soft), background 700ms var(--ease-out-soft), box-shadow 700ms var(--ease-out-soft);
+}
+
 .tension-fire-patch {
   --fire-patch-radius: calc(var(--fire-intensity) * 16%);
   mask-image:
