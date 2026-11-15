@@ -21,3 +21,8 @@
 - [x] Rename the app and apply the requested three font roles
 - [x] Verify fonts, event reading, navigation and phone layout
 - [x] Rename the event panel to The Briefing, retaining the Cold War styling
+
+## Compact globe filters
+
+- [x] Collapse filters behind a right-hand control and add minimum severity
+- [x] Test combined filtering and verify expansion on desktop and phone

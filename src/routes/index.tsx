@@ -8,13 +8,7 @@ import {
 } from "lucide-react";
 
 import briefingRoom from "@/assets/briefing-room.jpg";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { GlobeFilters } from "@/components/world-pulse/GlobeFilters";
 import { LocationPanel } from "@/components/world-pulse/LocationPanel";
 import { SentimentDot } from "@/components/world-pulse/SentimentBadge";
 import { TensionIndex } from "@/components/world-pulse/TensionIndex";
@@ -59,11 +53,12 @@ function GlobeFallback() {
 function Index() {
   const [sentiment, setSentiment] = useState<SentimentFilter>("all");
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
+  const [minimumSeverity, setMinimumSeverity] = useState(0);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const filteredEvents = useMemo(
-    () => filterNewsEvents(demoNewsEvents, sentiment, timeRange),
-    [sentiment, timeRange],
+    () => filterNewsEvents(demoNewsEvents, sentiment, timeRange, undefined, minimumSeverity),
+    [sentiment, timeRange, minimumSeverity],
   );
   const tension = useMemo(() => calculateTensionIndex(filteredEvents), [filteredEvents]);
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
@@ -103,34 +98,10 @@ function Index() {
       </header>
 
       <main className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1 flex-col">
-        <section className="briefing-console relative z-30 flex shrink-0 flex-col gap-3 px-5 py-3 lg:flex-row lg:items-center lg:justify-between" aria-label="Globe filters and controls">
-          <div className="flex flex-wrap items-center gap-2">
-            <Select value={sentiment} onValueChange={(value) => { setSentiment(value as SentimentFilter); setSelectedEventId(null); }}>
-              <SelectTrigger aria-label="Filter by sentiment" className="h-8 w-[142px] border-border bg-background/40 font-system text-[10px] shadow-none">
-                <SelectValue placeholder="Sentiment" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All sentiments</SelectItem>
-                <SelectItem value="positive"><span className="flex items-center gap-2"><SentimentDot score={0.5} /> Positive</span></SelectItem>
-                <SelectItem value="neutral"><span className="flex items-center gap-2"><SentimentDot score={0} /> Neutral</span></SelectItem>
-                <SelectItem value="negative"><span className="flex items-center gap-2"><SentimentDot score={-0.5} /> Negative</span></SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={timeRange} onValueChange={(value) => { setTimeRange(value as TimeRange); setSelectedEventId(null); }}>
-              <SelectTrigger aria-label="Filter by time range" className="h-8 w-[132px] border-border bg-background/40 font-system text-[10px] shadow-none">
-                <SelectValue placeholder="Time range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="24h">Last 24 hours</SelectItem>
-                <SelectItem value="72h">Last 72 hours</SelectItem>
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-              </SelectContent>
-            </Select>
-
-          </div>
-        </section>
+        <GlobeFilters sentiment={sentiment} timeRange={timeRange} minimumSeverity={minimumSeverity}
+          onSentimentChange={(value) => { setSentiment(value); setSelectedEventId(null); }}
+          onTimeRangeChange={(value) => { setTimeRange(value); setSelectedEventId(null); }}
+          onSeverityChange={(value) => { setMinimumSeverity(value); setSelectedEventId(null); }} />
 
         <section className="briefing-display relative min-h-[540px] flex-1 overflow-hidden" aria-label="Interactive 3D news globe">
             <img src={briefingRoom} alt="" width={1920} height={1088} className="briefing-room-image" />

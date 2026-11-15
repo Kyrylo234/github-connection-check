@@ -55,6 +55,17 @@ describe("World Pulse demo fixture", () => {
 });
 
 describe("sentiment and time filters", () => {
+  it("includes the minimum severity boundary and excludes lower severity", () => {
+    const events = [event({ id: "below", severity: 0.49 }), event({ id: "boundary", severity: 0.5 }), event({ id: "above", severity: 0.9 })];
+    expect(filterNewsEvents(events, "all", "30d", undefined, 0.5).map((item) => item.id)).toEqual(["boundary", "above"]);
+  });
+
+  it("keeps all severities at zero and combines severity with sentiment and time", () => {
+    const events = [event({ id: "zero", severity: 0 }), event({ id: "severe", severity: 1 }), event({ id: "positive", severity: 1, sentiment: 0.8 }), event({ id: "old", severity: 1, occurredAt: "2026-11-14T08:00:00.000Z" })];
+    expect(filterNewsEvents(events, "all", "30d", undefined, 0)).toHaveLength(4);
+    expect(filterNewsEvents(events, "negative", "24h", undefined, 1).map((item) => item.id)).toEqual(["severe"]);
+  });
+
   it("uses positive, neutral and negative bands around zero", () => {
     expect(getSentiment(0.21)).toBe("positive");
     expect(getSentiment(0.2)).toBe("neutral");

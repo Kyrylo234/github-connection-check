@@ -24,12 +24,13 @@ export function filterNewsEvents(
   sentiment: SentimentFilter,
   timeRange: TimeRange,
   snapshotAt = DEMO_SNAPSHOT_AT,
+  minimumSeverity = 0,
 ) {
   const oldestTimestamp = Date.parse(snapshotAt) - TIME_RANGE_HOURS[timeRange] * 60 * 60 * 1000;
 
   return events.filter((event) => {
     const matchesSentiment = sentiment === "all" || getSentiment(event.sentiment) === sentiment;
-    return matchesSentiment && Date.parse(event.occurredAt) >= oldestTimestamp;
+    return matchesSentiment && Date.parse(event.occurredAt) >= oldestTimestamp && event.severity >= minimumSeverity;
   });
 }
 
