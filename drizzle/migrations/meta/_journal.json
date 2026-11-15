@@ -15,6 +15,13 @@
       "when": 1794748527764,
       "tag": "0001_publisher_news_failure_status",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794748791612,
+      "tag": "0002_hosted_news_analysis_cache",
+      "breakpoints": true
     }
   ]
 }

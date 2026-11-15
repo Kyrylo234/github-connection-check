@@ -67,3 +67,10 @@
 - [x] Normalize headlines and test transparent location/scoring heuristics
 - [x] Add source status, refresh, dates, links and compact news sidebar without changing the globe or exercises
 - [x] Verify actual publisher news and preserved exercises in the browser; test failures, demo-fallback responses and refresh coordination
+
+## Hosted news classification
+
+- [x] Add validated 15-story batches with URL/content cache, shared lock, cooldown and 60-story daily demo cap
+- [x] Add strict hosted JSON classification and verified gazetteer resolution with safe fallback and persistent error pauses
+- [x] Show actual analysis method, counts, dates and update globe clusters and independent tension values
+- [x] Test classification/cache rules and verify real hosted analysis, globe updates and preserved exercises

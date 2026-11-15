@@ -15,9 +15,11 @@ import { TensionIndex } from "@/components/world-pulse/TensionIndex";
 import { DEMO_SNAPSHOT_AT, demoNewsEvents } from "@/data/demoNews";
 import { calculateRecentTension, filterNewsEvents } from "@/lib/news-analysis";
 import type { SentimentFilter, TimeRange } from "@/types/news";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { publisherNewsOptions } from "@/lib/publisher-news.query";
-import { locateNews } from "@/lib/publisher-news";
+import { analyzeNews } from "@/lib/news-classification.functions";
+import { classifiedEvents, clusterNews, storySignals } from "@/lib/news-classification";
 import { NewsSidebar } from "@/components/world-pulse/NewsSidebar";
 
 const WorldGlobe = lazy(() => import("@/components/world-pulse/WorldGlobe"));
@@ -60,9 +62,15 @@ function GlobeFallback() {
 
 function Index() {
   const { data: response, isFetching, refetch } = useSuspenseQuery(publisherNewsOptions);
-  const sourceEvents = useMemo(() => response.snapshot ? response.snapshot.articles.flatMap(article => {
-    const event = locateNews(article); return event ? [event] : [];
-  }) : demoNewsEvents, [response.snapshot]);
+  const queryClient = useQueryClient();
+  const classify = useServerFn(analyzeNews);
+  const mutation = useMutation({ mutationFn: classify, onSuccess: analysis => {
+    queryClient.setQueryData(publisherNewsOptions.queryKey, (current: typeof response | undefined) => current ? {
+      ...current, analysis: { ...analysis, results: [...(current.analysis?.results ?? []).filter(row => !analysis.results.some(next => next.articleId === row.articleId)), ...analysis.results] },
+    } : current);
+  } });
+  const results = response.analysis?.results ?? [];
+  const sourceEvents = useMemo(() => response.snapshot ? clusterNews(classifiedEvents(response.snapshot.articles, response.analysis?.results ?? [])) : demoNewsEvents, [response.snapshot, response.analysis]);
   const snapshotAt = response.snapshot?.fetchedAt ?? DEMO_SNAPSHOT_AT;
   const articles = response.snapshot?.articles ?? demoNewsEvents.flatMap(event => event.articles);
   const [sentiment, setSentiment] = useState<SentimentFilter>("all");
@@ -74,12 +82,12 @@ function Index() {
     () => filterNewsEvents(sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity),
     [sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity],
   );
-  const tension = useMemo(() => calculateRecentTension(sourceEvents, snapshotAt), [sourceEvents, snapshotAt]);
+  const tension = useMemo(() => calculateRecentTension(response.snapshot ? storySignals(response.snapshot.articles, response.analysis?.results ?? []) : demoNewsEvents, snapshotAt), [response.snapshot, response.analysis, snapshotAt]);
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
 
   const selectEvent = (eventId: string) => setSelectedEventId(eventId);
   return (
-    <div className="briefing-dashboard flex flex-col bg-background text-foreground">
+    <div className="briefing-dashboard flex flex-col bg-background text-foreground max-lg:h-auto! max-lg:overflow-visible!">
       <header className="briefing-header relative z-40 shrink-0 border-b">
         <div className="mx-auto flex h-[74px] w-full max-w-[1920px] items-center gap-2 px-4 sm:gap-5 sm:px-5">
           <Link to="/" className="group flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="SitRep home">
@@ -118,7 +126,7 @@ function Index() {
           onSeverityChange={(value) => { setMinimumSeverity(value); setSelectedEventId(null); }} />
 
         <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <section className="briefing-display relative min-h-[540px] flex-1 overflow-hidden" aria-label="Interactive 3D news globe">
+        <section className="briefing-display relative h-[calc(100dvh-126px)] min-h-[540px] shrink-0 overflow-hidden lg:flex-1" aria-label="Interactive 3D news globe">
             <img src={briefingRoom} alt="" width={1920} height={1088} className="briefing-room-image" />
             <div className="briefing-room-shade pointer-events-none absolute inset-0" />
             <div className="pointer-events-none absolute right-7 top-7 z-20 rounded-sm border bg-background/80 p-3">
@@ -139,7 +147,7 @@ function Index() {
               </ClientOnly>
             </div>
             <div className="pointer-events-none absolute bottom-7 left-7 z-20 hidden font-system text-[8px] uppercase text-muted-foreground lg:block">
-              {response.snapshot ? "Publisher news · Keyword heuristic" : "DEMO snapshot"} · {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC
+              {response.snapshot ? results.length ? `Hosted AI · ${results.length} analysed stories` : "Publisher news · Heuristic fallback" : "DEMO snapshot"} · {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC
             </div>
             {selectedEvent && (
               <div className="absolute inset-x-3 bottom-3 top-auto z-30 max-h-[calc(100%-1.5rem)] sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:w-[360px] sm:max-h-none">
@@ -147,7 +155,10 @@ function Index() {
               </div>
             )}
         </section>
-        <NewsSidebar response={response} articles={articles} refreshing={isFetching} refresh={() => { void refetch(); }} select={selectEvent} />
+        <NewsSidebar response={response} articles={articles} events={sourceEvents} analysing={mutation.isPending}
+          analysisError={mutation.error ? "Hosted analysis could not complete; heuristic fallback remains active." : null}
+          analyze={() => mutation.mutate({ data: articles.filter(article => !results.some(row => row.articleId === article.id)).slice(0, 15).map(article => ({ id: article.id, title: article.title, description: article.description ?? "" })) })}
+          refreshing={isFetching} refresh={() => { void refetch(); }} select={selectEvent} />
         </div>
       </main>
     </div>

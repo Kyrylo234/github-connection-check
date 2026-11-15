@@ -47,4 +47,6 @@ use the editor.
 
 - Keep optional reasoning feedback in a validated public server function using Lovable AI Gateway; treat report text as untrusted evidence, keep keys server-only, and never change scores on AI failure.
 - Fetch only fixed publisher RSS URLs in a public server function; coordinate a shared ten-minute snapshot with a service-role-only atomic database lease so visitors cannot amplify feed requests.
-- Normalize and deduplicate news by canonical URL in pure tested logic; pin only unambiguous explicit locative country phrases in headlines, never publisher metadata, and label national coordinates and keyword scores as approximate.
+- Normalize and deduplicate news by canonical URL; heuristic pins require explicit locative country phrases, while hosted locations require exact country-scoped gazetteer matches and at least 0.6 confidence; never use publisher origin or AI-generated coordinates.
+- Run hosted news classification only from explicit batch actions, with strict JSON validation, a URL/content cache and database lease/budget; keep terminal credit/access pauses durable and preserve heuristic results on failure.
+- Derive global recent tension from unfiltered per-story signals, including AI-classified stories with unknown locations; cluster only map events so display grouping cannot alter the index.

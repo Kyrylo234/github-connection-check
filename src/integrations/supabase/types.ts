@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      news_analysis_budget: {
+        Row: {
+          budget_day: string
+          id: string
+          last_updated_at: string | null
+          next_at: string
+          paused_reason: string | null
+          used: number
+        }
+        Insert: {
+          budget_day?: string
+          id: string
+          last_updated_at?: string | null
+          next_at?: string
+          paused_reason?: string | null
+          used?: number
+        }
+        Update: {
+          budget_day?: string
+          id?: string
+          last_updated_at?: string | null
+          next_at?: string
+          paused_reason?: string | null
+          used?: number
+        }
+        Relationships: []
+      }
+      news_analysis_cache: {
+        Row: {
+          analysis: Json
+          analyzed_at: string
+          article_id: string
+          content_hash: string
+        }
+        Insert: {
+          analysis: Json
+          analyzed_at?: string
+          article_id: string
+          content_hash: string
+        }
+        Update: {
+          analysis?: Json
+          analyzed_at?: string
+          article_id?: string
+          content_hash?: string
+        }
+        Relationships: []
+      }
       publisher_news_cache: {
         Row: {
           id: string
@@ -40,6 +88,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_news_analysis_batch: {
+        Args: { batch_count: number }
+        Returns: string
+      }
       claim_publisher_news_refresh: { Args: never; Returns: boolean }
     }
     Enums: {

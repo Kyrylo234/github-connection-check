@@ -1,0 +1,39 @@
+import { describe, expect, it } from "vitest";
+import { ANALYSIS_BATCH_LIMIT, ANALYSIS_DAILY_LIMIT, analysisInputSchema, validateClassification, classifiedEvents, clusterNews, storySignals, type Classification } from "./news-classification";
+import { resolveNewsLocation } from "./news-location.server";
+import { calculateRecentTension } from "./news-analysis";
+import type { NewsArticle } from "@/types/news";
+const article: NewsArticle = { id: "a", title: "Attack in Japan", description: "Report", source: "BBC", publishedAt: "2026-11-15T10:00:00Z", isDemo: false };
+const classification: Classification = { articleId: "a", eventLocationName: "Japan", countryCode: "JP", sentiment: -1, severity: 1, confidence: 0.9, rationale: "Event harms people", location: resolveNewsLocation("Japan", "JP"), analyzedAt: "2026-11-15T12:00:00Z" };
+describe("hosted news classification", () => {
+  it("caps input at 15 stories and the demo budget at 60", () => {
+    expect(ANALYSIS_BATCH_LIMIT).toBe(15); expect(ANALYSIS_DAILY_LIMIT).toBe(60);
+    expect(analysisInputSchema.safeParse(Array.from({ length: 16 }, () => ({ id: "a", title: "Title", description: "" }))).success).toBe(false);
+  });
+  it("clamps finite AI numbers and rejects mismatched IDs and invalid JSON", () => {
+    const row = { articleId: "a", eventLocationName: null, countryCode: null, sentiment: -4, severity: 2, confidence: 3, rationale: "Test" };
+    expect(validateClassification({ results: [row] }, ["a"])[0]).toMatchObject({ sentiment: -1, severity: 1, confidence: 1 });
+    expect(() => validateClassification({ results: [row] }, ["b"])).toThrow();
+    expect(() => validateClassification("not json", ["a"])).toThrow();
+    expect(() => validateClassification({ results: [{ ...row, sentiment: NaN }] }, ["a"])).toThrow();
+  });
+  it("resolves real countries and cities without inventing unknown coordinates", () => {
+    expect(resolveNewsLocation("Paris", "FR")).toMatchObject({ country: "France", latitude: 48.85341, longitude: 2.3488 });
+    expect(resolveNewsLocation("Atlantis", "FR")).toBeNull();
+    expect(resolveNewsLocation("France", null)).toBeNull();
+  });
+  it("uses hosted effects for tension even when location is unclear", () => {
+    const unknown = { ...classification, location: null };
+    expect(classifiedEvents([article], [unknown])).toEqual([]);
+    expect(calculateRecentTension(storySignals([article], [unknown]), "2026-11-15T12:00:00Z").reading.score).toBe(100);
+  });
+  it("falls back only for unanalysed stories and never pins low-confidence AI", () => {
+    expect(classifiedEvents([article], [])[0]?.analysisMethod).toBe("Heuristic fallback");
+    expect(classifiedEvents([article], [{ ...classification, confidence: 0.5 }])).toEqual([]);
+  });
+  it("clusters colocated stories using actual article count", () => {
+    const events = classifiedEvents([article, { ...article, id: "b" }], [classification, { ...classification, articleId: "b" }]);
+    const cluster = clusterNews(events);
+    expect(cluster).toHaveLength(1); expect(cluster[0]?.articleCount).toBe(2); expect(cluster[0]?.sentiment).toBe(-1);
+  });
+});

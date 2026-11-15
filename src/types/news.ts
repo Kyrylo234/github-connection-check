@@ -39,4 +39,7 @@ export interface AnalyzedNewsEvent {
   articles: NewsArticle[];
   articleCount: number;
   isDemo: boolean;
+  analysisMethod?: "Hosted AI" | "Heuristic fallback";
+  confidence?: number;
+  rationale?: string;
 }

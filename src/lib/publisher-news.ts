@@ -1,5 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import type { AnalyzedNewsEvent, NewsArticle, NewsCategory } from "@/types/news";
+import type { AnalysisState } from "./news-classification";
 
 export const NEWS_CACHE_MINUTES = 10;
 export const PUBLISHER_FEEDS = [
@@ -14,6 +15,7 @@ export interface NewsSnapshot {
   errors: string[];
 }
 export interface NewsResponse {
+  analysis?: AnalysisState;
   snapshot: NewsSnapshot | null;
   error: string | null;
   nextRefreshAt: string | null;

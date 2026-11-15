@@ -24,7 +24,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
   }[getSentiment(selectedEvent.sentiment)];
   return (
     <aside className="flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-none border border-report-rule bg-report-paper" aria-label="The Briefing">
-      <div className="flex items-center justify-between border-b border-report-rule px-4 py-4">
+      <div className="flex shrink-0 items-center justify-between border-b border-report-rule px-4 py-4">
         <div className="flex items-center gap-2.5">
           <Layers3 className="size-4 text-signal" aria-hidden="true" />
           <h2 className="font-display text-lg font-bold uppercase">The Briefing</h2>
@@ -49,6 +49,8 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
 
           <section className="mt-5 border-t border-report-rule pt-3" aria-label="Assessment">
           <h4 className="font-display text-base font-bold uppercase text-signal">Assessment</h4>
+          {!selectedEvent.isDemo && <p className="mt-2 text-xs text-signal">{selectedEvent.analysisMethod ?? "Heuristic fallback"}{selectedEvent.confidence !== undefined ? ` · ${Math.round(selectedEvent.confidence * 100)}% confidence` : ""}</p>}
+          {selectedEvent.rationale && <p className="mt-2 text-xs leading-5 text-muted-foreground">{selectedEvent.rationale}</p>}
           <div className="mt-3 grid grid-cols-2">
             <div className="col-span-2 min-w-0 border-b border-report-rule pb-3">
               <p className="font-system text-[10px] font-semibold uppercase text-signal">Location</p>
@@ -108,7 +110,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
             ))}
           </div>
           <p className="mt-3 border-t border-report-rule pt-3 text-[11px] font-medium leading-5 text-muted-foreground">
-            {selectedEvent.isDemo ? "Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher." : "Location is inferred from an explicit country phrase in the headline and is approximate. Sentiment and severity use transparent keywords, not AI or verified analysis. Publisher origin is never used as event location."}
+            {selectedEvent.isDemo ? "Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher." : selectedEvent.analysisMethod === "Hosted AI" ? "Hosted AI classifies event effects from article evidence. Locations are resolved against published country/city coordinates, never invented by AI. National centres are approximate; confidence and scores are not verified facts." : "Location is inferred from an explicit country phrase in the headline and is approximate. Sentiment and severity use transparent keywords, not AI or verified analysis. Publisher origin is never used as event location."}
           </p>
           </section>
         </div>

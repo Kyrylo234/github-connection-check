@@ -52,7 +52,8 @@ export interface TensionReading {
  * Event pressure = max(0, -sentiment) × (0.7 + 0.3 × severity) × article weight.
  * Article weight = 1 + 0.15 × log₂(article count). Score = mean pressure × 100, capped.
  */
-export function calculateTensionIndex(events: AnalyzedNewsEvent[]): TensionReading {
+type EventSignal = Pick<AnalyzedNewsEvent, "sentiment" | "severity" | "articleCount" | "occurredAt">;
+export function calculateTensionIndex(events: EventSignal[]): TensionReading {
   const totalArticles = events.reduce((sum, event) => sum + event.articleCount, 0);
   const negativeEvents = events.filter((event) => event.sentiment < 0).length;
   if (events.length === 0) return { score: 0, band: "Low", totalArticles, negativeEvents };
@@ -70,7 +71,7 @@ export function calculateTensionIndex(events: AnalyzedNewsEvent[]): TensionReadi
 }
 
 /** Global recent-news reading; map filters must not affect this source selection. */
-export function calculateRecentTension(events: AnalyzedNewsEvent[], snapshotAt: string) {
+export function calculateRecentTension(events: EventSignal[], snapshotAt: string) {
   const end = Date.parse(snapshotAt);
   const start = end - TIME_RANGE_HOURS["24h"] * 60 * 60 * 1000;
   const recentEvents = events.filter((event) => {
