@@ -90,7 +90,6 @@ function Index() {
             </span>
             <span>
               <span className="block font-display text-xs font-bold uppercase leading-none tracking-[0.18em] sm:text-[15px]">World Pulse</span>
-              <span className="mt-1.5 hidden font-mono text-[7px] uppercase tracking-[0.2em] text-muted-foreground sm:block">Global sentiment observatory</span>
             </span>
           </Link>
 
