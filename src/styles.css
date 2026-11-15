@@ -138,6 +138,8 @@
   --report-rule: color-mix(in oklab, var(--radar-phosphor) 28%, transparent);
   --room-shade: color-mix(in oklab, var(--bunker-green) 30%, transparent);
   --console-shadow: 0 4px 16px oklch(0.08 0.008 112 / 45%);
+  --bunker-edge-shadow: inset 0 1px 0 color-mix(in oklab, var(--radar-phosphor) 12%, transparent), inset 0 -2px 0 color-mix(in oklab, var(--bunker-green) 80%, transparent), var(--console-shadow);
+  --bunker-grain: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in oklab, var(--document-ivory) 2%, transparent) 3px 4px), repeating-linear-gradient(93deg, transparent 0 47px, color-mix(in oklab, var(--radar-phosphor) 3%, transparent) 47px 48px);
   --sentiment-positive-rgb: 180 215 187;
   --sentiment-neutral-rgb: 81 155 255;
   --sentiment-negative-rgb: 228 91 75;
@@ -218,14 +220,33 @@
 
 .briefing-header {
   background: var(--background);
-  border-top: 3px solid var(--primary);
-  box-shadow: var(--console-shadow);
+  background-image: var(--bunker-grain);
+  border-top: 3px solid var(--report-rule);
+  box-shadow: var(--bunker-edge-shadow);
 }
 
 .briefing-console {
   background: var(--card);
+  background-image: var(--bunker-grain);
   border-bottom: 1px solid var(--border);
-  box-shadow: var(--console-shadow);
+  box-shadow: var(--bunker-edge-shadow);
+}
+
+aside[aria-label="The Briefing"] {
+  background-image: var(--bunker-grain);
+  border-width: 2px;
+  box-shadow: var(--bunker-edge-shadow);
+}
+
+aside[aria-label="The Briefing"] > div:first-child {
+  border-bottom-width: 2px;
+  background-color: color-mix(in oklab, var(--bunker-green) 92%, var(--radar-phosphor));
+  box-shadow: inset 0 1px 0 var(--border);
+}
+
+.briefing-console [role="combobox"] {
+  border-radius: 0;
+  box-shadow: inset 0 1px 3px color-mix(in oklab, var(--bunker-green) 70%, transparent);
 }
 
 .briefing-room-image {
@@ -246,7 +267,8 @@
   content: "";
   position: absolute;
   inset: 16px;
-  border: 1px solid var(--border);
+  border: 2px solid var(--report-rule);
+  box-shadow: var(--bunker-edge-shadow);
   pointer-events: none;
   z-index: 1;
 }
