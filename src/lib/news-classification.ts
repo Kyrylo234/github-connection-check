@@ -2,8 +2,6 @@ import { z } from "zod";
 import { locateNews } from "./publisher-news";
 import type { AnalyzedNewsEvent, NewsArticle } from "@/types/news";
 
-export const ANALYSIS_BATCH_LIMIT = 15;
-export const ANALYSIS_DAILY_LIMIT = 60;
 export const analysisSchema = z.object({ results: z.array(z.object({
   articleId: z.string(), eventLocationName: z.string().nullable(), countryCode: z.string().nullable(),
   sentiment: z.number(), severity: z.number(), confidence: z.number(), rationale: z.string(),
@@ -13,9 +11,6 @@ export type Classification = z.infer<typeof analysisSchema>["results"][number] &
   analyzedAt: string;
 };
 export interface AnalysisState { results: Classification[]; error: string | null; lastUpdatedAt: string | null }
-export const analysisInputSchema = z.array(z.object({
-  id: z.string().min(1).max(2000), title: z.string().min(1).max(1000), description: z.string().max(2000),
-}).strict()).min(1).max(ANALYSIS_BATCH_LIMIT);
 
 export function validateClassification(value: unknown, ids: string[]) {
   const parsed = analysisSchema.parse(value);
@@ -48,7 +43,7 @@ export function classifiedEvents(articles: NewsArticle[], results: Classificatio
     return [{ id: article.id, location: classified.location, category: article.category ?? "Society",
       occurredAt: article.publishedAt, articles: [article], articleCount: 1, isDemo: false,
       sentiment: classified.sentiment, severity: classified.severity, confidence: classified.confidence,
-      rationale: classified.rationale, analysisMethod: "Hosted AI" as const }];
+      rationale: classified.rationale, analysisMethod: "Local AI" as const }];
   });
 }
 

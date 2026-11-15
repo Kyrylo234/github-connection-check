@@ -110,7 +110,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
             ))}
           </div>
           <p className="mt-3 border-t border-report-rule pt-3 text-[11px] font-medium leading-5 text-muted-foreground">
-            {selectedEvent.isDemo ? "Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher." : selectedEvent.analysisMethod === "Hosted AI" ? "Hosted AI classifies event effects from article evidence. Locations are resolved against published country/city coordinates, never invented by AI. National centres are approximate; confidence and scores are not verified facts." : "Location is inferred from an explicit country phrase in the headline and is approximate. Sentiment and severity use transparent keywords, not AI or verified analysis. Publisher origin is never used as event location."}
+            {selectedEvent.isDemo ? "Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher." : selectedEvent.analysisMethod === "Local AI" ? "Local AI classifies event effects in this browser. Locations are checked against published country/city coordinates, never invented by AI. National centres are approximate; confidence and scores are not verified facts." : "Location is inferred from an explicit country phrase in the headline and is approximate. Sentiment and severity use transparent keywords, not AI or verified analysis. Publisher origin is never used as event location."}
           </p>
           </section>
         </div>
