@@ -3,8 +3,9 @@ import { FileText, Layers3, MapPin, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Slider } from "@/components/ui/slider";
 import { getPrimaryArticle } from "@/data/demoNews";
-import { formatDemoTime, formatSentiment } from "@/lib/news-analysis";
+import { formatDemoTime, formatSentiment, getSentiment } from "@/lib/news-analysis";
 import type { AnalyzedNewsEvent } from "@/types/news";
 import { SentimentBadge } from "./SentimentBadge";
 
@@ -14,6 +15,11 @@ interface LocationPanelProps {
 }
 
 export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
+  const sliderColour = {
+    negative: "[&_[data-radix-slider-range]]:bg-sentiment-negative [&_[role=slider]]:border-sentiment-negative [&_[role=slider]]:bg-sentiment-negative",
+    neutral: "[&_[data-radix-slider-range]]:bg-sentiment-neutral [&_[role=slider]]:border-sentiment-neutral [&_[role=slider]]:bg-sentiment-neutral",
+    positive: "[&_[data-radix-slider-range]]:bg-sentiment-positive [&_[role=slider]]:border-sentiment-positive [&_[role=slider]]:bg-sentiment-positive",
+  }[getSentiment(selectedEvent.sentiment)];
   return (
     <aside className="glass-panel flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-sm border-t-2 border-t-signal bg-popover" aria-label="The Briefing">
       <div className="flex items-center justify-between border-b px-4 py-4">
@@ -29,7 +35,6 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
       <ScrollArea className="min-h-0 flex-1">
         <div className="animate-fade-up p-4" key={selectedEvent.id}>
           <div className="flex flex-wrap items-center gap-2">
-            <SentimentBadge score={selectedEvent.sentiment} />
             <span className="rounded-full border bg-background/30 px-2 py-0.5 font-system text-[9px] uppercase tracking-wider text-muted-foreground">{selectedEvent.category}</span>
             <span className="ml-auto font-system text-[8px] tracking-[0.14em] text-signal">DEMO DATA</span>
           </div>
@@ -49,8 +54,24 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
           <div className="mt-5 grid grid-cols-2 divide-x border-y py-3">
             <div className="px-3">
               <p className="font-system text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Sentiment</p>
-              <p className="mt-1.5 font-system text-lg font-normal">{formatSentiment(selectedEvent.sentiment)}</p>
-              <p className="mt-0.5 text-[9px] text-muted-foreground">−1 to +1</p>
+              <div className="mt-2">
+                <SentimentBadge score={selectedEvent.sentiment} />
+              </div>
+              <Slider
+                aria-label="Event sentiment"
+                aria-valuetext={formatSentiment(selectedEvent.sentiment)}
+                min={-1}
+                max={1}
+                step={0.01}
+                value={[selectedEvent.sentiment]}
+                disabled
+                className={`mt-3 [&_[role=slider]]:opacity-100 ${sliderColour}`}
+              />
+              <div className="mt-2 flex justify-between font-system text-[9px] text-muted-foreground">
+                <span>−1</span>
+                <span>{formatSentiment(selectedEvent.sentiment)}</span>
+                <span>+1</span>
+              </div>
             </div>
             <div className="px-3">
               <p className="font-system text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Severity</p>
