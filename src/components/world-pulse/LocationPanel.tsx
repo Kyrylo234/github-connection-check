@@ -1,4 +1,5 @@
 import { FileText, Layers3, MapPin, X } from "lucide-react";
+import type { CSSProperties } from "react";
 
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -76,7 +77,12 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
             <div className="px-3">
               <p className="font-system text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Severity</p>
               <p className="mt-1.5 font-system text-lg font-normal">{Math.round(selectedEvent.severity * 100)}<span className="text-xs text-muted-foreground">%</span></p>
-              <Progress value={selectedEvent.severity * 100} className="mt-2 h-0.5 bg-secondary" />
+              <Progress
+                value={selectedEvent.severity * 100}
+                aria-label="Event severity"
+                className="severity-meter mt-2 h-0.5 bg-secondary"
+                style={{ "--severity-position": `${selectedEvent.severity * 100}%` } as CSSProperties}
+              />
             </div>
           </div>
 

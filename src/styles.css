@@ -141,6 +141,14 @@
   color-scheme: dark;
 }
 
+.severity-meter > div {
+  background: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--sentiment-positive), var(--signal) clamp(0%, calc(var(--severity-position) * 2), 100%)),
+    var(--sentiment-negative) clamp(0%, calc(var(--severity-position) * 2 - 100%), 100%)
+  );
+}
+
 .tension-earth {
   mix-blend-mode: screen;
 }
