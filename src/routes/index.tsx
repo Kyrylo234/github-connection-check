@@ -170,10 +170,6 @@ function Index() {
         <section className="briefing-display relative min-h-[540px] flex-1 overflow-hidden" aria-label="Interactive 3D news globe">
             <img src={briefingRoom} alt="" width={1920} height={1088} className="briefing-room-image" />
             <div className="briefing-room-shade pointer-events-none absolute inset-0" />
-            <div className="pointer-events-none absolute left-7 top-7 z-20">
-              <p className="font-mono text-[10px] uppercase text-signal">Situation room / 01</p>
-              <p className="mt-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground">{filteredEvents.length} signals</p>
-            </div>
             <div className="pointer-events-none absolute right-7 top-7 z-20 rounded-sm border bg-background/80 p-3">
               <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.15em] text-muted-foreground">Sentiment</p>
               <div className="space-y-1.5">
