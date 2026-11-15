@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { findNewHotspot, HOTSPOT_FOCUS_HOLD_MS } from "@/lib/hotspot-focus";
+import { hottestVisibleHotspot, HOTSPOT_FOCUS_HOLD_MS } from "@/lib/hotspot-focus";
 import type { AnalyzedNewsEvent } from "@/types/news";
 import { usePageActive } from "./use-page-active";
 
@@ -9,18 +9,21 @@ export function useHotspotFocus(
   enabled: boolean,
   selectedEventId: string | null,
   resetToken: number,
+  updateVersion: string | null,
 ) {
-  const previous = useRef(sourceEvents);
+  const previousVersion = useRef(updateVersion);
   const previousReset = useRef(resetToken);
   const [pending, setPending] = useState<AnalyzedNewsEvent | null>(null);
   const [focused, setFocused] = useState<AnalyzedNewsEvent | null>(null);
   const pageActive = usePageActive();
 
   useEffect(() => {
-    const candidate = findNewHotspot(previous.current, sourceEvents);
-    previous.current = sourceEvents;
-    if (candidate && visibleEvents.some((event) => event.id === candidate.id)) setPending(candidate);
-  }, [sourceEvents, visibleEvents]);
+    if (previousVersion.current === updateVersion) return;
+    previousVersion.current = updateVersion;
+    if (!updateVersion) return;
+    const candidate = hottestVisibleHotspot(sourceEvents, visibleEvents);
+    if (candidate) setPending({ ...candidate });
+  }, [updateVersion, sourceEvents, visibleEvents]);
 
   useEffect(() => {
     if (previousReset.current === resetToken) return;
@@ -34,7 +37,7 @@ export function useHotspotFocus(
       setFocused(null);
       return;
     }
-    if (focused || !pending) return;
+    if (!pending) return;
     if (visibleEvents.some((event) => event.id === pending.id)) setFocused(pending);
     setPending(null);
   }, [enabled, selectedEventId, pageActive, pending, focused, visibleEvents]);

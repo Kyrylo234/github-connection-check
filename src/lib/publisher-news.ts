@@ -17,7 +17,7 @@ export interface NewsSnapshot {
 }
 
 /** A content version shared by the status check and the full news query. */
-export function newsSnapshotVersion(snapshot: NewsSnapshot | null): string | null {
+export function newsArticlesVersion(snapshot: NewsSnapshot | null): string | null {
   if (!snapshot) return null;
   let hash = 2166136261;
   for (const article of snapshot.articles) {
@@ -26,12 +26,19 @@ export function newsSnapshotVersion(snapshot: NewsSnapshot | null): string | nul
       hash = Math.imul(hash ^ content.charCodeAt(index), 16777619);
     }
   }
+  return `${snapshot.articles.length}:${(hash >>> 0).toString(16)}`;
+}
+
+export function newsSnapshotVersion(snapshot: NewsSnapshot | null): string | null {
+  const articleVersion = newsArticlesVersion(snapshot);
+  if (!snapshot || !articleVersion) return null;
+  let hash = 2166136261;
   for (const error of snapshot.errors) {
     for (let index = 0; index < error.length; index++) {
       hash = Math.imul(hash ^ error.charCodeAt(index), 16777619);
     }
   }
-  return `${snapshot.articles.length}:${(hash >>> 0).toString(16)}`;
+  return `${articleVersion}:${(hash >>> 0).toString(16)}`;
 }
 export interface NewsResponse {
   analysis?: AnalysisState;

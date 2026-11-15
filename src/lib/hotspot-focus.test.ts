@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { demoNewsEvents } from "@/data/demoNews";
-import { findNewHotspot } from "./hotspot-focus";
+import { findNewHotspot, hottestVisibleHotspot } from "./hotspot-focus";
 import type { AnalyzedNewsEvent } from "@/types/news";
 
 const base = demoNewsEvents[0];
@@ -34,5 +34,16 @@ describe("new very hot areas", () => {
   });
   it("never focuses an unknown or invalid location", () => {
     expect(findNewHotspot([], [live({ location: { ...base.location, latitude: NaN } })])).toBeNull();
+  });
+});
+
+describe("hottest area after a publisher update", () => {
+  it("uses the hottest visible live location even below the arrival threshold", () => {
+    const ordinary = live({ id: "ordinary", sentiment: -0.7, severity: 0.8, articleCount: 1 });
+    expect(hottestVisibleHotspot([ordinary, live()], [ordinary])?.id).toBe("ordinary");
+  });
+  it("excludes demo and unlocated stories", () => {
+    expect(hottestVisibleHotspot([live({ isDemo: true }), live({ id: "unlocated", location: { ...base.location, latitude: NaN } })],
+      [live({ isDemo: true }), live({ id: "unlocated", location: { ...base.location, latitude: NaN } })])).toBeNull();
   });
 });

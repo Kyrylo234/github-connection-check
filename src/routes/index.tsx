@@ -12,13 +12,12 @@ import { GlobeFilters } from "@/components/world-pulse/GlobeFilters";
 import { LocationPanel } from "@/components/world-pulse/LocationPanel";
 import { SentimentDot } from "@/components/world-pulse/SentimentBadge";
 import { TensionIndex } from "@/components/world-pulse/TensionIndex";
-import { DEMO_SNAPSHOT_AT, demoNewsEvents } from "@/data/demoNews";
 import { calculateRecentTension, filterNewsEvents } from "@/lib/news-analysis";
 import type { SentimentFilter, TimeRange } from "@/types/news";
 import { useMutation, useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { publisherNewsOptions, publisherNewsVersionOptions } from "@/lib/publisher-news.query";
-import { newsSnapshotVersion } from "@/lib/publisher-news";
+import { newsArticlesVersion, newsSnapshotVersion } from "@/lib/publisher-news";
 import { analyzeNews } from "@/lib/news-classification.functions";
 import { classifiedEvents, clusterNews, storySignals } from "@/lib/news-classification";
 import { NewsSidebar } from "@/components/world-pulse/NewsSidebar";
@@ -89,9 +88,10 @@ function Index() {
     } : current);
   } });
   const results = response.analysis?.results ?? [];
-  const sourceEvents = useMemo(() => response.snapshot ? clusterNews(classifiedEvents(response.snapshot.articles, response.analysis?.results ?? [])) : demoNewsEvents, [response.snapshot, response.analysis]);
-  const snapshotAt = response.snapshot?.fetchedAt ?? DEMO_SNAPSHOT_AT;
-  const articles = response.snapshot?.articles ?? demoNewsEvents.flatMap(event => event.articles);
+  const sourceEvents = useMemo(() => response.snapshot ? clusterNews(classifiedEvents(response.snapshot.articles, response.analysis?.results ?? [])) : [], [response.snapshot, response.analysis]);
+  const [emptySnapshotAt] = useState(() => new Date().toISOString());
+  const snapshotAt = response.snapshot?.fetchedAt ?? emptySnapshotAt;
+  const articles = response.snapshot?.articles ?? [];
   const [sentiment, setSentiment] = useState<SentimentFilter>("all");
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
   const [minimumSeverity, setMinimumSeverity] = useState(0);
@@ -101,7 +101,7 @@ function Index() {
     () => filterNewsEvents(sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity),
     [sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity],
   );
-  const tension = useMemo(() => calculateRecentTension(response.snapshot ? storySignals(response.snapshot.articles, response.analysis?.results ?? []) : demoNewsEvents, snapshotAt), [response.snapshot, response.analysis, snapshotAt]);
+  const tension = useMemo(() => calculateRecentTension(response.snapshot ? storySignals(response.snapshot.articles, response.analysis?.results ?? []) : [], snapshotAt), [response.snapshot, response.analysis, snapshotAt]);
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
 
   const selectEvent = (eventId: string) => setSelectedEventId(eventId);
@@ -161,12 +161,12 @@ function Index() {
             <div className="absolute inset-0 isolate z-0">
               <ClientOnly fallback={<GlobeFallback />}>
                 <Suspense fallback={<GlobeFallback />}>
-                  <WorldGlobe sourceEvents={sourceEvents} events={filteredEvents} selectedEventId={selectedEvent?.id ?? null} autoRotate={true} resetToken={0} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
+                  <WorldGlobe sourceEvents={sourceEvents} events={filteredEvents} selectedEventId={selectedEvent?.id ?? null} autoRotate={true} resetToken={0} newsVersion={newsArticlesVersion(response.snapshot)} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
                 </Suspense>
               </ClientOnly>
             </div>
             <div className="pointer-events-none absolute bottom-7 left-7 z-20 hidden font-system text-[8px] uppercase text-muted-foreground lg:block">
-              {response.snapshot ? results.length ? `Hosted AI · ${results.length} analysed stories` : "Publisher news · Heuristic fallback" : "DEMO snapshot"} · {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC
+              {response.snapshot ? results.length ? `Hosted AI · ${results.length} analysed stories` : "Publisher news · Heuristic fallback" : "Publisher news unavailable"}{response.snapshot ? ` · ${new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC` : ""}
             </div>
             {selectedEvent && (
               <div className="absolute inset-x-3 bottom-3 top-auto z-30 max-h-[calc(100%-1.5rem)] sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:w-[360px] sm:max-h-none">

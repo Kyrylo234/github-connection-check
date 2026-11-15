@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isHotspotPointerEvent } from "@/lib/globe-interaction";
+import { isHotspotPointerEvent, shouldIgnoreGlobeClick } from "@/lib/globe-interaction";
 
 describe("globe pointer isolation", () => {
   it("ignores the deferred globe callback from a hotspot press", () => {
@@ -26,5 +26,11 @@ describe("globe pointer isolation", () => {
     if (!isHotspotPointerEvent({ target: canvas })) selected = null;
     expect(selected).toBeNull();
     expect(isHotspotPointerEvent({ target: null })).toBe(false);
+  });
+
+  it("ignores the renderer's delayed canvas callback after a hotspot press", () => {
+    const canvas = document.createElement("canvas");
+    expect(shouldIgnoreGlobeClick({ target: canvas }, 1000, 1250)).toBe(true);
+    expect(shouldIgnoreGlobeClick({ target: canvas }, 1000, 1500)).toBe(false);
   });
 });

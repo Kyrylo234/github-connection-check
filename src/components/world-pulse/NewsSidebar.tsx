@@ -6,17 +6,17 @@ import type { AnalyzedNewsEvent, NewsArticle } from "@/types/news";
 export function NewsSidebar({ response, articles, events, analysing, analyze, analysisError, refreshing, refresh, select }: {
   response: NewsResponse; articles: NewsArticle[]; events: AnalyzedNewsEvent[]; analysing: boolean; analyze: () => void; analysisError: string | null; refreshing: boolean; refresh: () => void; select: (id: string) => void;
 }) {
-  const demo = !response.snapshot;
+  const unavailable = !response.snapshot;
   return <aside aria-label="Latest available news" className="flex h-[660px] min-h-0 shrink-0 flex-col border-t border-border bg-background lg:h-auto lg:w-[300px] lg:border-l lg:border-t-0">
     <div className="shrink-0 border-b border-border p-4">
       <div className="flex items-center justify-between gap-2"><h2 className="font-display text-xl font-bold">Latest available news</h2>
         <Button variant="ghost" size="icon" disabled={refreshing} onClick={refresh} aria-label="Refresh news" title="Refresh news"><RefreshCw className={refreshing ? "size-4 animate-spin" : "size-4"} /></Button></div>
-      <p className="mt-2 text-xs text-signal">{demo ? "DEMO FALLBACK · Fictional articles" : response.stale ? "PUBLISHER RSS · Saved headlines" : "PUBLISHER RSS · Latest fetched headlines"}</p>
+      <p className="mt-2 text-xs text-signal">{unavailable ? "LIVE NEWS UNAVAILABLE" : response.stale ? "PUBLISHER RSS · Saved headlines" : "PUBLISHER RSS · Latest fetched headlines"}</p>
       {response.snapshot && <p className="mt-2 text-[11px] text-muted-foreground">Fetched {newsDate(response.snapshot.fetchedAt)}</p>}
-      <p className="mt-2 text-[11px] leading-5 text-muted-foreground">Shared 10-minute cache. Publication dates shown below; publisher updates may be delayed.</p>
+      <p className="mt-2 text-[11px] leading-5 text-muted-foreground">Shared two-minute feed refresh. This page checks for changes every 30 seconds while open.</p>
       {response.nextRefreshAt && <p className="mt-1 text-[11px] text-muted-foreground">Next provider check after {newsDate(response.nextRefreshAt)}</p>}
       {(response.error || response.snapshot?.errors.length) ? <p role="alert" className="mt-2 text-xs leading-5 text-sentiment-negative">{response.error || response.snapshot?.errors.join(" · ")}</p> : null}
-      {!demo && <div className="mt-3 border-t border-border pt-3">
+      {!unavailable && <div className="mt-3 border-t border-border pt-3">
         <p role="status" className="text-xs text-signal">{analysing ? "Analysing with hosted AI" : response.analysis?.results.length ? "Hosted AI · Heuristic fallback for remaining stories" : "Heuristic fallback"}</p>
         <p className="mt-2 text-[11px] text-muted-foreground">{response.analysis?.results.length ?? 0} / {articles.length} stories analysed</p>
         {response.analysis?.lastUpdatedAt && <p className="mt-1 text-[11px] text-muted-foreground">Analysis updated {newsDate(response.analysis.lastUpdatedAt)}</p>}
@@ -26,6 +26,7 @@ export function NewsSidebar({ response, articles, events, analysing, analyze, an
       </div>}
     </div>
     <div className="min-h-0 flex-1 divide-y divide-border overflow-y-auto">
+      {unavailable && <p role="status" className="p-4 text-xs leading-5 text-muted-foreground">Live headlines could not load. Refresh to try again; no fictional stories are shown as current news.</p>}
       {articles.map(article => {
         const located = events.find(event => event.articles.some(item => item.id === article.id));
         const classification = response.analysis?.results.find(result => result.articleId === article.id);

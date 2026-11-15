@@ -5,6 +5,21 @@ import type { AnalyzedNewsEvent } from "@/types/news";
 export const VERY_HOT_INTENSITY = 0.8;
 export const HOTSPOT_FOCUS_HOLD_MS = 8000;
 
+/** Pick a real, located story from the current visible map after a source update. */
+export function hottestVisibleHotspot(
+  source: readonly AnalyzedNewsEvent[],
+  visible: readonly AnalyzedNewsEvent[],
+): AnalyzedNewsEvent | null {
+  const sourceIds = new Set(source.filter((event) => !event.isDemo).map((event) => event.id));
+  return visible.filter((event) => {
+    const { latitude, longitude } = event.location;
+    return sourceIds.has(event.id) && Number.isFinite(latitude) && Number.isFinite(longitude)
+      && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180;
+  }).sort((a, b) => getHotspotIntensity(b) - getHotspotIntensity(a)
+    || Date.parse(b.occurredAt) - Date.parse(a.occurredAt)
+    || a.id.localeCompare(b.id))[0] ?? null;
+}
+
 export function findNewHotspot(
   previous: readonly AnalyzedNewsEvent[],
   incoming: readonly AnalyzedNewsEvent[],

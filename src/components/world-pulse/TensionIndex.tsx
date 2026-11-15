@@ -45,7 +45,7 @@ export function TensionIndex({ reading, eventCount }: TensionIndexProps) {
             <PopoverContent align="end" className="w-80 rounded-xl p-4">
               <p className="font-system text-[10px] uppercase tracking-[0.16em] text-signal">Transparent calculation</p>
               <p className="mt-3 text-xs leading-5 text-muted-foreground">
-                Uses all demo news from the latest 24 hours of the demo snapshot, regardless of map filters. Negative sentiment magnitude is multiplied by severity and article-cluster weight.
+                Uses available publisher stories from the latest 24 hours of the current snapshot, regardless of map filters or confirmed locations. Negative sentiment magnitude is multiplied by severity and article-cluster weight.
               </p>
               <div className="mt-3 rounded-lg border bg-background/50 p-3 font-mono text-[10px] leading-5 text-foreground">
                 pressure = max(0, −sentiment)<br />

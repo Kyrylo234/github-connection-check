@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { NEWS_CACHE_MINUTES, deduplicateNews, locateNews, newsSnapshotVersion, parsePublisherFeed } from "./publisher-news";
+import { NEWS_CACHE_MINUTES, deduplicateNews, locateNews, newsArticlesVersion, newsSnapshotVersion, parsePublisherFeed } from "./publisher-news";
 import type { NewsArticle } from "@/types/news";
 const article = (title: string): NewsArticle => ({ id: "https://example.com/a", url: "https://example.com/a", title, source: "France News", publishedAt: "2026-11-15T10:00:00Z", isDemo: false });
 describe("publisher news", () => {
@@ -9,6 +9,8 @@ describe("publisher news", () => {
     const first = { articles, fetchedAt: "2026-11-15T10:00:00Z", errors: [] };
     const checkedAgain = { ...first, fetchedAt: "2026-11-15T10:02:00Z" };
     expect(newsSnapshotVersion(first)).toBe(newsSnapshotVersion(checkedAgain));
+    expect(newsArticlesVersion(first)).toBe(newsArticlesVersion({ ...first, errors: ["Feed temporarily unavailable"] }));
+    expect(newsSnapshotVersion(first)).not.toBe(newsSnapshotVersion({ ...first, errors: ["Feed temporarily unavailable"] }));
     expect(newsSnapshotVersion({ ...first, articles: [article("Flood in Korea")] })).not.toBe(newsSnapshotVersion(first));
   });
   it("normalizes dates and deduplicates URL tracking variants", () => {

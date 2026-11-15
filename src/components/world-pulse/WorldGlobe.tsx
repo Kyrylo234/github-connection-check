@@ -7,7 +7,7 @@ import { getPrimaryArticle } from "@/data/demoNews";
 import { getHotspotIntensity, getSentiment } from "@/lib/news-analysis";
 import { useHotspotFocus } from "@/hooks/use-hotspot-focus";
 import { useIdleHotAreaTour } from "@/hooks/use-idle-hot-area-tour";
-import { isHotspotPointerEvent } from "@/lib/globe-interaction";
+import { isHotspotPointerEvent, shouldIgnoreGlobeClick } from "@/lib/globe-interaction";
 import { nextHotArea, rankHotAreas, rankVeryHotAreas } from "@/lib/hot-area-navigation";
 import type { AnalyzedNewsEvent, Sentiment } from "@/types/news";
 
@@ -17,6 +17,7 @@ interface WorldGlobeProps {
   selectedEventId: string | null;
   autoRotate: boolean;
   resetToken: number;
+  newsVersion: string | null;
   onSelect: (eventId: string) => void;
   onClose: () => void;
 }
@@ -62,7 +63,7 @@ export function GlobeLoading() {
       </div>
       <div>
         <p className="font-system text-[10px] uppercase tracking-[0.22em] text-signal">Initialising orbit view</p>
-        <p className="mt-2 text-sm text-muted-foreground">Preparing the demo globe…</p>
+        <p className="mt-2 text-sm text-muted-foreground">Preparing the news globe…</p>
       </div>
     </div>
   );
@@ -74,16 +75,18 @@ export default function WorldGlobe({
   selectedEventId,
   autoRotate,
   resetToken,
+  newsVersion,
   onSelect,
   onClose,
 }: WorldGlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
+  const lastHotspotPressAt = useRef(-Infinity);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null);
   const [globeReady, setGlobeReady] = useState(false);
   const [palette, setPalette] = useState<GlobePalette>(() => readPalette());
-  const focusedHotspot = useHotspotFocus(sourceEvents, events, autoRotate, selectedEventId, resetToken);
+  const focusedHotspot = useHotspotFocus(sourceEvents, events, autoRotate, selectedEventId, resetToken, newsVersion);
   const hotAreas = useMemo(() => rankHotAreas(events), [events]);
   const veryHotAreas = useMemo(() => rankVeryHotAreas(events), [events]);
   const { area: touredHotArea } = useIdleHotAreaTour(
@@ -254,16 +257,19 @@ export default function WorldGlobe({
             return createElement(
               "div",
               { className: "max-w-64 rounded-lg border bg-popover p-3 text-popover-foreground shadow-xl" },
-              createElement("p", { className: "font-system text-[9px] uppercase tracking-widest text-signal" }, `Demo data · ${event.category}`),
+              createElement("p", { className: "font-system text-[9px] uppercase tracking-widest text-signal" }, `${event.isDemo ? "Demo data" : "Publisher news"} · ${event.category}`),
               createElement("p", { className: "mt-2 text-xs font-semibold leading-5" }, getPrimaryArticle(event).title),
               createElement("p", { className: "mt-2 text-[11px] text-muted-foreground" }, `${event.location.name} · ${event.articleCount} article${event.articleCount === 1 ? "" : "s"}`),
             );
           }}
           onPointClick={(item, pointerEvent) => {
-            if (!isHotspotPointerEvent(pointerEvent)) onSelect((item as AnalyzedNewsEvent).id);
+            if (!isHotspotPointerEvent(pointerEvent)) {
+              lastHotspotPressAt.current = Date.now();
+              onSelect((item as AnalyzedNewsEvent).id);
+            }
           }}
           onGlobeClick={(_, pointerEvent) => {
-            if (!isHotspotPointerEvent(pointerEvent)) onClose();
+            if (!shouldIgnoreGlobeClick(pointerEvent, lastHotspotPressAt.current, Date.now())) onClose();
           }}
           htmlElementsData={events}
           htmlLat={(item) => (item as AnalyzedNewsEvent).location.latitude}
@@ -282,8 +288,10 @@ export default function WorldGlobe({
             button.dataset["sentiment"] = getSentiment(event.sentiment);
             button.style.setProperty("--hotspot-opacity", `${0.35 + getHotspotIntensity(event) * 0.5}`);
             button.setAttribute("aria-label", `Open globe event: ${getPrimaryArticle(event).title}`);
-            button.title = `${event.location.name} · Demo data`;
+            button.title = `${event.location.name} · ${event.isDemo ? "Demo data" : "Publisher news"}`;
+            button.addEventListener("pointerdown", () => { lastHotspotPressAt.current = Date.now(); });
             button.addEventListener("click", (clickEvent) => {
+              lastHotspotPressAt.current = Date.now();
               clickEvent.stopPropagation();
               onSelect(event.id);
             });

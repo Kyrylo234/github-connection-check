@@ -54,6 +54,6 @@ export async function fetchPublisherNews(): Promise<NewsResponse> {
     if (saveError) return { snapshot, nextRefreshAt, stale: true, error: "Headlines fetched, but the shared cache could not be saved." };
     return { snapshot, nextRefreshAt, stale: false, error: null };
   } catch {
-    return { snapshot, nextRefreshAt, stale: true, error: "The shared news cache is unavailable. Demo fallback is shown if no saved headlines are available." };
+    return { snapshot, nextRefreshAt, stale: true, error: "The shared news cache is unavailable. Live headlines could not load." };
   }
 }
