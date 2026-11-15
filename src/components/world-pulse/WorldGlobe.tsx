@@ -2,7 +2,7 @@ import { createElement, useEffect, useMemo, useRef, useState } from "react";
 import Globe, { type GlobeMethods } from "react-globe.gl";
 import { Globe2, LocateFixed, MousePointer2 } from "lucide-react";
 
-import earthAsset from "@/assets/world-pulse-earth.asset.json";
+import earthTexture from "@/assets/earth-dark.jpg";
 import { getPrimaryArticle } from "@/data/demoNews";
 import { getHotspotIntensity, getSentiment } from "@/lib/news-analysis";
 import { useHotspotFocus } from "@/hooks/use-hotspot-focus";
@@ -235,7 +235,7 @@ export default function WorldGlobe({
           ref={globeRef}
           width={dimensions.width}
           height={dimensions.height}
-          globeImageUrl={earthAsset.url}
+          globeImageUrl={earthTexture}
           backgroundColor={`rgba(${cssChannels(palette.transparent)}, 0)`}
           showAtmosphere
           atmosphereColor={`rgb(${cssChannels(palette.atmosphere)})`}

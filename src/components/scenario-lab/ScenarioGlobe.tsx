@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Globe, { type GlobeMethods } from "react-globe.gl";
 import { Globe2 } from "lucide-react";
 
-import earthAsset from "@/assets/world-pulse-earth.asset.json";
+import earthTexture from "@/assets/earth-dark.jpg";
 import type { ScenarioLocation } from "@/types/scenario";
 
 export interface ScenarioMapEvent {
@@ -103,7 +103,7 @@ export default function ScenarioGlobe({ events, focusedEventId }: ScenarioGlobeP
           ref={globeRef}
           width={dimensions.width}
           height={dimensions.height}
-          globeImageUrl={earthAsset.url}
+          globeImageUrl={earthTexture}
           backgroundColor="rgba(0, 0, 0, 0)"
           showAtmosphere
           atmosphereColor={`rgb(${palette.atmosphere})`}
