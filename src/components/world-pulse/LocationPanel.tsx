@@ -74,14 +74,13 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
                 <span>+1</span>
               </div>
             </div>
-            <div className="px-3">
+            <div className="severity-display px-3" style={{ "--severity-position": `${selectedEvent.severity * 100}%` } as CSSProperties}>
               <p className="font-system text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Severity</p>
-              <p className="mt-1.5 font-system text-lg font-normal">{Math.round(selectedEvent.severity * 100)}<span className="text-xs text-muted-foreground">%</span></p>
+              <p className="severity-number mt-1.5 font-system text-lg font-normal">{Math.round(selectedEvent.severity * 100)}<span className="text-xs">%</span></p>
               <Progress
                 value={selectedEvent.severity * 100}
                 aria-label="Event severity"
                 className="severity-meter mt-2 h-0.5 bg-secondary"
-                style={{ "--severity-position": `${selectedEvent.severity * 100}%` } as CSSProperties}
               />
             </div>
           </div>

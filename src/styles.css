@@ -141,12 +141,20 @@
   color-scheme: dark;
 }
 
-.severity-meter > div {
-  background: color-mix(
+.severity-display {
+  --severity-colour: color-mix(
     in oklab,
     color-mix(in oklab, var(--sentiment-positive), var(--signal) clamp(0%, calc(var(--severity-position) * 2), 100%)),
     var(--sentiment-negative) clamp(0%, calc(var(--severity-position) * 2 - 100%), 100%)
   );
+}
+
+.severity-meter > div {
+  background: var(--severity-colour);
+}
+
+.severity-number {
+  color: var(--severity-colour);
 }
 
 .tension-earth {
