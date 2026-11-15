@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowUpRight,
@@ -15,9 +15,10 @@ import { TensionIndex } from "@/components/world-pulse/TensionIndex";
 import { DEMO_SNAPSHOT_AT, demoNewsEvents } from "@/data/demoNews";
 import { calculateRecentTension, filterNewsEvents } from "@/lib/news-analysis";
 import type { SentimentFilter, TimeRange } from "@/types/news";
-import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { publisherNewsOptions } from "@/lib/publisher-news.query";
+import { publisherNewsOptions, publisherNewsVersionOptions } from "@/lib/publisher-news.query";
+import { newsSnapshotVersion } from "@/lib/publisher-news";
 import { analyzeNews } from "@/lib/news-classification.functions";
 import { classifiedEvents, clusterNews, storySignals } from "@/lib/news-classification";
 import { NewsSidebar } from "@/components/world-pulse/NewsSidebar";
@@ -62,7 +63,25 @@ function GlobeFallback() {
 
 function Index() {
   const { data: response, isFetching, refetch } = useSuspenseQuery(publisherNewsOptions);
+  const { data: version } = useQuery(publisherNewsVersionOptions);
   const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!version) return;
+    if (version.version !== newsSnapshotVersion(response.snapshot)) {
+      void queryClient.invalidateQueries({ queryKey: publisherNewsOptions.queryKey });
+    } else if (version.nextRefreshAt !== response.nextRefreshAt
+      || version.fetchedAt !== (response.snapshot?.fetchedAt ?? null)
+      || version.stale !== response.stale || version.error !== response.error) {
+      queryClient.setQueryData(publisherNewsOptions.queryKey, (current: typeof response | undefined) =>
+        current ? {
+          ...current,
+          snapshot: current.snapshot && version.fetchedAt ? { ...current.snapshot, fetchedAt: version.fetchedAt } : current.snapshot,
+          nextRefreshAt: version.nextRefreshAt,
+          stale: version.stale,
+          error: version.error,
+        } : current);
+    }
+  }, [version, response, queryClient]);
   const classify = useServerFn(analyzeNews);
   const mutation = useMutation({ mutationFn: classify, onSuccess: analysis => {
     queryClient.setQueryData(publisherNewsOptions.queryKey, (current: typeof response | undefined) => current ? {
@@ -142,7 +161,7 @@ function Index() {
             <div className="absolute inset-0 isolate z-0">
               <ClientOnly fallback={<GlobeFallback />}>
                 <Suspense fallback={<GlobeFallback />}>
-                  <WorldGlobe sourceEvents={sourceEvents} events={filteredEvents} selectedEventId={selectedEventId} autoRotate={true} resetToken={0} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
+                  <WorldGlobe sourceEvents={sourceEvents} events={filteredEvents} selectedEventId={selectedEvent?.id ?? null} autoRotate={true} resetToken={0} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
                 </Suspense>
               </ClientOnly>
             </div>

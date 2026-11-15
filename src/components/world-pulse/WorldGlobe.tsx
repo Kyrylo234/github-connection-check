@@ -1,12 +1,13 @@
-import { createElement, useEffect, useRef, useState } from "react";
+import { createElement, useEffect, useMemo, useRef, useState } from "react";
 import Globe, { type GlobeMethods } from "react-globe.gl";
-import { Globe2, MousePointer2 } from "lucide-react";
+import { Globe2, LocateFixed, MousePointer2 } from "lucide-react";
 
 import earthAsset from "@/assets/world-pulse-earth.asset.json";
 import { getPrimaryArticle } from "@/data/demoNews";
 import { getHotspotIntensity, getSentiment } from "@/lib/news-analysis";
 import { useHotspotFocus } from "@/hooks/use-hotspot-focus";
 import { isHotspotPointerEvent } from "@/lib/globe-interaction";
+import { nextHotArea, rankHotAreas } from "@/lib/hot-area-navigation";
 import type { AnalyzedNewsEvent, Sentiment } from "@/types/news";
 
 interface WorldGlobeProps {
@@ -82,6 +83,21 @@ export default function WorldGlobe({
   const [globeReady, setGlobeReady] = useState(false);
   const [palette, setPalette] = useState<GlobePalette>(() => readPalette());
   const focusedHotspot = useHotspotFocus(sourceEvents, events, autoRotate, selectedEventId, resetToken);
+  const hotAreas = useMemo(() => rankHotAreas(events), [events]);
+  const navigatingHotAreas = hotAreas.some((event) => event.id === selectedEventId);
+
+  const moveToNextHotArea = () => {
+    const target = nextHotArea(hotAreas, selectedEventId);
+    if (!target || !globeRef.current) return;
+    const aspect = dimensions.height / Math.max(dimensions.width, 1);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    globeRef.current.pointOfView({
+      lat: target.location.latitude,
+      lng: target.location.longitude,
+      altitude: Math.min(4.4, 1.75 * Math.max(1, aspect * 0.78)),
+    }, reducedMotion ? 0 : 750);
+    onSelect(target.id);
+  };
 
   useEffect(() => {
     const syncPalette = () => {
@@ -145,13 +161,14 @@ export default function WorldGlobe({
     if (!selected) return;
     const aspect = dimensions.height / Math.max(dimensions.width, 1);
     const altitude = Math.min(4.4, 1.75 * Math.max(1, aspect * 0.78));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     globeRef.current.pointOfView(
       {
         lat: selected.location.latitude,
         lng: selected.location.longitude,
         altitude,
       },
-      750,
+      reducedMotion ? 0 : 750,
     );
   }, [selectedEventId, events, globeReady, dimensions.height, dimensions.width]);
 
@@ -186,6 +203,13 @@ export default function WorldGlobe({
   return (
     <div ref={containerRef} className="relative h-full min-h-[420px] w-full" data-scene-ready={globeReady || undefined}>
       {!globeReady && <div className="absolute inset-0 z-10 bg-background/40"><GlobeLoading /></div>}
+      <button type="button" onClick={moveToNextHotArea} disabled={!globeReady || hotAreas.length === 0}
+        className="absolute left-4 top-4 z-20 flex max-w-[calc(100%-8rem)] items-center gap-2 rounded-sm border bg-background/90 px-3 py-2 font-system text-[10px] uppercase text-signal shadow-sm hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal disabled:cursor-not-allowed disabled:opacity-50 sm:left-7 sm:top-7"
+        aria-label={navigatingHotAreas ? "Move globe to next hot area" : "Move globe to hottest area"}
+        title={hotAreas.length ? "Move to a highlighted area on the globe" : "No areas match the current filters"}>
+        <LocateFixed className="size-4 shrink-0" aria-hidden="true" />
+        <span>{navigatingHotAreas ? "Next hot area" : "Hottest area"}</span>
+      </button>
       {webGLSupported && dimensions.width > 0 && dimensions.height > 0 && (
         <Globe
           ref={globeRef}

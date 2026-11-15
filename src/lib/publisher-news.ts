@@ -2,7 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import type { AnalyzedNewsEvent, NewsArticle, NewsCategory } from "@/types/news";
 import type { AnalysisState } from "./news-classification";
 
-export const NEWS_CACHE_MINUTES = 10;
+export const NEWS_CACHE_MINUTES = 2;
 export const PUBLISHER_FEEDS = [
   { name: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml" },
   { name: "The Guardian", url: "https://www.theguardian.com/world/rss" },
@@ -13,6 +13,25 @@ export interface NewsSnapshot {
   articles: NewsArticle[];
   fetchedAt: string;
   errors: string[];
+  validators?: Record<string, { etag?: string; lastModified?: string }>;
+}
+
+/** A content version shared by the status check and the full news query. */
+export function newsSnapshotVersion(snapshot: NewsSnapshot | null): string | null {
+  if (!snapshot) return null;
+  let hash = 2166136261;
+  for (const article of snapshot.articles) {
+    const content = `${article.id}\u0000${article.title}\u0000${article.description ?? ""}\u0000${article.publishedAt}\u0000`;
+    for (let index = 0; index < content.length; index++) {
+      hash = Math.imul(hash ^ content.charCodeAt(index), 16777619);
+    }
+  }
+  for (const error of snapshot.errors) {
+    for (let index = 0; index < error.length; index++) {
+      hash = Math.imul(hash ^ error.charCodeAt(index), 16777619);
+    }
+  }
+  return `${snapshot.articles.length}:${(hash >>> 0).toString(16)}`;
 }
 export interface NewsResponse {
   analysis?: AnalysisState;

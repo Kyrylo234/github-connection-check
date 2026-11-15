@@ -1,9 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { NEWS_CACHE_MINUTES, deduplicateNews, locateNews, parsePublisherFeed } from "./publisher-news";
+import { NEWS_CACHE_MINUTES, deduplicateNews, locateNews, newsSnapshotVersion, parsePublisherFeed } from "./publisher-news";
 import type { NewsArticle } from "@/types/news";
 const article = (title: string): NewsArticle => ({ id: "https://example.com/a", url: "https://example.com/a", title, source: "France News", publishedAt: "2026-11-15T10:00:00Z", isDemo: false });
 describe("publisher news", () => {
-  it("keeps the agreed ten-minute cache interval", () => expect(NEWS_CACHE_MINUTES).toBe(10));
+  it("refreshes the shared publisher snapshot at most every two minutes", () => expect(NEWS_CACHE_MINUTES).toBe(2));
+  it("keeps the content version stable across unchanged refreshes", () => {
+    const articles = [article("Flood in Japan")];
+    const first = { articles, fetchedAt: "2026-11-15T10:00:00Z", errors: [] };
+    const checkedAgain = { ...first, fetchedAt: "2026-11-15T10:02:00Z" };
+    expect(newsSnapshotVersion(first)).toBe(newsSnapshotVersion(checkedAgain));
+    expect(newsSnapshotVersion({ ...first, articles: [article("Flood in Korea")] })).not.toBe(newsSnapshotVersion(first));
+  });
   it("normalizes dates and deduplicates URL tracking variants", () => {
     const xml = '<rss><channel><item><title>Flood in Japan</title><link>https://example.com/a?utm_source=rss</link><pubDate>Sun, 15 Nov 2026 10:00:00 GMT</pubDate><description>Flood report</description></item></channel></rss>';
     const result = parsePublisherFeed(xml, "BBC News");

@@ -24,6 +24,23 @@ it("holds new arrivals while reading and focuses for eight seconds after closing
   expect(result.current).toBeNull();
 });
 
+it("focuses an arrival automatically while the page is active", () => {
+  const { result, rerender } = renderHook(({ source }) => useHotspotFocus(source, source, true, null, 0),
+    { initialProps: { source: [] as AnalyzedNewsEvent[] } });
+  rerender({ source: [hot] });
+  expect(result.current?.id).toBe("live-hot");
+});
+
+it("waits while a publisher article is open in another tab", () => {
+  const { result, rerender } = renderHook(({ source }) => useHotspotFocus(source, source, true, null, 0),
+    { initialProps: { source: [] as AnalyzedNewsEvent[] } });
+  act(() => window.dispatchEvent(new Event("blur")));
+  rerender({ source: [hot] });
+  expect(result.current).toBeNull();
+  act(() => window.dispatchEvent(new Event("focus")));
+  expect(result.current?.id).toBe("live-hot");
+});
+
 it("does not treat filter changes or initial loading as new arrivals", () => {
   const { result, rerender } = renderHook(({ visible }) => useHotspotFocus([hot], visible, true, null, 0),
     { initialProps: { visible: [] as AnalyzedNewsEvent[] } });

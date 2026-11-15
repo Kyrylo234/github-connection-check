@@ -17,21 +17,39 @@ export async function fetchPublisherNews(): Promise<NewsResponse> {
 
     const results = await Promise.all(PUBLISHER_FEEDS.map(async feed => {
       try {
-        const response = await fetch(feed.url, { headers: { Accept: "application/rss+xml, application/xml, text/xml" }, signal: AbortSignal.timeout(12000) });
-        if (!response.ok) return { articles: [], error: `${feed.name}: HTTP ${response.status}` };
+        const previousValidator = snapshot?.validators?.[feed.name];
+        const headers: Record<string, string> = { Accept: "application/rss+xml, application/xml, text/xml" };
+        if (previousValidator?.etag) headers["If-None-Match"] = previousValidator.etag;
+        if (previousValidator?.lastModified) headers["If-Modified-Since"] = previousValidator.lastModified;
+        const response = await fetch(feed.url, { headers, signal: AbortSignal.timeout(12000) });
+        if (response.status === 304 && snapshot) return {
+          articles: snapshot.articles.filter(article => article.source === feed.name),
+          error: null,
+          validator: previousValidator,
+        };
+        if (!response.ok) return { articles: [], error: `${feed.name}: HTTP ${response.status}`, validator: undefined };
         const articles = parsePublisherFeed(await response.text(), feed.name);
-        return { articles, error: articles.length ? null : `${feed.name}: no valid dated articles` };
-      } catch { return { articles: [], error: `${feed.name}: feed unavailable or invalid` }; }
+        return {
+          articles,
+          error: articles.length ? null : `${feed.name}: no valid dated articles`,
+          validator: {
+            etag: response.headers?.get("etag") ?? undefined,
+            lastModified: response.headers?.get("last-modified") ?? undefined,
+          },
+        };
+      } catch { return { articles: [], error: `${feed.name}: feed unavailable or invalid`, validator: undefined }; }
     }));
     const articles = deduplicateNews(results.flatMap(result => result.articles));
     const errors = results.flatMap(result => result.error ? [result.error] : []);
+    const validators = Object.fromEntries(results.map((result, index) => [PUBLISHER_FEEDS[index]!.name, result.validator]).filter((entry) => entry[1]));
     nextRefreshAt = new Date(Date.now() + NEWS_CACHE_MINUTES * 60_000).toISOString();
     if (!articles.length) {
       const failure = errors.join(" · ") || "No publisher headlines available";
-      await supabaseAdmin.from("publisher_news_cache").update({ last_error: failure }).eq("id", "world");
+      nextRefreshAt = new Date(Date.now() + 10 * 60_000).toISOString();
+      await supabaseAdmin.from("publisher_news_cache").update({ last_error: failure, next_refresh_at: nextRefreshAt }).eq("id", "world");
       return { snapshot, nextRefreshAt, stale: true, error: failure };
     }
-    snapshot = { articles, errors, fetchedAt: new Date().toISOString() };
+    snapshot = { articles, errors, fetchedAt: new Date().toISOString(), validators };
     const { error: saveError } = await supabaseAdmin.from("publisher_news_cache").update({ snapshot: JSON.parse(JSON.stringify(snapshot)), next_refresh_at: nextRefreshAt, last_error: null }).eq("id", "world");
     if (saveError) return { snapshot, nextRefreshAt, stale: true, error: "Headlines fetched, but the shared cache could not be saved." };
     return { snapshot, nextRefreshAt, stale: false, error: null };

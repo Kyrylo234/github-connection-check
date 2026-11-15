@@ -13,6 +13,28 @@ export function useHotspotFocus(
   const previousReset = useRef(resetToken);
   const [pending, setPending] = useState<AnalyzedNewsEvent | null>(null);
   const [focused, setFocused] = useState<AnalyzedNewsEvent | null>(null);
+  const [pageActive, setPageActive] = useState(() => document.visibilityState !== "hidden");
+
+  useEffect(() => {
+    let windowFocused = true;
+    const onBlur = () => {
+      windowFocused = false;
+      setPageActive(false);
+    };
+    const onFocus = () => {
+      windowFocused = true;
+      setPageActive(document.visibilityState !== "hidden");
+    };
+    const onVisibilityChange = () => setPageActive(windowFocused && document.visibilityState !== "hidden");
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     const candidate = findNewHotspot(previous.current, sourceEvents);
@@ -28,14 +50,14 @@ export function useHotspotFocus(
   }, [resetToken]);
 
   useEffect(() => {
-    if (!enabled || selectedEventId) {
+    if (!enabled || selectedEventId || !pageActive) {
       setFocused(null);
       return;
     }
     if (focused || !pending) return;
     if (visibleEvents.some((event) => event.id === pending.id)) setFocused(pending);
     setPending(null);
-  }, [enabled, selectedEventId, pending, focused, visibleEvents]);
+  }, [enabled, selectedEventId, pageActive, pending, focused, visibleEvents]);
 
   useEffect(() => {
     if (!focused) return;
