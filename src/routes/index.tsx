@@ -179,7 +179,7 @@ function Index() {
                 ))}
               </div>
             </div>
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 isolate z-0">
               <ClientOnly fallback={<GlobeFallback />}>
                 <Suspense fallback={<GlobeFallback />}>
                   <WorldGlobe sourceEvents={demoNewsEvents} events={filteredEvents} selectedEventId={selectedEventId} autoRotate={autoRotate} resetToken={resetToken} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
