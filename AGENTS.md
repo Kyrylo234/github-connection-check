@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## World Pulse architecture
+
+- Keep `NewsArticle` and `AnalyzedNewsEvent` provider-independent so live news can replace the typed demo fixtures without changing the UI.
+- Keep globe rendering lazy and client-only behind `ClientOnly`; `react-globe.gl` must never enter the SSR import graph.
+- Keep filtering, hotspot intensity and tension calculations in pure TypeScript modules with regression tests, separate from React and Three.js.
