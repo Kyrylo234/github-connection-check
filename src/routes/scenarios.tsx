@@ -21,11 +21,11 @@ function ScenarioLab() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-5 text-foreground">
       <div className="globe-vignette pointer-events-none absolute inset-0" />
-      <div className="glass-panel relative w-full max-w-xl animate-fade-up rounded-2xl p-8 text-center sm:p-12">
+      <div className="relative w-full max-w-xl animate-fade-up border-y border-signal/30 p-8 text-center sm:p-12">
         <Link to="/" className="absolute left-5 top-5 flex items-center gap-2 rounded-md text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
           <ArrowLeft className="size-3.5" /> Globe
         </Link>
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl border border-signal/25 bg-signal/8">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-sm border border-signal/25 bg-signal/8">
           <FlaskConical className="size-7 text-signal" aria-hidden="true" />
         </div>
         <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.22em] text-signal">World Pulse · Coming next</p>

@@ -1,6 +1,7 @@
 import { FileText, Layers3, MapPin, X } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getPrimaryArticle } from "@/data/demoNews";
 import { formatDemoTime, formatSentiment } from "@/lib/news-analysis";
@@ -14,15 +15,15 @@ interface LocationPanelProps {
 
 export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
   return (
-    <aside className="glass-panel flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-xl bg-popover/95 shadow-2xl" aria-label="Location intelligence panel">
+    <aside className="glass-panel flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-sm border-t-2 border-t-signal bg-popover" aria-label="Location intelligence panel">
       <div className="flex items-center justify-between border-b px-4 py-4">
         <div className="flex items-center gap-2.5">
           <Layers3 className="size-4 text-signal" aria-hidden="true" />
-          <h2 className="font-display text-sm font-semibold">Location intelligence</h2>
+          <h2 className="font-display text-lg font-medium uppercase">Location intelligence</h2>
         </div>
-        <button onClick={onClose} className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="Close location panel">
+        <Button variant="ghost" size="icon" onClick={onClose} className="size-7 rounded-sm text-muted-foreground" aria-label="Close location panel">
           <X className="size-4" />
-        </button>
+        </Button>
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
@@ -45,13 +46,13 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-2">
-            <div className="rounded-lg border bg-background/30 p-3">
+          <div className="mt-5 grid grid-cols-2 divide-x border-y py-3">
+            <div className="px-3">
               <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Sentiment</p>
               <p className="mt-1.5 font-display text-lg font-semibold">{formatSentiment(selectedEvent.sentiment)}</p>
               <p className="mt-0.5 text-[9px] text-muted-foreground">−1 to +1</p>
             </div>
-            <div className="rounded-lg border bg-background/30 p-3">
+            <div className="px-3">
               <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Severity</p>
               <p className="mt-1.5 font-display text-lg font-semibold">{Math.round(selectedEvent.severity * 100)}<span className="text-xs text-muted-foreground">%</span></p>
               <Progress value={selectedEvent.severity * 100} className="mt-2 h-0.5 bg-secondary" />
@@ -64,7 +65,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
           </div>
           <div className="mt-3 space-y-2.5">
             {selectedEvent.articles.map((article) => (
-              <article key={article.id} className="rounded-lg border bg-background/30 p-3">
+              <article key={article.id} className="rounded-sm border bg-background/30 p-3">
                 <div className="flex items-center justify-between gap-3 font-mono text-[8px] uppercase tracking-wider text-muted-foreground">
                   <span>{article.source}</span>
                   <span className="shrink-0">{formatDemoTime(article.publishedAt)}</span>

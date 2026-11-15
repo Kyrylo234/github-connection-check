@@ -157,7 +157,7 @@ export default function WorldGlobe({
           backgroundColor={`rgba(${cssChannels(palette.transparent)}, 0)`}
           showAtmosphere
           atmosphereColor={`rgb(${cssChannels(palette.atmosphere)})`}
-          atmosphereAltitude={0.18}
+          atmosphereAltitude={0.12}
           showGraticules
           pointsData={events}
           pointLat={(item) => (item as AnalyzedNewsEvent).location.latitude}
@@ -209,7 +209,7 @@ export default function WorldGlobe({
           onGlobeReady={() => setGlobeReady(true)}
         />
       )}
-      <div className="pointer-events-none absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border bg-background/70 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-md">
+      <div className="pointer-events-none absolute bottom-7 left-1/2 flex max-w-[calc(100%-48px)] -translate-x-1/2 items-center gap-2 rounded-sm border bg-background/90 px-3 py-2 text-center font-mono text-[9px] uppercase text-muted-foreground">
         <MousePointer2 className="size-3 text-signal" aria-hidden="true" />
         Drag to orbit · Scroll to zoom · Select a signal
       </div>

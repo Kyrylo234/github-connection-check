@@ -10,3 +10,8 @@
 
 - [x] Replace the busy tension display with a calm-to-fiery globe and score; retain calculation details on click
 - [x] Verify score-driven imagery, filters, and compact screen layout
+
+## Cold War conference-room restyle
+
+- [x] Restyle the room, typography, controls and event panel without changing news or tension rules
+- [x] Verify the globe, event selection, filters and mobile layout

@@ -35,3 +35,4 @@ use the editor.
 - Keep globe rendering lazy and client-only behind `ClientOnly`; `react-globe.gl` must never enter the SSR import graph.
 - Keep filtering, hotspot intensity and tension calculations in pure TypeScript modules with regression tests, separate from React and Three.js.
 - Crossfade the aligned calm/fiery Earth assets using a tested pure tension-to-intensity function; visual changes must not alter the tension calculation.
+- Keep the briefing-room image as a non-interactive backdrop behind the transparent globe canvas; room styling must not intercept globe interaction.
