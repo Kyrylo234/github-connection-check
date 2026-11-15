@@ -6,7 +6,7 @@ import { formatPriorities, getReportOptions, movePriority, parsePriorities } fro
 import { MAXIMUM_SITUATION_REPORT_CHARACTERS } from "@/lib/scenario-session";
 import { parseReportDraft, REPORT_SECTIONS, serializeReportDraft } from "@/lib/situation-report-draft";
 
-export function SituationReportFields({ value, onChange, scenarioId, actions }: { value: string; onChange: (value: string) => void; scenarioId: string; actions: string[] }) {
+export function SituationReportFields({ value, onChange, scenarioId, actions = [] }: { value: string; onChange: (value: string) => void; scenarioId: string; actions?: string[] }) {
   const draft = parseReportDraft(value);
   const options = getReportOptions(scenarioId);
   const priorities = parsePriorities(draft.priority);
