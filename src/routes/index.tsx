@@ -82,19 +82,19 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground xl:flex xl:h-screen xl:flex-col xl:overflow-hidden">
       <header className="shrink-0 border-b bg-background/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-[74px] w-full max-w-[1920px] items-center gap-5 px-4 sm:px-5">
+        <div className="mx-auto flex h-[74px] w-full max-w-[1920px] items-center gap-2 px-4 sm:gap-5 sm:px-5">
           <Link to="/" className="group flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="World Pulse home">
-            <span className="relative flex size-9 items-center justify-center rounded-lg border border-signal/25 bg-signal/8">
+            <span className="relative hidden size-9 items-center justify-center rounded-lg border border-signal/25 bg-signal/8 sm:flex">
               <Globe2 className="size-5 text-signal transition-transform duration-200 group-hover:rotate-12" aria-hidden="true" />
               <span className="absolute right-1.5 top-1.5 size-1 rounded-full bg-sentiment-positive" />
             </span>
             <span>
-              <span className="block font-display text-[15px] font-bold uppercase leading-none tracking-[0.18em]">World Pulse</span>
+              <span className="block font-display text-xs font-bold uppercase leading-none tracking-[0.18em] sm:text-[15px]">World Pulse</span>
               <span className="mt-1.5 hidden font-mono text-[7px] uppercase tracking-[0.2em] text-muted-foreground sm:block">Global sentiment observatory</span>
             </span>
           </Link>
 
-          <nav className="ml-2 flex h-full items-center gap-1 sm:ml-6" aria-label="Primary navigation">
+          <nav className="flex h-full items-center gap-1 sm:ml-6" aria-label="Primary navigation">
             <Link to="/" className="relative flex h-full items-center gap-2 border-b border-signal px-2 text-xs font-medium text-foreground sm:px-3">
               <Radio className="size-3.5 text-signal" aria-hidden="true" />
               <span className="hidden sm:inline">Live globe</span><span className="sm:hidden">Globe</span>

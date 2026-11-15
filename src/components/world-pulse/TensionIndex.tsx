@@ -1,8 +1,9 @@
-import { Activity, Info } from "lucide-react";
-
+import calmEarth from "@/assets/tension-earth-calm.jpg";
+import fieryEarth from "@/assets/tension-earth-inferno.jpg";
+import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Progress } from "@/components/ui/progress";
 import type { TensionReading } from "@/lib/news-analysis";
+import { getTensionFireIntensity } from "@/lib/tension-visual";
 
 interface TensionIndexProps {
   reading: TensionReading;
@@ -10,21 +11,25 @@ interface TensionIndexProps {
 }
 
 export function TensionIndex({ reading, eventCount }: TensionIndexProps) {
+  const fireIntensity = getTensionFireIntensity(reading.score);
+
   return (
-    <div className="flex min-w-0 items-center gap-3 sm:gap-4" data-testid="tension-index">
-      <div className="hidden size-9 items-center justify-center rounded-lg border border-signal/20 bg-signal/8 sm:flex">
-        <Activity className="size-4 text-signal" aria-hidden="true" />
-      </div>
-      <div className="min-w-0">
-        <div className="flex items-center gap-1.5">
-          <p className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
-            World Tension Index
-          </p>
-          <Popover>
+    <div className="min-w-0" data-testid="tension-index">
+      <Popover>
             <PopoverTrigger asChild>
-              <button className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="Explain the World Tension Index">
-                <Info className="size-3" />
-              </button>
+              <Button variant="ghost" className="h-auto gap-1 p-0 hover:bg-transparent sm:gap-2" aria-label={`World Tension Index: ${reading.score} out of 100. View calculation`}>
+                <span className="tension-earth relative block size-11 shrink-0 overflow-hidden sm:size-16" role="img" aria-label={fireIntensity === 0 ? "Calm Earth" : `Earth with ${Math.round(fireIntensity * 100)} percent fire intensity`}>
+                  <img src={calmEarth} alt="" width={816} height={816} className="absolute inset-0 size-full object-contain" />
+                  <img src={fieryEarth} alt="" width={816} height={816} className="absolute inset-0 size-full object-contain transition-opacity duration-700" style={{ opacity: fireIntensity }} data-testid="tension-fire" />
+                </span>
+                <span className="block text-left">
+                  <span className="hidden font-mono text-[9px] uppercase leading-4 text-muted-foreground sm:block">World Tension</span>
+                  <span className="flex items-baseline gap-1">
+                    <span className="font-display text-2xl font-semibold leading-none tabular-nums" aria-label={`Tension score ${reading.score} out of 100`}>{reading.score}</span>
+                    <span className="font-mono text-[9px] font-normal text-muted-foreground">/100</span>
+                  </span>
+                </span>
+              </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-80 rounded-xl p-4">
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-signal">Transparent calculation</p>
@@ -43,22 +48,7 @@ export function TensionIndex({ reading, eventCount }: TensionIndexProps) {
                 Experimental news-based signal only. It is not a validated measure of global stability.
               </p>
             </PopoverContent>
-          </Popover>
-        </div>
-        <div className="mt-1 flex items-center gap-2">
-          <span className="font-display text-2xl font-semibold leading-none tracking-tight" aria-label={`Tension score ${reading.score} out of 100`}>
-            {reading.score}
-          </span>
-          <span className="font-mono text-[10px] text-muted-foreground">/100</span>
-          <span className="rounded-full border border-signal/20 bg-signal/8 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-signal">
-            {reading.band}
-          </span>
-        </div>
-        <Progress value={reading.score} className="mt-2 h-0.5 w-28 bg-secondary" aria-label="World Tension Index" />
-        <p className="mt-1.5 hidden font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground md:block">
-          Experimental signal · Demo events
-        </p>
-      </div>
+      </Popover>
     </div>
   );
 }
