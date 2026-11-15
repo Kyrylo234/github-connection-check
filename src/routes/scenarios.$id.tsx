@@ -12,7 +12,7 @@ export const Route = createFileRoute("/scenarios/$id")({
   head: ({ loaderData }) => {
     const scenario = getScenario(loaderData?.scenarioId ?? "");
     const title = scenario ? `${scenario.title} — SitRep Scenario Lab` : "Scenario unavailable — SitRep";
-    const description = scenario ? `Play the fictional ${scenario.title} crisis exercise as ${scenario.role}. Three branching decisions with deterministic, illustrative feedback.` : "This SitRep scenario is unavailable.";
+    const description = scenario ? `Play the fictional ${scenario.title} globe-led crisis exercise as ${scenario.role}. Three timed incidents and a written situation report with deterministic, illustrative feedback.` : "This SitRep scenario is unavailable.";
     return {
       meta: [
         { title },

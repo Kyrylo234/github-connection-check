@@ -14,17 +14,24 @@ const cyberattack: Scenario = {
   summary: "Contain a corporate data breach while evidence, operations and public trust compete for attention.",
   role: "Incident Response Lead",
   organisation: "Northstar Systems — fictional employer",
-  briefing: "At 02:14, Northstar's security team confirms unauthorised access to a customer database. The intruder still has access, evidence is fragile, and a regulatory notification clock may already be running. You have authority to coordinate technical, legal and communications teams.",
+  briefing: "You begin with a quiet global monitoring shift. Northstar's fictional regional teams are operating normally. As simulated incidents arrive, read each location briefing, make a decision and observe its consequence. Your final task is a concise written situation report for leadership.",
   objectives: ["Limit harm without destroying useful evidence", "Balance operational continuity with containment", "Communicate accurately to affected people and regulators"],
-  estimatedMinutes: 6,
+  estimatedMinutes: 8,
   decisionCount: 3,
   entryNodeId: "cyber-01",
+  reportTask: {
+    prompt: "Write a 60–140 word situation report for Northstar leadership. State the incident, priority risk, decisions taken, next steps and remaining uncertainty.",
+    situationTerms: [["customer", "record", "data"], ["breach", "attack", "exfiltration", "unauthorised", "unauthorized"], ["contain", "isolat", "access"]],
+    riskTerms: [["customer", "service", "operation"], ["regulat", "legal", "trust", "evidence", "exposure", "data", "record"]],
+    stakeholderTerms: [["customer", "regulator", "leadership", "executive", "team", "public"]],
+  },
   nodes: {
     "cyber-01": {
       id: "cyber-01",
       step: 1,
       title: "The first containment window",
       situation: "The attacker is copying records from one database segment. Customer services are online, the security team can isolate that segment, and the full extent of access is not yet known.",
+      event: { location: { name: "Dublin", country: "Ireland", latitude: 53.3498, longitude: -6.2603 }, timeLabel: "02:14 UTC", severity: 0.86, category: "Cyber intrusion" },
       choices: [
         {
           id: "isolate-segment",
@@ -60,6 +67,7 @@ const cyberattack: Scenario = {
       step: 2,
       title: "Contained, not closed",
       situation: "Isolation has held for forty minutes. Legal needs confirmation of what was accessed, engineers want to restore service, and the regulator's preliminary notification window is narrowing.",
+      event: { location: { name: "Frankfurt", country: "Germany", latitude: 50.1109, longitude: 8.6821 }, timeLabel: "02:54 UTC", severity: 0.78, category: "Operational escalation" },
       choices: [
         {
           id: "coordinate-notification",
@@ -95,6 +103,7 @@ const cyberattack: Scenario = {
       step: 2,
       title: "The cost of the shutdown",
       situation: "The total shutdown has stopped the attack and interrupted essential customer activity. Executives are receiving complaints, while engineers say a staged recovery is possible on the unaffected infrastructure.",
+      event: { location: { name: "Frankfurt", country: "Germany", latitude: 50.1109, longitude: 8.6821 }, timeLabel: "02:54 UTC", severity: 0.88, category: "Service disruption" },
       choices: [
         {
           id: "holding-and-phased-restore",
@@ -130,6 +139,7 @@ const cyberattack: Scenario = {
       step: 2,
       title: "The intruder reacts",
       situation: "Monitoring produced useful indicators, but additional records were taken and the intruder now threatens publication. The original access route remains open and no stakeholder message has been approved.",
+      event: { location: { name: "Frankfurt", country: "Germany", latitude: 50.1109, longitude: 8.6821 }, timeLabel: "02:54 UTC", severity: 0.94, category: "Extortion threat" },
       choices: [
         {
           id: "contain-and-account",
@@ -165,6 +175,7 @@ const cyberattack: Scenario = {
       step: 3,
       title: "The public account",
       situation: "By morning, a journalist has a sample of genuine customer records. The investigation has established the affected data categories, but not every individual record. Your final decision sets the public response.",
+      event: { location: { name: "London", country: "United Kingdom", latitude: 51.5072, longitude: -0.1276 }, timeLabel: "07:30 UTC", severity: 0.9, category: "Public disclosure" },
       choices: [
         {
           id: "coordinated-disclosure",
@@ -205,17 +216,24 @@ const supplyChain: Scenario = {
   summary: "Keep essential medical deliveries moving through a supplier failure, transport shock and difficult allocation choices.",
   role: "Regional Operations Director",
   organisation: "Meridian Medical Systems — fictional employer",
-  briefing: "A flood has halted Meridian's principal component supplier in the fictional country of Alderia. A regional shipping restriction is diverting freight, and hospitals have twelve days of stock for one essential monitoring device. You control regional inventory, supplier escalation and customer coordination.",
+  briefing: "You begin with a quiet global monitoring shift. Meridian's fictional medical-supply network is operating normally. As simulated incidents arrive, read each location briefing, make a decision and observe its consequence. Your final task is a concise written situation report for leadership.",
   objectives: ["Maintain supply for the most urgent needs", "Avoid unverified substitutions and hidden quality risks", "Give customers and partners an honest operating picture"],
-  estimatedMinutes: 6,
+  estimatedMinutes: 8,
   decisionCount: 3,
   entryNodeId: "supply-01",
+  reportTask: {
+    prompt: "Write a 60–140 word situation report for Meridian leadership. State the shortage, priority clinical risk, decisions taken, next steps and remaining uncertainty.",
+    situationTerms: [["supply", "stock", "shortage", "delivery"], ["hospital", "medical", "patient"], ["supplier", "freight", "component"]],
+    riskTerms: [["patient", "clinical", "hospital"], ["stock", "shortage", "quality", "safety", "delay"]],
+    stakeholderTerms: [["hospital", "patient", "customer", "supplier", "leadership", "team"]],
+  },
   nodes: {
     "supply-01": {
       id: "supply-01",
       step: 1,
       title: "The first shortage forecast",
-      situation: "The primary supplier cannot provide a firm recovery date. An audited alternate supplier has limited capacity, air freight is expensive, and hospital customers are requesting conflicting delivery commitments.",
+      situation: "A flood has halted the principal component supplier in Ljubljana. The supplier cannot provide a firm recovery date. An audited alternate has limited capacity, air freight is expensive, and hospitals have twelve days of stock.",
+      event: { location: { name: "Ljubljana", country: "Slovenia", latitude: 46.0569, longitude: 14.5058 }, timeLabel: "06:20 UTC", severity: 0.8, category: "Supplier disruption" },
       choices: [
         {
           id: "qualify-alternate",
@@ -251,6 +269,7 @@ const supplyChain: Scenario = {
       step: 2,
       title: "Capacity with conditions",
       situation: "The alternate can cover sixty percent of normal demand after quality checks. A new unverified vendor offers full volume immediately, and two large commercial customers demand protection of their contracts.",
+      event: { location: { name: "Rotterdam", country: "Netherlands", latitude: 51.9244, longitude: 4.4777 }, timeLabel: "09:45 UTC", severity: 0.82, category: "Capacity shortage" },
       choices: [
         {
           id: "verified-split",
@@ -286,6 +305,7 @@ const supplyChain: Scenario = {
       step: 2,
       title: "Fast freight, limited funds",
       situation: "The airlift has replenished regional stock unevenly. Emergency kits, routine orders and premium-contract deliveries now compete for the remaining transport budget and warehouse capacity.",
+      event: { location: { name: "Rotterdam", country: "Netherlands", latitude: 51.9244, longitude: 4.4777 }, timeLabel: "09:45 UTC", severity: 0.84, category: "Freight congestion" },
       choices: [
         {
           id: "emergency-consolidate",
@@ -321,6 +341,7 @@ const supplyChain: Scenario = {
       step: 2,
       title: "The estimate slips again",
       situation: "Nine days of stock remain and the primary supplier now expects another week of disruption. Staff have begun improvising purchasing requests, while customers still believe normal deliveries will resume shortly.",
+      event: { location: { name: "Rotterdam", country: "Netherlands", latitude: 51.9244, longitude: 4.4777 }, timeLabel: "09:45 UTC", severity: 0.9, category: "Supply deterioration" },
       choices: [
         {
           id: "activate-emergency",
@@ -356,6 +377,7 @@ const supplyChain: Scenario = {
       step: 3,
       title: "The allocation agreement",
       situation: "A hospital network reports three days of stock for urgent monitoring cases. The remaining verified supply cannot meet every requested date. Customers, suppliers and internal teams need one final operating plan.",
+      event: { location: { name: "Warsaw", country: "Poland", latitude: 52.2297, longitude: 21.0122 }, timeLabel: "13:10 UTC", severity: 0.96, category: "Clinical shortage" },
       choices: [
         {
           id: "joint-fair-plan",

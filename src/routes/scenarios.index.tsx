@@ -32,7 +32,7 @@ function ScenarioLab() {
           <div className="animate-fade-up">
             <p className="font-system text-[10px] uppercase text-signal">Scenario Lab / Fictional exercises</p>
             <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold leading-[0.95] sm:text-6xl">Make the call. Live with the consequence.</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground">Step into a professional crisis role. Each decision changes the situation you face next and leaves a trace in your final report.</p>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground">Begin with a calm world. Read each simulated incident as it arrives on the globe, make the call, then finish with a written situation report for leadership.</p>
           </div>
           <div className="flex gap-3 border-l-2 border-signal/50 pl-4">
             <ShieldAlert className="mt-0.5 size-5 shrink-0 text-signal" aria-hidden="true" />
@@ -56,7 +56,7 @@ function ScenarioLab() {
                 <CardContent className="flex-1 px-5 pb-5 sm:px-6">
                   <dl className="grid grid-cols-2 gap-px border bg-border">
                     <div className="bg-background p-3"><dt className="font-system text-[9px] uppercase text-muted-foreground">Your role</dt><dd className="mt-1 text-[11px] font-semibold leading-5">{scenario.role}</dd></div>
-                    <div className="bg-background p-3"><dt className="font-system text-[9px] uppercase text-muted-foreground">Structure</dt><dd className="mt-1 text-[11px] font-semibold leading-5">3 linked decisions<br />3 choices each</dd></div>
+                    <div className="bg-background p-3"><dt className="font-system text-[9px] uppercase text-muted-foreground">Structure</dt><dd className="mt-1 text-[11px] font-semibold leading-5">3 globe incidents<br />+ written SitRep</dd></div>
                   </dl>
                   <div className="mt-4 flex items-center gap-4 font-system text-[9px] uppercase text-muted-foreground"><span className="flex items-center gap-1.5"><Clock3 className="size-3.5" /> {scenario.estimatedMinutes} min</span><span className="flex items-center gap-1.5"><GitBranch className="size-3.5" /> Branching</span></div>
                 </CardContent>
@@ -75,7 +75,7 @@ function ScenarioLab() {
               {SCENARIO_DIMENSIONS.map((dimension) => <div key={dimension.id} className="border-l border-signal/35 pl-3"><p className="font-system text-xl text-signal">{Math.round(dimension.weight * 100)}%</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">{dimension.label}</p></div>)}
             </div>
           </div>
-          <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Every choice has authored points for all four dimensions. Your progress stays only in this browser tab; replaying clears the current exercise.</p>
+          <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Every choice has authored points for all four dimensions. The final written SitRep uses a visible fixed rubric, not AI. Progress stays only in this browser tab; replaying clears the exercise.</p>
         </section>
       </div>
     </ScenarioShell>

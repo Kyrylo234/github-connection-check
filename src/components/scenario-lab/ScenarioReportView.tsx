@@ -15,7 +15,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
   const report = useMemo(() => {
     if (session.status !== "complete") return null;
     try {
-      return calculateScenarioReport(scenario, session.history);
+      return calculateScenarioReport(scenario, session.history, session.situationReport);
     } catch {
       return null;
     }
@@ -36,7 +36,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
         <div className="mx-auto max-w-2xl px-4 py-20 text-center">
           <FileWarning className="mx-auto size-8 text-signal" aria-hidden="true" />
           <h1 className="mt-5 font-display text-4xl font-bold">No completed report in this tab</h1>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">Complete all three decisions to generate a report. Reports are stored only in the current browser tab.</p>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">Complete all three decisions and the final written situation report. Reports are stored only in the current browser tab.</p>
           <Button asChild className="mt-7 rounded-none font-system text-xs uppercase"><Link to="/scenarios/$id" params={{ id: scenario.id }}>Open exercise</Link></Button>
         </div>
       </ScenarioShell>
@@ -82,9 +82,10 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
             <div className="p-5 sm:p-8">
               <h2 className="font-display text-2xl font-bold">Recruiter-facing summary</h2>
               <p className="mt-3 text-xs leading-6">{report.summary}</p>
-              <dl className="mt-4 grid grid-cols-2 gap-3 text-[11px]">
+              <dl className="mt-4 grid grid-cols-3 gap-3 text-[11px]">
                 <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Role played</dt><dd className="mt-1 font-semibold">{scenario.role}</dd></div>
-                <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Decisions completed</dt><dd className="mt-1 font-semibold">3 / 3</dd></div>
+                <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Decisions</dt><dd className="mt-1 font-semibold">3 / 3</dd></div>
+                <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Written SitRep</dt><dd className="mt-1 font-semibold">{report.writing.overall} / 100</dd></div>
               </dl>
             </div>
           </section>
@@ -92,7 +93,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
           <section className="border-b border-report-rule p-5 sm:p-8" aria-labelledby="dimension-heading">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <div><p className="font-system text-[9px] font-semibold uppercase">Section 01</p><h2 id="dimension-heading" className="mt-1 font-display text-3xl font-bold">Dimension breakdown</h2></div>
-              <p className="font-system text-[9px] font-semibold uppercase">Authored points · Weighted deterministically</p>
+              <p className="font-system text-[9px] font-semibold uppercase">Decisions 75% · Written SitRep 25%</p>
             </div>
             <div className="mt-6 grid gap-x-8 gap-y-5 sm:grid-cols-2">
               {SCENARIO_DIMENSIONS.map((dimension) => {
@@ -105,7 +106,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
                 );
               })}
             </div>
-            <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Overall = Judgment × 30% + Ethics × 25% + Communication × 25% + Risk Management × 20%. Dimension values are the mean authored points across the three choices, rounded to whole numbers.</p>
+            <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Overall = Judgment × 30% + Ethics × 25% + Communication × 25% + Risk Management × 20%. Each dimension blends authored decision points (75%) with the fixed writing rubric (25%), rounded to whole numbers.</p>
           </section>
 
           <section className="border-b border-report-rule p-5 sm:p-8" aria-labelledby="decision-heading">
@@ -118,7 +119,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
                     <p className="font-system text-[10px] font-semibold uppercase">Decision {String(decision.step).padStart(2, "0")}</p>
                     <div>
                       <h3 className="font-display text-2xl font-bold">{decision.choice.label}</h3>
-                      <p className="mt-1 text-[11px] font-semibold text-muted-foreground">Scene: {decision.node.title}</p>
+                      <p className="mt-1 text-[11px] font-semibold text-muted-foreground">Scene: {decision.node.title} · {decision.node.event.location.name}</p>
                       <div className="mt-3 grid gap-3 md:grid-cols-2">
                         <div><p className="font-system text-[9px] font-semibold uppercase">Outcome</p><p className="mt-1 text-[11px] leading-5">{decision.choice.consequence}</p></div>
                         <div><p className="font-system text-[9px] font-semibold uppercase">Choice-linked feedback</p><p className="mt-1 text-[11px] leading-5">{decision.choice.feedback}</p></div>
@@ -130,8 +131,25 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
             </ol>
           </section>
 
+          <section className="border-b border-report-rule p-5 sm:p-8" aria-labelledby="writing-heading">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div><p className="font-system text-[9px] font-semibold uppercase">Section 03</p><h2 id="writing-heading" className="mt-1 font-display text-3xl font-bold">Submitted situation report</h2></div>
+              <p className="font-system text-xl">{report.writing.overall} <span className="text-xs">/ 100</span></p>
+            </div>
+            <blockquote className="mt-5 whitespace-pre-wrap border-l-2 border-report-rule pl-4 text-xs font-semibold leading-6">{report.writing.text}</blockquote>
+            <div className="mt-6 grid gap-px border border-report-rule bg-report-rule sm:grid-cols-2 lg:grid-cols-3">
+              {report.writing.criteria.map((criterion) => (
+                <div key={criterion.id} className="print-break-avoid bg-report-paper p-4">
+                  <div className="flex items-center justify-between gap-3"><h3 className="text-[11px] font-bold">{criterion.label}</h3><p className="font-system text-xs">{criterion.score} / {criterion.maxScore}</p></div>
+                  <p className="mt-2 text-[10px] leading-4 text-muted-foreground">{criterion.feedback}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-[10px] leading-5 text-muted-foreground">This transparent keyword-and-length rubric checks whether operational briefing elements are present. It does not understand or grade writing quality, professional competence or real-world judgment.</p>
+          </section>
+
           <section className="grid gap-5 p-5 sm:grid-cols-2 sm:p-8" aria-labelledby="interpretation-heading">
-            <div><p className="font-system text-[9px] font-semibold uppercase">Section 03</p><h2 id="interpretation-heading" className="mt-1 font-display text-3xl font-bold">Interpretation</h2></div>
+            <div><p className="font-system text-[9px] font-semibold uppercase">Section 04</p><h2 id="interpretation-heading" className="mt-1 font-display text-3xl font-bold">Interpretation</h2></div>
             <div className="text-[11px] leading-5">
               <p><strong>Strongest pattern:</strong> {report.strongest.label}, {report.strongest.score}/100.</p>
               <p className="mt-2"><strong>Development theme:</strong> {report.development.label}, {report.development.score}/100.</p>

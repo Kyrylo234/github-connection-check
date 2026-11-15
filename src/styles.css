@@ -278,7 +278,8 @@ aside[aria-label="The Briefing"] > div:first-child {
   background: var(--room-shade);
 }
 
-.briefing-display::after {
+.briefing-display::after,
+.scenario-globe-frame::after {
   content: "";
   position: absolute;
   inset: 16px;

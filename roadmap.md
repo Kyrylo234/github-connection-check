@@ -43,3 +43,10 @@
 - [x] Add deterministic weighted scoring, local session persistence and clean replay
 - [x] Build playable briefings, consequence views, final reports and browser PDF printing
 - [x] Test both complete paths, branching, replay, report contents and home navigation
+
+## Globe-led Scenario Lab
+
+- [x] Start each exercise on a calm globe and deliver timed fictional incidents with automatic camera focus
+- [x] Require reading acknowledgement before each decision and show consequences between incidents
+- [x] Add a final written situation report with a transparent deterministic rubric
+- [x] Test session transitions and scoring, then verify both stories end to end

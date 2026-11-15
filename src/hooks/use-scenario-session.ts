@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  acknowledgeScenarioEvent,
   applyScenarioChoice,
+  continueScenarioMonitoring,
   createScenarioSession,
   isScenarioSession,
+  receiveScenarioEvent,
   startScenarioSession,
+  submitSituationReport,
+  updateSituationReportDraft,
 } from "@/lib/scenario-session";
 import type { Scenario, ScenarioSession } from "@/types/scenario";
 
 export function getScenarioStorageKey(scenarioId: string): string {
-  return `sitrep.scenario.v1.${scenarioId}`;
+  return `sitrep.scenario.v2.${scenarioId}`;
 }
 
 function writeSession(session: ScenarioSession): void {
@@ -36,13 +41,29 @@ export function useScenarioSession(scenario: Scenario) {
     setHydrated(true);
   }, [scenario]);
 
-  const start = useCallback(() => {
+  const commit = useCallback((update: (current: ScenarioSession) => ScenarioSession) => {
     setSession((current) => {
-      const next = startScenarioSession(current);
-      writeSession(next);
+      const next = update(current);
+      if (next !== current) writeSession(next);
       return next;
     });
   }, []);
+
+  const start = useCallback(() => {
+    commit((current) => startScenarioSession(current));
+  }, [commit]);
+
+  const receiveEvent = useCallback((nodeId: string) => {
+    commit((current) => receiveScenarioEvent(current, nodeId));
+  }, [commit]);
+
+  const acknowledgeEvent = useCallback((nodeId: string) => {
+    commit((current) => acknowledgeScenarioEvent(current, nodeId));
+  }, [commit]);
+
+  const continueMonitoring = useCallback(() => {
+    commit(continueScenarioMonitoring);
+  }, [commit]);
 
   const choose = useCallback(
     (nodeId: string, choiceId: string): ScenarioSession | null => {
@@ -56,11 +77,35 @@ export function useScenarioSession(scenario: Scenario) {
     [scenario, session],
   );
 
+  const updateReportDraft = useCallback((text: string) => {
+    commit((current) => updateSituationReportDraft(current, text));
+  }, [commit]);
+
+  const submitReport = useCallback((): ScenarioSession | null => {
+    const next = submitSituationReport(session);
+    if (next) {
+      setSession(next);
+      writeSession(next);
+    }
+    return next;
+  }, [session]);
+
   const replay = useCallback(() => {
     const reset = createScenarioSession(scenario);
     setSession(reset);
     writeSession(reset);
   }, [scenario]);
 
-  return { session, hydrated, start, choose, replay };
+  return {
+    session,
+    hydrated,
+    start,
+    receiveEvent,
+    acknowledgeEvent,
+    continueMonitoring,
+    choose,
+    updateReportDraft,
+    submitReport,
+    replay,
+  };
 }

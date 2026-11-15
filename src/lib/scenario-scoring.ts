@@ -7,6 +7,10 @@ import type {
   ScenarioNode,
 } from "@/types/scenario";
 import { SCENARIO_DIMENSIONS } from "@/types/scenario";
+import { calculateWeightedScore } from "@/lib/scenario-scoring-core";
+import { assessSituationReport, type SituationReportAssessment } from "@/lib/situation-report";
+
+export { calculateWeightedScore } from "@/lib/scenario-scoring-core";
 
 export interface ReportDecision {
   step: number;
@@ -17,16 +21,12 @@ export interface ReportDecision {
 export interface ScenarioReport {
   overall: number;
   dimensions: DimensionScores;
+  decisionDimensions: DimensionScores;
   decisions: ReportDecision[];
+  writing: SituationReportAssessment;
   strongest: { id: DimensionId; label: string; score: number };
   development: { id: DimensionId; label: string; score: number };
   summary: string;
-}
-
-export function calculateWeightedScore(dimensions: DimensionScores): number {
-  return Math.round(
-    SCENARIO_DIMENSIONS.reduce((total, dimension) => total + dimensions[dimension.id] * dimension.weight, 0),
-  );
 }
 
 function resolveDecisions(scenario: Scenario, history: DecisionRecord[]): ReportDecision[] {
@@ -53,14 +53,25 @@ function resolveDecisions(scenario: Scenario, history: DecisionRecord[]): Report
   });
 }
 
-export function calculateScenarioReport(scenario: Scenario, history: DecisionRecord[]): ScenarioReport {
+export function calculateScenarioReport(
+  scenario: Scenario,
+  history: DecisionRecord[],
+  situationReport: string,
+): ScenarioReport {
   const decisions = resolveDecisions(scenario, history);
-  const dimensions = Object.fromEntries(
+  const decisionDimensions = Object.fromEntries(
     SCENARIO_DIMENSIONS.map((dimension) => [
       dimension.id,
       Math.round(
         decisions.reduce((total, decision) => total + decision.choice.scores[dimension.id], 0) / decisions.length,
       ),
+    ]),
+  ) as DimensionScores;
+  const writing = assessSituationReport(scenario, situationReport);
+  const dimensions = Object.fromEntries(
+    SCENARIO_DIMENSIONS.map((dimension) => [
+      dimension.id,
+      Math.round(decisionDimensions[dimension.id] * 0.75 + writing.dimensions[dimension.id] * 0.25),
     ]),
   ) as DimensionScores;
 
@@ -75,10 +86,12 @@ export function calculateScenarioReport(scenario: Scenario, history: DecisionRec
   return {
     overall,
     dimensions,
+    decisionDimensions,
     decisions,
+    writing,
     strongest,
     development,
-    summary: `Across ${decisions.length} fictional decisions, the strongest pattern was ${strongest.label.toLowerCase()} (${strongest.score}/100). The clearest development theme was ${development.label.toLowerCase()} (${development.score}/100). The decision record below shows the choices and consequences behind these values.`,
+    summary: `Across ${decisions.length} fictional decisions and a written situation report, the strongest pattern was ${strongest.label.toLowerCase()} (${strongest.score}/100). The clearest development theme was ${development.label.toLowerCase()} (${development.score}/100). Decision choices contribute 75% of each dimension and the fixed writing rubric contributes 25%.`,
   };
 }
 

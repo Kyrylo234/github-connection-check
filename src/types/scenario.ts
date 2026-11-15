@@ -18,12 +18,34 @@ export interface ScenarioChoice {
   scores: DimensionScores;
 }
 
+export interface ScenarioLocation {
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface ScenarioEvent {
+  location: ScenarioLocation;
+  timeLabel: string;
+  severity: number;
+  category: string;
+}
+
 export interface ScenarioNode {
   id: string;
   step: number;
   title: string;
   situation: string;
+  event: ScenarioEvent;
   choices: ScenarioChoice[];
+}
+
+export interface ScenarioReportTask {
+  prompt: string;
+  situationTerms: string[][];
+  riskTerms: string[][];
+  stakeholderTerms: string[][];
 }
 
 export interface Scenario {
@@ -38,6 +60,7 @@ export interface Scenario {
   estimatedMinutes: number;
   decisionCount: number;
   entryNodeId: string;
+  reportTask: ScenarioReportTask;
   nodes: Record<string, ScenarioNode>;
 }
 
@@ -46,12 +69,22 @@ export interface DecisionRecord {
   choiceId: string;
 }
 
+export type ScenarioStatus =
+  | "briefing"
+  | "standby"
+  | "reading"
+  | "decision"
+  | "debrief"
+  | "situation-report"
+  | "complete";
+
 export interface ScenarioSession {
-  version: 1;
+  version: 2;
   scenarioId: string;
-  status: "briefing" | "playing" | "complete";
+  status: ScenarioStatus;
   currentNodeId: string;
   history: DecisionRecord[];
+  situationReport: string;
   startedAt: string | null;
   completedAt: string | null;
 }
