@@ -91,28 +91,32 @@
 
 :root {
   --radius: 0.375rem;
-  --background: oklch(0.155 0.009 115);
-  --foreground: oklch(0.91 0.017 95);
-  --card: oklch(0.215 0.014 112);
+  --bunker-green: oklch(0.23029678 0.01954595 166.98175255);
+  --radar-phosphor: oklch(0.84603273 0.05351330 151.01430476);
+  --alert-red: oklch(0.64559952 0.17379499 29.33355322);
+  --document-ivory: oklch(0.89522919 0.02940951 89.58339047);
+  --background: var(--bunker-green);
+  --foreground: var(--document-ivory);
+  --card: color-mix(in oklab, var(--bunker-green) 94%, var(--radar-phosphor));
   --card-foreground: var(--foreground);
-  --popover: oklch(0.225 0.015 112);
+  --popover: var(--card);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.78 0.12 78);
-  --primary-foreground: oklch(0.18 0.013 112);
-  --secondary: oklch(0.27 0.018 112);
+  --primary: var(--radar-phosphor);
+  --primary-foreground: var(--bunker-green);
+  --secondary: color-mix(in oklab, var(--bunker-green) 85%, var(--radar-phosphor));
   --secondary-foreground: var(--foreground);
-  --muted: oklch(0.23 0.014 112);
-  --muted-foreground: oklch(0.7 0.025 100);
-  --accent: oklch(0.32 0.034 110);
+  --muted: var(--card);
+  --muted-foreground: color-mix(in oklab, var(--document-ivory) 68%, var(--bunker-green));
+  --accent: color-mix(in oklab, var(--bunker-green) 78%, var(--radar-phosphor));
   --accent-foreground: var(--foreground);
-  --destructive: oklch(0.67 0.2 24);
-  --destructive-foreground: oklch(0.96 0.01 24);
-  --border: oklch(0.72 0.035 100 / 24%);
-  --input: oklch(0.72 0.035 100 / 30%);
-  --ring: oklch(0.78 0.12 78 / 70%);
+  --destructive: var(--alert-red);
+  --destructive-foreground: var(--document-ivory);
+  --border: color-mix(in oklab, var(--radar-phosphor) 24%, transparent);
+  --input: color-mix(in oklab, var(--radar-phosphor) 30%, transparent);
+  --ring: color-mix(in oklab, var(--radar-phosphor) 70%, transparent);
   --chart-1: var(--primary);
-  --chart-2: oklch(0.77 0.17 155);
-  --chart-3: oklch(0.67 0.2 24);
+  --chart-2: var(--sentiment-neutral);
+  --chart-3: var(--alert-red);
   --chart-4: oklch(0.75 0.12 80);
   --chart-5: oklch(0.65 0.12 285);
   --sidebar: var(--background);
@@ -123,21 +127,21 @@
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
-  --sentiment-positive: oklch(0.77 0.17 155);
+  --sentiment-positive: var(--radar-phosphor);
   --sentiment-neutral: oklch(0.68 0.16 240);
-  --sentiment-negative: oklch(0.68 0.21 25);
-  --tension-flame-red: oklch(0.64 0.24 27);
+  --sentiment-negative: var(--alert-red);
+  --tension-flame-red: var(--alert-red);
   --tension-flame-orange: oklch(0.79 0.18 60);
   --signal: var(--primary);
-  --surface-raised: oklch(0.265 0.02 112);
-  --report-paper: oklch(0.19 0.008 112);
-  --report-rule: oklch(0.48 0.045 112 / 55%);
-  --room-shade: oklch(0.12 0.008 112 / 30%);
+  --surface-raised: var(--secondary);
+  --report-paper: var(--bunker-green);
+  --report-rule: color-mix(in oklab, var(--radar-phosphor) 28%, transparent);
+  --room-shade: color-mix(in oklab, var(--bunker-green) 30%, transparent);
   --console-shadow: 0 4px 16px oklch(0.08 0.008 112 / 45%);
-  --sentiment-positive-rgb: 61 227 158;
+  --sentiment-positive-rgb: 180 215 187;
   --sentiment-neutral-rgb: 81 155 255;
-  --sentiment-negative-rgb: 255 93 100;
-  --atmosphere-rgb: 155 167 127;
+  --sentiment-negative-rgb: 228 91 75;
+  --atmosphere-rgb: 180 215 187;
   --transparent-rgb: 0 0 0;
 }
 
@@ -148,7 +152,7 @@
 .severity-display {
   --severity-colour: color-mix(
     in oklab,
-    color-mix(in oklab, var(--sentiment-positive), var(--signal) clamp(0%, calc(var(--severity-position) * 2), 100%)),
+    color-mix(in oklab, var(--sentiment-positive), var(--chart-4) clamp(0%, calc(var(--severity-position) * 2), 100%)),
     var(--sentiment-negative) clamp(0%, calc(var(--severity-position) * 2 - 100%), 100%)
   );
 }
