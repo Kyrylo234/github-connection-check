@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import calmEarth from "@/assets/tension-earth-calm.jpg";
 import fieryEarth from "@/assets/tension-earth-inferno.jpg";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,13 @@ export function TensionIndex({ reading, eventCount }: TensionIndexProps) {
                 <span className="tension-earth relative block size-11 shrink-0 overflow-hidden sm:size-16" role="img" aria-label={fireIntensity === 0 ? "Calm Earth" : `Earth with ${Math.round(fireIntensity * 100)} percent fire intensity`}>
                   <img src={calmEarth} alt="" width={816} height={816} className="absolute inset-0 size-full object-contain" />
                   <img src={fieryEarth} alt="" width={816} height={816} className="absolute inset-0 size-full object-contain transition-opacity duration-700" style={{ opacity: fireIntensity }} data-testid="tension-fire" />
+                  {fireIntensity > 0 && (
+                    <span className="tension-flickers pointer-events-none absolute inset-0" style={{ "--fire-intensity": fireIntensity } as CSSProperties} aria-hidden="true">
+                      {[0, 1, 2].map((patch) => (
+                        <img key={patch} src={fieryEarth} alt="" width={816} height={816} className="tension-fire-patch absolute inset-0 size-full animate-fire-flicker object-contain" />
+                      ))}
+                    </span>
+                  )}
                 </span>
                 <span className="block text-left">
                   <span className="hidden font-mono text-[9px] uppercase leading-4 text-muted-foreground sm:block">World Tension</span>

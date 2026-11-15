@@ -38,6 +38,7 @@
   --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
   --animate-shimmer: shimmer 2s linear infinite;
   --animate-scan: scan 7s linear infinite;
+  --animate-fire-flicker: fire-flicker 2.7s linear infinite;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -137,6 +138,38 @@
 
 .tension-earth {
   mix-blend-mode: screen;
+}
+
+.tension-fire-patch {
+  --fire-patch-radius: calc(var(--fire-intensity) * 16%);
+  mask-image:
+    radial-gradient(circle at 43% 36%, var(--foreground) 0, transparent var(--fire-patch-radius)),
+    radial-gradient(circle at 61% 58%, var(--foreground) 0, transparent var(--fire-patch-radius)),
+    radial-gradient(circle at 31% 66%, var(--foreground) 0, transparent var(--fire-patch-radius));
+}
+
+.tension-fire-patch:nth-child(2) {
+  animation-duration: 3.3s;
+  animation-delay: -1.7s;
+  mask-image:
+    radial-gradient(circle at 64% 31%, var(--foreground) 0, transparent var(--fire-patch-radius)),
+    radial-gradient(circle at 43% 57%, var(--foreground) 0, transparent var(--fire-patch-radius)),
+    radial-gradient(circle at 73% 49%, var(--foreground) 0, transparent var(--fire-patch-radius));
+}
+
+.tension-fire-patch:nth-child(3) {
+  animation-duration: 2.1s;
+  animation-delay: -0.8s;
+  mask-image:
+    radial-gradient(circle at 51% 43%, var(--foreground) 0, transparent var(--fire-patch-radius)),
+    radial-gradient(circle at 34% 48%, var(--foreground) 0, transparent var(--fire-patch-radius)),
+    radial-gradient(circle at 55% 75%, var(--foreground) 0, transparent var(--fire-patch-radius));
+}
+
+@keyframes fire-flicker {
+  0%, 19%, 53%, 81%, 100% { opacity: 0.15; }
+  7%, 24%, 41%, 67%, 90% { opacity: 1; }
+  12%, 36%, 60%, 75%, 95% { opacity: 0.4; }
 }
 
 @utility glass-panel {
