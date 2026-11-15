@@ -9,6 +9,7 @@ import type {
 import { SCENARIO_DIMENSIONS } from "@/types/scenario";
 import { calculateWeightedScore } from "@/lib/scenario-scoring-core";
 import { assessSituationReport, type SituationReportAssessment } from "@/lib/situation-report";
+import { assessPriorities } from "@/lib/priority-assessment";
 
 export { calculateWeightedScore } from "@/lib/scenario-scoring-core";
 
@@ -24,6 +25,7 @@ export interface ScenarioReport {
   decisionDimensions: DimensionScores;
   decisions: ReportDecision[];
   writing: SituationReportAssessment;
+  priorities: ReturnType<typeof assessPriorities>;
   strongest: { id: DimensionId; label: string; score: number };
   development: { id: DimensionId; label: string; score: number };
   summary: string;
@@ -68,10 +70,11 @@ export function calculateScenarioReport(
     ]),
   ) as DimensionScores;
   const writing = assessSituationReport(scenario, situationReport);
+  const priorities = assessPriorities(scenario.id, situationReport);
   const dimensions = Object.fromEntries(
     SCENARIO_DIMENSIONS.map((dimension) => [
       dimension.id,
-      Math.round(decisionDimensions[dimension.id] * 0.75 + writing.dimensions[dimension.id] * 0.25),
+      Math.round(decisionDimensions[dimension.id] * 0.75 + priorities.score * 0.25),
     ]),
   ) as DimensionScores;
 
@@ -89,9 +92,10 @@ export function calculateScenarioReport(
     decisionDimensions,
     decisions,
     writing,
+    priorities,
     strongest,
     development,
-    summary: `Across ${decisions.length} fictional decisions and a written situation report, the strongest pattern was ${strongest.label.toLowerCase()} (${strongest.score}/100). The clearest development theme was ${development.label.toLowerCase()} (${development.score}/100). Decision choices contribute 75% of each dimension and the fixed writing rubric contributes 25%.`,
+    summary: `Across ${decisions.length} fictional decisions, the strongest pattern was ${strongest.label.toLowerCase()} (${strongest.score}/100). The clearest development theme was ${development.label.toLowerCase()} (${development.score}/100). Authored decisions contribute 75% of each dimension and priority ordering contributes 25%. Writing and AI feedback do not affect numeric scores.`,
   };
 }
 

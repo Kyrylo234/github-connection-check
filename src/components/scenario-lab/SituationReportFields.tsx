@@ -1,5 +1,6 @@
 import { Textarea } from "@/components/ui/textarea";
 import { RankingList } from "@/components/scenario-lab/RankingList";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPriorities, getReportOptions, parsePriorities } from "@/lib/report-options";
 import { MAXIMUM_SITUATION_REPORT_CHARACTERS } from "@/lib/scenario-session";
@@ -24,6 +25,7 @@ export function SituationReportFields({ value, onChange, scenarioId, actions = [
           {id === "priority" ? (
             <div className="mt-3">
               <RankingList items={priorities} label="Ranked priorities" onChange={(items) => update("priority", formatPriorities(items))} />
+              {!draft.priority && <Button type="button" variant="outline" onClick={() => update("priority", formatPriorities(priorities))} className="mt-3 w-full rounded-none border-report-rule bg-transparent text-xs">Confirm this order</Button>}
             </div>
           ) : id === "people" ? (
             <div className="mt-3 space-y-3">

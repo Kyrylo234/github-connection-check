@@ -4,6 +4,8 @@ import { getScenario, scenarios } from "@/data/scenarios";
 import { calculateScenarioReport, calculateWeightedScore } from "@/lib/scenario-scoring";
 import { acknowledgeScenarioEvent, applyScenarioChoice, continueScenarioMonitoring, createScenarioSession, receiveScenarioEvent, startScenarioSession } from "@/lib/scenario-session";
 import type { Scenario, ScenarioSession } from "@/types/scenario";
+import { formatPriorities, getReportOptions } from "@/lib/report-options";
+import { parseReportDraft, serializeReportDraft } from "@/lib/situation-report-draft";
 
 const CYBER_REPORT = "Situation: unauthorised access caused a customer data breach and records were copied before we contained access and isolated the affected segment. Priority risk: further customer data exposure, service disruption, loss of trust and regulatory harm. Actions taken: we preserved evidence, coordinated the response team and issued accurate customer and regulator updates. Next steps: the incident team will continue forensic investigation, verify the full access scope, monitor systems, restore services safely and provide support to affected customers. Leadership will receive a coordinated update after review. Uncertainty: the final number of records and complete intrusion scope remain unknown while the investigation continues, so no unconfirmed claims should be released.";
 
@@ -50,6 +52,17 @@ describe("Scenario content", () => {
 });
 
 describe("Deterministic scenario scoring", () => {
+  it("counts priority order but not keyword coverage in numeric scores", () => {
+    const scenario = getScenario("cyberattack");
+    if (!scenario) throw new Error("Missing scenario");
+    let session = startScenarioSession(createScenarioSession(scenario));
+    for (const id of ["isolate-segment", "coordinate-notification", "coordinated-disclosure"]) session = choose(session, scenario, id);
+    const options = getReportOptions(scenario.id).priorities;
+    const text = (next: string, priorities: string[]) => serializeReportDraft({ ...parseReportDraft(""), next, priority: formatPriorities(priorities) });
+    expect(calculateScenarioReport(scenario, session.history, text("Uncertain", options)).overall).toBe(93);
+    expect(calculateScenarioReport(scenario, session.history, text(CYBER_REPORT, options)).overall).toBe(93);
+    expect(calculateScenarioReport(scenario, session.history, text(CYBER_REPORT, [...options].reverse())).overall).toBe(68);
+  });
   it("uses Judgment 30%, Ethics 25%, Communication 25% and Risk Management 20%", () => {
     expect(calculateWeightedScore({ judgment: 80, ethics: 60, communication: 40, riskManagement: 20 })).toBe(53);
   });
@@ -65,8 +78,8 @@ describe("Deterministic scenario scoring", () => {
     expect(report.decisionDimensions).toEqual({ judgment: 92, ethics: 92, communication: 85, riskManagement: 92 });
     expect(report.writing.text).toBe(CYBER_REPORT);
     expect(report.writing.criteria.every((criterion) => criterion.score === 20)).toBe(true);
-    expect(report.dimensions).toEqual({ judgment: 94, ethics: 94, communication: 89, riskManagement: 94 });
-    expect(report.overall).toBe(93);
+    expect(report.dimensions).toEqual({ judgment: 69, ethics: 69, communication: 64, riskManagement: 69 });
+    expect(report.overall).toBe(68);
     expect(report.decisions.map((decision) => decision.choice.id)).toEqual(["isolate-segment", "coordinate-notification", "coordinated-disclosure"]);
   });
 

@@ -39,8 +39,10 @@ use the editor.
 - Keep the briefing-room image as a non-interactive backdrop behind the transparent globe canvas; room styling must not intercept globe interaction.
 - Detect new live hotspots against the unfiltered source snapshot in pure logic; defer camera focus during event reading or pause, and never treat filter changes as arrivals.
 - Ignore renderer pointer callbacks originating from HTML hotspots; the renderer defers pointer-up handling and can otherwise undo the hotspot's selection.
-- Keep Scenario Lab definitions, deterministic scoring and session transitions in pure TypeScript with regression tests; store progress only in tab-local browser storage and keep AI, authentication and hiring recommendations out of the exercise.
+- Keep Scenario Lab definitions, deterministic scoring and session transitions in pure TypeScript with regression tests; store progress only in tab-local browser storage and allow optional server-side AI feedback separate from deterministic scores, with no authentication or hiring recommendations.
 - Keep guided report fields serialized into the existing report string with a pure round-trip parser; preserve older free-text drafts and exclude authored section labels from grading.
-- Keep scenario-specific report options and priority reordering in pure logic; save explicit user selections as report text without changing the fixed grading rubric.
+- Keep scenario-specific report options and priority reordering in pure logic; grade explicit complete rankings against scenario-specific pairwise rubrics; numeric dimensions blend authored decisions 75% and ranking 25%, never keyword-writing or AI scores.
 - Use the shared dnd-kit ranking list for sortable report inputs, with pointer and keyboard sensors; display every option upfront and preserve saved rankings.
 - Derive the final task's read-only action recap from actual decision history, never from authored defaults; keep it out of the candidate's graded response.
+
+- Keep optional reasoning feedback in a validated public server function using Lovable AI Gateway; treat report text as untrusted evidence, keep keys server-only, and never change scores on AI failure.

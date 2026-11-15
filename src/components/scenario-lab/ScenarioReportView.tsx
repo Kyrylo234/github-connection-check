@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useScenarioSession } from "@/hooks/use-scenario-session";
 import { calculateScenarioReport, getReportBand } from "@/lib/scenario-scoring";
 import type { Scenario } from "@/types/scenario";
+import { ReasoningFeedback } from "@/components/scenario-lab/ReasoningFeedback";
 import { SCENARIO_DIMENSIONS } from "@/types/scenario";
 
 export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
@@ -85,7 +86,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
               <dl className="mt-4 grid grid-cols-3 gap-3 text-[11px]">
                 <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Role played</dt><dd className="mt-1 font-semibold">{scenario.role}</dd></div>
                 <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Decisions</dt><dd className="mt-1 font-semibold">3 / 3</dd></div>
-                <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Written SitRep</dt><dd className="mt-1 font-semibold">{report.writing.overall} / 100</dd></div>
+                <div><dt className="font-system text-[9px] font-semibold uppercase text-muted-foreground">Priority order</dt><dd className="mt-1 font-semibold">{report.priorities.score} / 100</dd></div>
               </dl>
             </div>
           </section>
@@ -93,7 +94,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
           <section className="border-b border-report-rule p-5 sm:p-8" aria-labelledby="dimension-heading">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <div><p className="font-system text-[9px] font-semibold uppercase">Section 01</p><h2 id="dimension-heading" className="mt-1 font-display text-3xl font-bold">Dimension breakdown</h2></div>
-              <p className="font-system text-[9px] font-semibold uppercase">Decisions 75% · Written SitRep 25%</p>
+              <p className="font-system text-[9px] font-semibold uppercase">Decisions 75% · Priority order 25%</p>
             </div>
             <div className="mt-6 grid gap-x-8 gap-y-5 sm:grid-cols-2">
               {SCENARIO_DIMENSIONS.map((dimension) => {
@@ -106,7 +107,7 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
                 );
               })}
             </div>
-            <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Overall = Judgment × 30% + Ethics × 25% + Communication × 25% + Risk Management × 20%. Each dimension blends authored decision points (75%) with the fixed writing rubric (25%), rounded to whole numbers.</p>
+            <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Overall = Judgment × 30% + Ethics × 25% + Communication × 25% + Risk Management × 20%. Each dimension blends authored decision points (75%) with priority-pair ordering (25%), rounded to whole numbers.</p>
           </section>
 
           <section className="border-b border-report-rule p-5 sm:p-8" aria-labelledby="decision-heading">
@@ -134,19 +135,18 @@ export function ScenarioReportView({ scenario }: { scenario: Scenario }) {
           <section className="border-b border-report-rule p-5 sm:p-8" aria-labelledby="writing-heading">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div><p className="font-system text-[9px] font-semibold uppercase">Section 03</p><h2 id="writing-heading" className="mt-1 font-display text-3xl font-bold">Submitted situation report</h2></div>
-              <p className="font-system text-xl">{report.writing.overall} <span className="text-xs">/ 100</span></p>
+              
             </div>
             <blockquote className="mt-5 whitespace-pre-wrap border-l-2 border-report-rule pl-4 text-xs font-semibold leading-6">{report.writing.text}</blockquote>
-            <div className="mt-6 grid gap-px border border-report-rule bg-report-rule sm:grid-cols-2 lg:grid-cols-3">
-              {report.writing.criteria.map((criterion) => (
-                <div key={criterion.id} className="print-break-avoid bg-report-paper p-4">
-                  <div className="flex items-center justify-between gap-3"><h3 className="text-[11px] font-bold">{criterion.label}</h3><p className="font-system text-xs">{criterion.score} / {criterion.maxScore}</p></div>
-                  <p className="mt-2 text-[10px] leading-4 text-muted-foreground">{criterion.feedback}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-[10px] leading-5 text-muted-foreground">This transparent keyword-and-length rubric checks whether operational briefing elements are present. It does not understand or grade writing quality, professional competence or real-world judgment.</p>
+            <h3 className="mt-6 font-display text-2xl font-bold">Priority ranking · {report.priorities.score} / 100</h3>
+            <p className="mt-2 text-xs leading-6">{report.priorities.feedback}</p>
+            <p className="mt-2 text-xs leading-6">{report.priorities.rationale}</p>
+            <p className="mt-4 font-system text-[10px] font-bold uppercase">Authored reference order</p>
+            <ol className="mt-2 list-decimal space-y-1 pl-5 text-[11px] leading-5">{report.priorities.expected.map((item) => <li key={item}>{item}</li>)}</ol>
+            <p className="mt-4 text-[10px] leading-5">Writing and AI feedback do not contribute numeric scores.</p>
           </section>
+
+          <ReasoningFeedback session={session} />
 
           <section className="grid gap-5 p-5 sm:grid-cols-2 sm:p-8" aria-labelledby="interpretation-heading">
             <div><p className="font-system text-[9px] font-semibold uppercase">Section 04</p><h2 id="interpretation-heading" className="mt-1 font-display text-3xl font-bold">Interpretation</h2></div>

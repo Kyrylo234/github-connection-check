@@ -50,3 +50,10 @@
 - [x] Require reading acknowledgement before each decision and show consequences between incidents
 - [x] Add a final written situation report with a transparent deterministic rubric
 - [x] Test session transitions and scoring, then verify both stories end to end
+
+## Assessment feedback upgrade
+
+- [x] Grade priority order against scenario-specific pairwise rubrics
+- [x] Replace keyword-derived hiring-style scores with deterministic decisions and ranking scores
+- [x] Add optional AI feedback on reasoning, separate from numeric scores
+- [x] Verify scoring rules and AI feedback through the completed exercise

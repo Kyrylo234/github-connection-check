@@ -321,8 +321,8 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
                 <h1 className="mt-2 font-display text-4xl font-bold">Brief leadership</h1>
                 <p className="mt-3 text-[11px] font-semibold leading-5">Rank your priorities, identify affected people, and give leadership a short response on next steps and uncertainty.</p>
                 <div className="mt-4 border-y border-report-rule py-3">
-                  <p className="font-system text-[9px] font-bold uppercase text-muted-foreground">Fixed rubric · No AI</p>
-                  <p className="mt-1 text-[10px] font-medium leading-4">Core situation · Priority risk · Decisions and next steps · Stakeholders · Uncertainty · Concise length</p>
+                  <p className="font-system text-[9px] font-bold uppercase text-muted-foreground">Authored scoring · Optional AI feedback</p>
+                  <p className="mt-1 text-[10px] font-medium leading-4">Decisions 75% · Priority order 25%. Writing receives feedback, not a hiring score.</p>
                 </div>
                 <SituationReportFields
                   scenarioId={scenario.id}
@@ -339,7 +339,7 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
                 </div>
                 {reportLength < MINIMUM_SITUATION_REPORT_CHARACTERS && <p className="mt-3 text-[10px] font-semibold leading-4 text-muted-foreground">Add {MINIMUM_SITUATION_REPORT_CHARACTERS - reportLength} more characters to submit a substantive brief.</p>}
                 <Button disabled={reportLength < MINIMUM_SITUATION_REPORT_CHARACTERS} onClick={submitWrittenReport} className="mt-5 w-full rounded-none font-system text-xs uppercase">Submit report & complete exercise <ArrowRight /></Button>
-                <p className="mt-3 text-[10px] font-semibold leading-4 text-muted-foreground">The rubric checks included briefing elements, not writing quality or real-world competence. Illustrative only.</p>
+                <p className="mt-3 text-[10px] font-semibold leading-4 text-muted-foreground">Optional AI reasoning feedback is available on the final report. Illustrative only; not validated for hiring.</p>
               </aside>
             )}
           </div>

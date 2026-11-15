@@ -70,12 +70,12 @@ function ScenarioLab() {
 
         <section className="mt-9 border-y py-6" aria-labelledby="scoring-heading">
           <div className="grid gap-5 lg:grid-cols-[0.8fr_1.5fr] lg:items-center">
-            <div><p className="font-system text-[9px] uppercase text-signal">Transparent scoring</p><h2 id="scoring-heading" className="mt-1 font-display text-3xl font-bold">No black box. No AI.</h2></div>
+            <div><p className="font-system text-[9px] uppercase text-signal">Transparent scoring</p><h2 id="scoring-heading" className="mt-1 font-display text-3xl font-bold">Authored scores. Optional AI feedback.</h2></div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {SCENARIO_DIMENSIONS.map((dimension) => <div key={dimension.id} className="border-l border-signal/35 pl-3"><p className="font-system text-xl text-signal">{Math.round(dimension.weight * 100)}%</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">{dimension.label}</p></div>)}
             </div>
           </div>
-          <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Every choice has authored points for all four dimensions. The final written SitRep uses a visible fixed rubric, not AI. Progress stays only in this browser tab; replaying clears the exercise.</p>
+          <p className="mt-5 text-[10px] leading-5 text-muted-foreground">Authored choices contribute 75% and priority order 25% to each dimension. Optional AI reasoning feedback never changes scores. Progress stays only in this browser tab; replaying clears the exercise.</p>
         </section>
       </div>
     </ScenarioShell>
