@@ -95,6 +95,7 @@
   --radar-phosphor: oklch(0.84603273 0.05351330 151.01430476);
   --alert-red: oklch(0.64559952 0.17379499 29.33355322);
   --document-ivory: oklch(0.89522919 0.02940951 89.58339047);
+  --charcoal-steel: oklch(0.27303691 0.00564572 156.83868660);
   --background: var(--bunker-green);
   --foreground: var(--document-ivory);
   --card: color-mix(in oklab, var(--bunker-green) 94%, var(--radar-phosphor));
@@ -219,14 +220,14 @@
 }
 
 .briefing-header {
-  background: var(--background);
+  background: var(--charcoal-steel);
   background-image: var(--bunker-grain);
   border-top: 3px solid var(--report-rule);
   box-shadow: var(--bunker-edge-shadow);
 }
 
 .briefing-console {
-  background: var(--card);
+  background: var(--charcoal-steel);
   background-image: var(--bunker-grain);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--bunker-edge-shadow);
