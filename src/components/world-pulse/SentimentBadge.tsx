@@ -21,7 +21,7 @@ export function SentimentDot({ score, className }: { score: number; className?: 
 export function SentimentBadge({ score, showScore = false }: { score: number; showScore?: boolean }) {
   const sentiment = getSentiment(score);
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider", sentimentStyles[sentiment])}>
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-system text-[9px] uppercase tracking-wider", sentimentStyles[sentiment])}>
       <SentimentDot score={score} />
       {sentiment}{showScore ? ` ${score > 0 ? "+" : ""}${score.toFixed(2)}` : ""}
     </span>

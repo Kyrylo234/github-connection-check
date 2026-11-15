@@ -15,13 +15,13 @@ interface LocationPanelProps {
 
 export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
   return (
-    <aside className="glass-panel flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-sm border-t-2 border-t-signal bg-popover" aria-label="Location intelligence panel">
+    <aside className="glass-panel flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-sm border-t-2 border-t-signal bg-popover" aria-label="The Briefing">
       <div className="flex items-center justify-between border-b px-4 py-4">
         <div className="flex items-center gap-2.5">
           <Layers3 className="size-4 text-signal" aria-hidden="true" />
-          <h2 className="font-display text-lg font-medium uppercase">Location intelligence</h2>
+          <h2 className="font-display text-lg font-bold uppercase">The Briefing</h2>
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose} className="size-7 rounded-sm text-muted-foreground" aria-label="Close location panel">
+        <Button variant="ghost" size="icon" onClick={onClose} className="size-7 rounded-sm text-muted-foreground" aria-label="Close briefing">
           <X className="size-4" />
         </Button>
       </div>
@@ -30,17 +30,17 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
         <div className="animate-fade-up p-4" key={selectedEvent.id}>
           <div className="flex flex-wrap items-center gap-2">
             <SentimentBadge score={selectedEvent.sentiment} />
-            <span className="rounded-full border bg-background/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-muted-foreground">{selectedEvent.category}</span>
-            <span className="ml-auto font-mono text-[8px] tracking-[0.14em] text-signal">DEMO DATA</span>
+            <span className="rounded-full border bg-background/30 px-2 py-0.5 font-system text-[9px] uppercase tracking-wider text-muted-foreground">{selectedEvent.category}</span>
+            <span className="ml-auto font-system text-[8px] tracking-[0.14em] text-signal">DEMO DATA</span>
           </div>
-          <h3 className="mt-4 font-display text-[17px] font-semibold leading-7 text-balance">
+          <h3 className="mt-4 font-mono text-[15px] font-medium leading-7 text-balance">
             {getPrimaryArticle(selectedEvent).title}
           </h3>
           <div className="mt-4 flex items-start gap-2 text-xs leading-5 text-muted-foreground">
             <MapPin className="mt-0.5 size-3.5 shrink-0 text-signal" aria-hidden="true" />
             <div>
               <p className="text-foreground/85">{selectedEvent.location.name}, {selectedEvent.location.country}</p>
-              <p className="mt-0.5 font-mono text-[9px] uppercase tracking-wider">
+              <p className="mt-0.5 font-system text-[9px] uppercase tracking-wider">
                 {Math.abs(selectedEvent.location.latitude).toFixed(2)}°{selectedEvent.location.latitude >= 0 ? "N" : "S"} · {Math.abs(selectedEvent.location.longitude).toFixed(2)}°{selectedEvent.location.longitude >= 0 ? "E" : "W"}
               </p>
             </div>
@@ -48,30 +48,30 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
 
           <div className="mt-5 grid grid-cols-2 divide-x border-y py-3">
             <div className="px-3">
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Sentiment</p>
-              <p className="mt-1.5 font-display text-lg font-semibold">{formatSentiment(selectedEvent.sentiment)}</p>
+              <p className="font-system text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Sentiment</p>
+              <p className="mt-1.5 font-system text-lg font-normal">{formatSentiment(selectedEvent.sentiment)}</p>
               <p className="mt-0.5 text-[9px] text-muted-foreground">−1 to +1</p>
             </div>
             <div className="px-3">
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Severity</p>
-              <p className="mt-1.5 font-display text-lg font-semibold">{Math.round(selectedEvent.severity * 100)}<span className="text-xs text-muted-foreground">%</span></p>
+              <p className="font-system text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Severity</p>
+              <p className="mt-1.5 font-system text-lg font-normal">{Math.round(selectedEvent.severity * 100)}<span className="text-xs text-muted-foreground">%</span></p>
               <Progress value={selectedEvent.severity * 100} className="mt-2 h-0.5 bg-secondary" />
             </div>
           </div>
 
           <div className="mt-5 flex items-center justify-between border-t pt-4">
-            <h4 className="flex items-center gap-2 text-xs font-semibold"><FileText className="size-3.5 text-signal" /> Related articles</h4>
-            <span className="font-mono text-[9px] text-muted-foreground">{selectedEvent.articleCount} total</span>
+            <h4 className="flex items-center gap-2 font-display text-base font-bold"><FileText className="size-3.5 text-signal" /> Related articles</h4>
+            <span className="font-system text-[9px] text-muted-foreground">{selectedEvent.articleCount} total</span>
           </div>
           <div className="mt-3 space-y-2.5">
             {selectedEvent.articles.map((article) => (
               <article key={article.id} className="rounded-sm border bg-background/30 p-3">
-                <div className="flex items-center justify-between gap-3 font-mono text-[8px] uppercase tracking-wider text-muted-foreground">
-                  <span>{article.source}</span>
+                <div className="flex items-center justify-between gap-3 font-system text-[8px] uppercase tracking-wider text-muted-foreground">
+                  <span className="font-mono">{article.source}</span>
                   <span className="shrink-0">{formatDemoTime(article.publishedAt)}</span>
                 </div>
                 <h5 className="mt-2 text-[11px] font-medium leading-5 text-foreground/85">{article.title}</h5>
-                <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.12em] text-signal/80">Fictional demo article</p>
+                <p className="mt-2 font-system text-[8px] uppercase tracking-[0.12em] text-signal/80">Fictional demo article</p>
               </article>
             ))}
           </div>

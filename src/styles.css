@@ -30,9 +30,10 @@
  */
 
 @theme inline {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Oswald", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-system: "Share Tech Mono", ui-monospace, monospace;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --animate-fade-up: fade-up 0.55s var(--ease-out-soft) both;
   --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
@@ -330,6 +331,11 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "ss02", "cv11";
+  }
+
+  h1, h2, h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
   }
 
   button, a, input, select {

@@ -78,10 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "World Pulse" },
+      { title: "SitRep" },
       { name: "description", content: "See the world's mood. Test how you'd respond." },
-      { name: "author", content: "World Pulse" },
-      { property: "og:title", content: "World Pulse" },
+      { name: "author", content: "SitRep" },
+      { property: "og:title", content: "SitRep" },
       { property: "og:description", content: "See the world's mood. Test how you'd respond." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -91,7 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@400;500;600&family=Share+Tech+Mono&display=swap",
       },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },

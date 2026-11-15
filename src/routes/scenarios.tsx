@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/scenarios")({
   head: () => ({
     meta: [
-      { title: "Scenario Lab — World Pulse" },
-      { name: "description", content: "Scenario Lab is the next World Pulse feature: branching crisis simulations and illustrative response reports." },
-      { property: "og:title", content: "Scenario Lab — World Pulse" },
-      { property: "og:description", content: "A forthcoming branching crisis simulation from World Pulse." },
+      { title: "Scenario Lab — SitRep" },
+      { name: "description", content: "Scenario Lab is the next SitRep feature: branching crisis simulations and illustrative response reports." },
+      { property: "og:title", content: "Scenario Lab — SitRep" },
+      { property: "og:description", content: "A forthcoming branching crisis simulation from SitRep." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -28,8 +28,8 @@ function ScenarioLab() {
         <div className="mx-auto flex size-16 items-center justify-center rounded-sm border border-signal/25 bg-signal/8">
           <FlaskConical className="size-7 text-signal" aria-hidden="true" />
         </div>
-        <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.22em] text-signal">World Pulse · Coming next</p>
-        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">Scenario Lab</h1>
+        <p className="mt-6 font-system text-[9px] uppercase tracking-[0.22em] text-signal">SitRep · Coming next</p>
+        <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">Scenario Lab</h1>
         <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-muted-foreground">
           A branching crisis simulation where you can test how you would respond. This homepage build includes the destination only; scenarios are not available yet.
         </p>

@@ -58,7 +58,7 @@ export function GlobeLoading() {
         <Globe2 className="size-10 text-signal" aria-hidden="true" />
       </div>
       <div>
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-signal">Initialising orbit view</p>
+        <p className="font-system text-[10px] uppercase tracking-[0.22em] text-signal">Initialising orbit view</p>
         <p className="mt-2 text-sm text-muted-foreground">Preparing the demo globe…</p>
       </div>
     </div>
@@ -148,7 +148,7 @@ export default function WorldGlobe({
       <div className="flex h-full min-h-[420px] items-center justify-center p-8">
         <div className="max-w-md text-center">
           <Globe2 className="mx-auto size-12 text-muted-foreground" aria-hidden="true" />
-          <h2 className="mt-5 font-display text-xl font-semibold">3D view unavailable</h2>
+          <h2 className="mt-5 font-display text-xl font-bold">3D view unavailable</h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
             Your browser couldn’t start WebGL. Try a WebGL-capable browser or enable hardware
             acceleration to explore the demo globe and its event details.
@@ -190,7 +190,7 @@ export default function WorldGlobe({
             return createElement(
               "div",
               { className: "max-w-64 rounded-lg border bg-popover p-3 text-popover-foreground shadow-xl" },
-              createElement("p", { className: "font-mono text-[9px] uppercase tracking-widest text-signal" }, `Demo data · ${event.category}`),
+              createElement("p", { className: "font-system text-[9px] uppercase tracking-widest text-signal" }, `Demo data · ${event.category}`),
               createElement("p", { className: "mt-2 text-xs font-semibold leading-5" }, getPrimaryArticle(event).title),
               createElement("p", { className: "mt-2 text-[11px] text-muted-foreground" }, `${event.location.name} · ${event.articleCount} article${event.articleCount === 1 ? "" : "s"}`),
             );
@@ -224,7 +224,7 @@ export default function WorldGlobe({
           onGlobeReady={() => setGlobeReady(true)}
         />
       )}
-      <div className="pointer-events-none absolute bottom-7 left-1/2 flex max-w-[calc(100%-48px)] -translate-x-1/2 items-center gap-2 rounded-sm border bg-background/90 px-3 py-2 text-center font-mono text-[9px] uppercase text-muted-foreground">
+      <div className="pointer-events-none absolute bottom-7 left-1/2 flex max-w-[calc(100%-48px)] -translate-x-1/2 items-center gap-2 rounded-sm border bg-background/90 px-3 py-2 text-center font-system text-[9px] uppercase text-muted-foreground">
         <MousePointer2 className="size-3 text-signal" aria-hidden="true" />
         Drag to orbit · Scroll to zoom · Select a signal
       </div>

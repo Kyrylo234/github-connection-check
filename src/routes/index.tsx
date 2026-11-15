@@ -32,15 +32,15 @@ const WorldGlobe = lazy(() => import("@/components/world-pulse/WorldGlobe"));
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "World Pulse — Global Situation Room" },
+      { title: "SitRep — Global Situation Room" },
       {
         name: "description",
-        content: "Explore a demo 3D globe of global news sentiment, regional events and an experimental World Tension Index.",
+        content: "Explore SitRep’s demo 3D globe of global news sentiment, regional events and an experimental World Tension Index.",
       },
-      { property: "og:title", content: "World Pulse — Global Situation Room" },
+      { property: "og:title", content: "SitRep — Global Situation Room" },
       {
         property: "og:description",
-        content: "An interactive demo globe of geographically located news sentiment and crisis signals.",
+        content: "SitRep’s interactive demo globe of geographically located news sentiment and crisis signals.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -56,7 +56,7 @@ function GlobeFallback() {
         <div className="absolute inset-2 animate-pulse-soft rounded-full border border-signal/20" />
         <Globe2 className="size-9 text-signal" aria-hidden="true" />
       </div>
-      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-signal">Initialising orbit view</p>
+      <p className="font-system text-[9px] uppercase tracking-[0.2em] text-signal">Initialising orbit view</p>
     </div>
   );
 }
@@ -84,13 +84,13 @@ function Index() {
     <div className="briefing-dashboard flex flex-col bg-background text-foreground">
       <header className="briefing-header relative z-40 shrink-0 border-b">
         <div className="mx-auto flex h-[74px] w-full max-w-[1920px] items-center gap-2 px-4 sm:gap-5 sm:px-5">
-          <Link to="/" className="group flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="World Pulse home">
+          <Link to="/" className="group flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="SitRep home">
             <span className="relative hidden size-9 items-center justify-center rounded-sm border border-signal/40 bg-signal/8 sm:flex">
               <Globe2 className="size-5 text-signal transition-transform duration-200 group-hover:rotate-12" aria-hidden="true" />
               <span className="absolute right-1.5 top-1.5 size-1 rounded-full bg-sentiment-positive" />
             </span>
             <span>
-              <span className="block font-display text-lg font-medium uppercase leading-none sm:text-2xl">World Pulse</span>
+              <span className="block font-display text-2xl font-bold leading-none sm:text-3xl">SitRep</span>
             </span>
           </Link>
 
@@ -109,7 +109,7 @@ function Index() {
           <div className="ml-auto flex items-center gap-4">
             <div className="hidden items-center gap-2 rounded-sm border border-signal/30 bg-secondary/30 px-3 py-1.5 lg:flex">
               <span className="size-1.5 animate-pulse-soft rounded-full bg-sentiment-positive" />
-              <span className="font-mono text-[9px] uppercase text-signal">Demo data</span>
+              <span className="font-system text-[9px] uppercase text-signal">Demo data</span>
             </div>
             <div className="hidden h-8 w-px bg-border sm:block" />
             <TensionIndex reading={tension} eventCount={filteredEvents.length} />
@@ -132,7 +132,7 @@ function Index() {
 
           <div className="flex flex-wrap items-center gap-2">
             <Select value={sentiment} onValueChange={(value) => { setSentiment(value as SentimentFilter); setSelectedEventId(null); }}>
-              <SelectTrigger aria-label="Filter by sentiment" className="h-8 w-[142px] border-border bg-background/40 font-mono text-[10px] shadow-none">
+              <SelectTrigger aria-label="Filter by sentiment" className="h-8 w-[142px] border-border bg-background/40 font-system text-[10px] shadow-none">
                 <SelectValue placeholder="Sentiment" />
               </SelectTrigger>
               <SelectContent>
@@ -144,7 +144,7 @@ function Index() {
             </Select>
 
             <Select value={timeRange} onValueChange={(value) => { setTimeRange(value as TimeRange); setSelectedEventId(null); }}>
-              <SelectTrigger aria-label="Filter by time range" className="h-8 w-[132px] border-border bg-background/40 font-mono text-[10px] shadow-none">
+              <SelectTrigger aria-label="Filter by time range" className="h-8 w-[132px] border-border bg-background/40 font-system text-[10px] shadow-none">
                 <SelectValue placeholder="Time range" />
               </SelectTrigger>
               <SelectContent>
@@ -156,11 +156,11 @@ function Index() {
             </Select>
 
             <div className="mx-1 hidden h-5 w-px bg-border sm:block" />
-            <Button variant="outline" size="sm" onClick={() => setAutoRotate((value) => !value)} className="h-8 border-border bg-background/40 px-3 font-mono text-[9px] uppercase tracking-wider shadow-none" aria-pressed={!autoRotate}>
+            <Button variant="outline" size="sm" onClick={() => setAutoRotate((value) => !value)} className="h-8 border-border bg-background/40 px-3 font-system text-[9px] uppercase tracking-wider shadow-none" aria-pressed={!autoRotate}>
               {autoRotate ? <Pause className="size-3" /> : <Play className="size-3" />}
               {autoRotate ? "Pause rotation" : "Resume rotation"}
             </Button>
-            <Button variant="outline" size="sm" onClick={resetView} className="h-8 border-border bg-background/40 px-3 font-mono text-[9px] uppercase tracking-wider shadow-none">
+            <Button variant="outline" size="sm" onClick={resetView} className="h-8 border-border bg-background/40 px-3 font-system text-[9px] uppercase tracking-wider shadow-none">
               <RotateCcw className="size-3" /> Reset view
             </Button>
           </div>
@@ -170,10 +170,10 @@ function Index() {
             <img src={briefingRoom} alt="" width={1920} height={1088} className="briefing-room-image" />
             <div className="briefing-room-shade pointer-events-none absolute inset-0" />
             <div className="pointer-events-none absolute right-7 top-7 z-20 rounded-sm border bg-background/80 p-3">
-              <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.15em] text-muted-foreground">Sentiment</p>
+              <p className="mb-2 font-system text-[8px] uppercase tracking-[0.15em] text-muted-foreground">Sentiment</p>
               <div className="space-y-1.5">
                 {(["positive", "neutral", "negative"] as const).map((item) => (
-                  <div key={item} className="flex items-center gap-2 font-mono text-[8px] uppercase tracking-wider text-muted-foreground">
+                  <div key={item} className="flex items-center gap-2 font-system text-[8px] uppercase tracking-wider text-muted-foreground">
                     <SentimentDot score={item === "positive" ? 0.5 : item === "negative" ? -0.5 : 0} /> {item}
                   </div>
                 ))}
@@ -186,7 +186,7 @@ function Index() {
                 </Suspense>
               </ClientOnly>
             </div>
-            <div className="pointer-events-none absolute bottom-7 left-7 z-20 hidden font-mono text-[8px] uppercase text-muted-foreground lg:block">
+            <div className="pointer-events-none absolute bottom-7 left-7 z-20 hidden font-system text-[8px] uppercase text-muted-foreground lg:block">
               Demo snapshot · {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(DEMO_SNAPSHOT_AT))} UTC
             </div>
             {selectedEvent && (

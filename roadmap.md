@@ -1,4 +1,4 @@
-# World Pulse homepage
+# SitRep homepage
 
 - [x] Add typed demo news fixtures and transparent filtering/tension calculations
 - [x] Build the interactive globe, hotspots and WebGL fallback
@@ -15,3 +15,9 @@
 
 - [x] Restyle the room, typography, controls and event panel without changing news or tension rules
 - [x] Verify the globe, event selection, filters and mobile layout
+
+## SitRep name and typography
+
+- [x] Rename the app and apply the requested three font roles
+- [x] Verify fonts, event reading, navigation and phone layout
+- [x] Rename the event panel to The Briefing, retaining the Cold War styling

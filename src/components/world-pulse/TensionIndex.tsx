@@ -34,16 +34,16 @@ export function TensionIndex({ reading, eventCount }: TensionIndexProps) {
                   </span>
                 </span>
                 <span className="block text-left">
-                  <span className="hidden font-mono text-[9px] uppercase leading-4 text-muted-foreground sm:block">World Tension</span>
+                  <span className="hidden font-system text-[9px] uppercase leading-4 text-muted-foreground sm:block">World Tension</span>
                   <span className="flex items-baseline gap-1">
-                    <span className="font-display text-2xl font-semibold leading-none tabular-nums" aria-label={`Tension score ${reading.score} out of 100`}>{reading.score}</span>
-                    <span className="font-mono text-[9px] font-normal text-muted-foreground">/100</span>
+                    <span className="font-system text-2xl font-normal leading-none tabular-nums" aria-label={`Tension score ${reading.score} out of 100`}>{reading.score}</span>
+                    <span className="font-system text-[9px] font-normal text-muted-foreground">/100</span>
                   </span>
                 </span>
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-80 rounded-xl p-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-signal">Transparent calculation</p>
+              <p className="font-system text-[10px] uppercase tracking-[0.16em] text-signal">Transparent calculation</p>
               <p className="mt-3 text-xs leading-5 text-muted-foreground">
                 For each selected event, negative sentiment magnitude is multiplied by severity and article-cluster weight.
               </p>

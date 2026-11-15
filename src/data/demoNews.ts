@@ -57,7 +57,7 @@ const seeds: DemoEventSeed[] = [
     id: "demo-01", city: "Bab el-Mandeb", country: "Red Sea", latitude: 12.6, longitude: 43.3,
     category: "Conflict", sentiment: -0.82, severity: 0.88, hoursAgo: 2,
     reports: [
-      { title: "Demo shipping operators review Red Sea routes after security warning", source: "World Pulse Demo Wire" },
+      { title: "Demo shipping operators review Red Sea routes after security warning", source: "SitRep Demo Wire" },
       { title: "Sample insurers model longer diversions around Bab el-Mandeb", source: "Demo Maritime Desk" },
       { title: "Fictional regional patrols announce a new coordination protocol", source: "Sample Security Monitor" },
     ],
@@ -66,7 +66,7 @@ const seeds: DemoEventSeed[] = [
     id: "demo-02", city: "Kyiv", country: "Ukraine", latitude: 50.45, longitude: 30.52,
     category: "Conflict", sentiment: -0.76, severity: 0.84, hoursAgo: 4,
     reports: [
-      { title: "Demo authorities report overnight drone interceptions over Kyiv", source: "World Pulse Demo Wire" },
+      { title: "Demo authorities report overnight drone interceptions over Kyiv", source: "SitRep Demo Wire" },
       { title: "Sample engineers assess damage to a fictional power substation", source: "Demo Infrastructure Desk" },
       { title: "Fictional city services outline repairs and emergency timetables", source: "Sample City Bulletin" },
       { title: "Demo analysts map the overnight incident timeline", source: "Demo Analysis Bureau" },
@@ -77,7 +77,7 @@ const seeds: DemoEventSeed[] = [
     category: "Society", sentiment: -0.71, severity: 0.9, hoursAgo: 7,
     reports: [
       { title: "Demo relief teams request more capacity at Port Sudan shelters", source: "Demo Humanitarian Desk" },
-      { title: "Sample agencies coordinate water deliveries for displaced families", source: "World Pulse Demo Wire" },
+      { title: "Sample agencies coordinate water deliveries for displaced families", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -85,7 +85,7 @@ const seeds: DemoEventSeed[] = [
     category: "Diplomacy", sentiment: 0.24, severity: 0.72, hoursAgo: 10,
     reports: [
       { title: "Demo monitors describe a larger aid convoy crossing at Rafah", source: "Demo Humanitarian Desk" },
-      { title: "Sample mediators publish a fictional delivery verification plan", source: "World Pulse Demo Wire" },
+      { title: "Sample mediators publish a fictional delivery verification plan", source: "SitRep Demo Wire" },
       { title: "Demo logistics teams prepare additional medical shipments", source: "Sample Relief Bulletin" },
     ],
   },
@@ -94,7 +94,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.66, severity: 0.76, hoursAgo: 15,
     reports: [
       { title: "Demo heat advisory prompts Karachi to extend cooling-centre hours", source: "Demo Climate Desk" },
-      { title: "Sample hospitals rehearse a fictional surge-response plan", source: "World Pulse Demo Wire" },
+      { title: "Sample hospitals rehearse a fictional surge-response plan", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -102,7 +102,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.59, severity: 0.68, hoursAgo: 20,
     reports: [
       { title: "Demo flood sensors trigger neighbourhood alerts across Jakarta", source: "Demo Climate Desk" },
-      { title: "Sample response crews clear priority drainage channels", source: "World Pulse Demo Wire" },
+      { title: "Sample response crews clear priority drainage channels", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -117,7 +117,7 @@ const seeds: DemoEventSeed[] = [
     category: "Economy", sentiment: 0.46, severity: 0.28, hoursAgo: 31,
     reports: [
       { title: "Demo chipmakers announce a fictional recycling partnership in Seoul", source: "Demo Markets Desk" },
-      { title: "Sample suppliers forecast lower manufacturing waste", source: "World Pulse Demo Wire" },
+      { title: "Sample suppliers forecast lower manufacturing waste", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -132,7 +132,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.48, severity: 0.61, hoursAgo: 44,
     reports: [
       { title: "Demo monsoon forecast puts Mumbai transport teams on alert", source: "Demo Climate Desk" },
-      { title: "Sample commuters advised to expect fictional rail delays", source: "World Pulse Demo Wire" },
+      { title: "Sample commuters advised to expect fictional rail delays", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -147,7 +147,7 @@ const seeds: DemoEventSeed[] = [
     category: "Technology", sentiment: 0.42, severity: 0.24, hoursAgo: 57,
     reports: [
       { title: "Demo battery researchers publish a longer-life recycling process", source: "Demo Technology Desk" },
-      { title: "Sample manufacturers agree to test the fictional process at scale", source: "World Pulse Demo Wire" },
+      { title: "Sample manufacturers agree to test the fictional process at scale", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -155,14 +155,14 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: 0.61, severity: 0.25, hoursAgo: 65,
     reports: [
       { title: "Demo renewable microgrid begins a year-long trial near Sydney", source: "Demo Climate Desk" },
-      { title: "Sample households join a fictional shared-storage programme", source: "World Pulse Demo Wire" },
+      { title: "Sample households join a fictional shared-storage programme", source: "SitRep Demo Wire" },
     ],
   },
   {
     id: "demo-14", city: "Wellington", country: "New Zealand", latitude: -41.29, longitude: 174.78,
     category: "Society", sentiment: 0.12, severity: 0.36, hoursAgo: 72,
     reports: [
-      { title: "Demo earthquake exercise tests Wellington emergency communications", source: "World Pulse Demo Wire" },
+      { title: "Demo earthquake exercise tests Wellington emergency communications", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -170,7 +170,7 @@ const seeds: DemoEventSeed[] = [
     category: "Diplomacy", sentiment: 0.55, severity: 0.44, hoursAgo: 80,
     reports: [
       { title: "Demo regional delegates agree a fictional water-sharing framework in Nairobi", source: "Demo Diplomacy Desk" },
-      { title: "Sample technical teams schedule cross-border monitoring", source: "World Pulse Demo Wire" },
+      { title: "Sample technical teams schedule cross-border monitoring", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -192,14 +192,14 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.62, severity: 0.7, hoursAgo: 116,
     reports: [
       { title: "Demo reservoir outlook triggers water-saving measures in Cape Town", source: "Demo Climate Desk" },
-      { title: "Sample utilities publish fictional neighbourhood usage targets", source: "World Pulse Demo Wire" },
+      { title: "Sample utilities publish fictional neighbourhood usage targets", source: "SitRep Demo Wire" },
     ],
   },
   {
     id: "demo-19", city: "Cairo", country: "Egypt", latitude: 30.04, longitude: 31.24,
     category: "Technology", sentiment: -0.06, severity: 0.33, hoursAgo: 129,
     reports: [
-      { title: "Demo grid operators begin scheduled maintenance across Cairo", source: "World Pulse Demo Wire" },
+      { title: "Demo grid operators begin scheduled maintenance across Cairo", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -207,7 +207,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: 0.52, severity: 0.27, hoursAgo: 142,
     reports: [
       { title: "Demo solar desalination pilot starts operations near Casablanca", source: "Demo Climate Desk" },
-      { title: "Sample engineers publish the fictional plant's first output targets", source: "World Pulse Demo Wire" },
+      { title: "Sample engineers publish the fictional plant's first output targets", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -215,7 +215,7 @@ const seeds: DemoEventSeed[] = [
     category: "Economy", sentiment: 0.04, severity: 0.35, hoursAgo: 156,
     reports: [
       { title: "Demo central-bank scenario leaves London markets little changed", source: "Demo Markets Desk" },
-      { title: "Sample analysts describe a wait-and-see fictional outlook", source: "World Pulse Demo Wire" },
+      { title: "Sample analysts describe a wait-and-see fictional outlook", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -251,7 +251,7 @@ const seeds: DemoEventSeed[] = [
     category: "Diplomacy", sentiment: 0.18, severity: 0.49, hoursAgo: 239,
     reports: [
       { title: "Demo negotiators resume fictional grain-corridor talks in Istanbul", source: "Demo Diplomacy Desk" },
-      { title: "Sample delegates agree a technical agenda for the next round", source: "World Pulse Demo Wire" },
+      { title: "Sample delegates agree a technical agenda for the next round", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -259,7 +259,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.45, severity: 0.56, hoursAgo: 258,
     reports: [
       { title: "Demo researchers warn of faster forest loss in a fictional monitoring zone", source: "Demo Climate Desk" },
-      { title: "Sample São Paulo investors review deforestation safeguards", source: "World Pulse Demo Wire" },
+      { title: "Sample São Paulo investors review deforestation safeguards", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -281,7 +281,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.57, severity: 0.64, hoursAgo: 321,
     reports: [
       { title: "Demo water authority expands leak repairs across Mexico City", source: "Demo Climate Desk" },
-      { title: "Sample neighbourhood tanks receive fictional priority deliveries", source: "World Pulse Demo Wire" },
+      { title: "Sample neighbourhood tanks receive fictional priority deliveries", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -289,7 +289,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.51, severity: 0.66, hoursAgo: 344,
     reports: [
       { title: "Demo coastal storm scenario closes parts of New York harbour", source: "Demo Climate Desk" },
-      { title: "Sample transit crews prepare fictional flood barriers", source: "World Pulse Demo Wire" },
+      { title: "Sample transit crews prepare fictional flood barriers", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -297,7 +297,7 @@ const seeds: DemoEventSeed[] = [
     category: "Technology", sentiment: 0.44, severity: 0.26, hoursAgo: 368,
     reports: [
       { title: "Demo AI labs publish a shared fictional model-evaluation benchmark", source: "Demo Technology Desk" },
-      { title: "Sample universities join an open safety review in San Francisco", source: "World Pulse Demo Wire" },
+      { title: "Sample universities join an open safety review in San Francisco", source: "SitRep Demo Wire" },
     ],
   },
   {
@@ -312,7 +312,7 @@ const seeds: DemoEventSeed[] = [
     category: "Climate", sentiment: -0.69, severity: 0.73, hoursAgo: 419,
     reports: [
       { title: "Demo wildfire smoke forecast prompts health warnings around Vancouver", source: "Demo Climate Desk" },
-      { title: "Sample fire crews reposition fictional aircraft and equipment", source: "World Pulse Demo Wire" },
+      { title: "Sample fire crews reposition fictional aircraft and equipment", source: "SitRep Demo Wire" },
     ],
   },
   {
