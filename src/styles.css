@@ -236,7 +236,7 @@ aside[aria-label="The Briefing"] {
   --report-paper: var(--document-ivory);
   --foreground: var(--bunker-green);
   --background: var(--document-ivory);
-  --muted-foreground: color-mix(in oklab, var(--bunker-green) 75%, var(--document-ivory));
+  --muted-foreground: color-mix(in oklab, var(--bunker-green) 90%, var(--document-ivory));
   --signal: var(--bunker-green);
   --secondary: color-mix(in oklab, var(--bunker-green) 15%, var(--document-ivory));
   --accent: var(--secondary);

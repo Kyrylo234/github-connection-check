@@ -38,11 +38,11 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
           <section aria-label="Situation">
           <div className="flex items-center justify-between gap-2">
             <h4 className="font-display text-base font-bold uppercase text-signal">Situation</h4>
-            <span className="font-system text-[8px] text-muted-foreground">DEMO DATA</span>
+            <span className="font-system text-[10px] font-semibold text-muted-foreground">DEMO DATA</span>
           </div>
           <h3 className="mt-3 font-mono text-[15px] font-medium leading-7 text-balance">
             {getPrimaryArticle(selectedEvent).title}
-            <span className="ml-2 font-system text-[10px] font-normal text-muted-foreground">— {selectedEvent.category}</span>
+            <span className="ml-2 font-system text-[11px] font-semibold text-muted-foreground">— {selectedEvent.category}</span>
           </h3>
           </section>
 
@@ -50,14 +50,14 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
           <h4 className="font-display text-base font-bold uppercase text-signal">Assessment</h4>
           <div className="mt-3 grid grid-cols-2">
             <div className="col-span-2 min-w-0 border-b border-report-rule pb-3">
-              <p className="font-system text-[8px] uppercase text-signal/80">Location</p>
-              <p className="mt-2 text-[11px] leading-5 text-foreground/85">{selectedEvent.location.name}, {selectedEvent.location.country}</p>
-              <p className="mt-1 font-system text-[9px] text-muted-foreground">
+              <p className="font-system text-[10px] font-semibold uppercase text-signal">Location</p>
+              <p className="mt-2 text-xs font-medium leading-5 text-foreground">{selectedEvent.location.name}, {selectedEvent.location.country}</p>
+              <p className="mt-1 font-system text-[11px] font-semibold text-muted-foreground">
                 {Math.abs(selectedEvent.location.latitude).toFixed(2)}°{selectedEvent.location.latitude >= 0 ? "N" : "S"} · {Math.abs(selectedEvent.location.longitude).toFixed(2)}°{selectedEvent.location.longitude >= 0 ? "E" : "W"}
               </p>
             </div>
             <div className="min-w-0 border-r border-report-rule py-3 pr-3">
-              <p className="font-system text-[8px] uppercase text-signal/80">Sentiment</p>
+              <p className="font-system text-[10px] font-semibold uppercase text-signal">Sentiment</p>
               <div className="mt-2">
                 <SentimentBadge score={selectedEvent.sentiment} />
               </div>
@@ -71,14 +71,14 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
                 disabled
                 className={`mt-3 [&_[role=slider]]:opacity-100 ${sliderColour}`}
               />
-              <div className="mt-2 flex justify-between font-system text-[9px] text-muted-foreground">
+              <div className="mt-2 flex justify-between font-system text-[11px] font-semibold text-muted-foreground">
                 <span>−1</span>
                 <span>{formatSentiment(selectedEvent.sentiment)}</span>
                 <span>+1</span>
               </div>
             </div>
             <div className="severity-display min-w-0 py-3 pl-3" style={{ "--severity-position": `${selectedEvent.severity * 100}%` } as CSSProperties}>
-              <p className="font-system text-[8px] uppercase text-signal/80">Severity</p>
+              <p className="font-system text-[10px] font-semibold uppercase text-signal">Severity</p>
               <p className="severity-number mt-1.5 font-system text-lg font-normal">{Math.round(selectedEvent.severity * 100)}<span className="text-xs">%</span></p>
               <Progress
                 value={selectedEvent.severity * 100}
@@ -92,21 +92,21 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
           <section className="mt-2 border-t border-report-rule pt-3" aria-label="Source Notes">
           <div className="flex items-center justify-between">
             <h4 className="font-display text-base font-bold uppercase text-signal">Source Notes</h4>
-            <span className="font-system text-[9px] text-muted-foreground">{selectedEvent.articleCount} total</span>
+            <span className="font-system text-[11px] font-semibold text-muted-foreground">{selectedEvent.articleCount} total</span>
           </div>
           <div className="mt-3 divide-y divide-report-rule">
             {selectedEvent.articles.map((article) => (
               <article key={article.id} className="py-3 first:pt-0">
-                <div className="flex items-center justify-between gap-3 font-system text-[8px] uppercase tracking-wider text-muted-foreground">
+                <div className="flex flex-wrap items-center justify-between gap-2 font-system text-[10px] font-semibold uppercase text-muted-foreground">
                   <span className="font-mono">{article.source}</span>
                   <span className="shrink-0">{formatDemoTime(article.publishedAt)}</span>
                 </div>
-                <h5 className="mt-2 text-[11px] font-medium leading-5 text-foreground/85">{article.title}</h5>
-                <p className="mt-2 font-system text-[8px] uppercase tracking-[0.12em] text-signal/80">Fictional demo article</p>
+                <h5 className="mt-2 text-xs font-semibold leading-5 text-foreground">{article.title}</h5>
+                <p className="mt-2 font-system text-[10px] font-semibold uppercase text-signal">Fictional demo article</p>
               </article>
             ))}
           </div>
-          <p className="mt-3 border-t border-report-rule pt-3 text-[9px] leading-4 text-muted-foreground">
+          <p className="mt-3 border-t border-report-rule pt-3 text-[11px] font-medium leading-5 text-muted-foreground">
             Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher.
           </p>
           </section>
