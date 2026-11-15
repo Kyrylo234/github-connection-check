@@ -43,7 +43,7 @@ export function classifiedEvents(articles: NewsArticle[], results: Classificatio
     return [{ id: article.id, location: classified.location, category: article.category ?? "Society",
       occurredAt: article.publishedAt, articles: [article], articleCount: 1, isDemo: false,
       sentiment: classified.sentiment, severity: classified.severity, confidence: classified.confidence,
-      rationale: classified.rationale, analysisMethod: "Local AI" as const }];
+      rationale: classified.rationale, analysisMethod: "Local sentiment" as const }];
   });
 }
 

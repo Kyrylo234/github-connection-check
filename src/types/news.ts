@@ -39,7 +39,7 @@ export interface AnalyzedNewsEvent {
   articles: NewsArticle[];
   articleCount: number;
   isDemo: boolean;
-  analysisMethod?: "Local AI" | "Heuristic fallback";
+  analysisMethod?: "Local sentiment" | "Heuristic fallback";
   confidence?: number;
   rationale?: string;
 }

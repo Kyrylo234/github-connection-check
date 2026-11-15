@@ -100,6 +100,12 @@ export function deduplicateNews(articles: NewsArticle[]): NewsArticle[] {
     .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt)).slice(0, 100);
 }
 
+export function headlineSeverity(title: string): number {
+  if (/\b(attack|war|killed|deaths|missile|flood|earthquake|crisis|outbreak|breach)\b/i.test(title)) return 0.8;
+  if (/\b(peace|ceasefire|agreement|rescued|recovery|aid)\b/i.test(title)) return 0.3;
+  return 0.2;
+}
+
 // Approximate national centres, not capitals or publisher headquarters. Only explicit
 // locative phrases in titles qualify. Multiple possible locations remain unpinned.
 const places: [string, string, number, number][] = [
@@ -128,6 +134,6 @@ export function locateNews(article: NewsArticle): AnalyzedNewsEvent | null {
   const positive = /\b(peace|ceasefire|agreement|rescued|recovery|aid)\b/i.test(article.title);
   const sentiment = negative && !positive ? -0.7 : positive && !negative ? 0.5 : 0;
   return { id: article.id, location: { name: "Approximate national location", country, latitude, longitude },
-    category: article.category ?? "Society", sentiment, severity: negative ? 0.8 : positive ? 0.3 : 0.2,
+    category: article.category ?? "Society", sentiment, severity: headlineSeverity(article.title),
     occurredAt: article.publishedAt, articles: [article], articleCount: 1, isDemo: false };
 }

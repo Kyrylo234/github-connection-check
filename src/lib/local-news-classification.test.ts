@@ -1,26 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { parseLocalClassification } from "./local-news-classification";
+import { sentimentFromPredictions } from "./local-news-classification";
+import { headlineSeverity } from "./publisher-news";
 
-const response = (overrides: Record<string, unknown> = {}) => JSON.stringify({ results: [{
-  articleId: "story-1", eventLocationName: "Japan", countryCode: "JP", sentiment: -0.8,
-  severity: 0.9, confidence: 0.8, rationale: "Reported harm in Japan", ...overrides,
-}] });
-
-describe("browser-local news output", () => {
-  it("accepts a validated location from the gazetteer", () => {
-    expect(parseLocalClassification(response(), "story-1").location).toMatchObject({ country: "Japan", latitude: 36 });
+describe("browser-local sentiment scores", () => {
+  it("maps the three model probabilities to a signed sentiment and confidence", () => {
+    expect(sentimentFromPredictions([
+      { label: "negative", score: 0.8 }, { label: "neutral", score: 0.15 }, { label: "positive", score: 0.05 },
+    ])).toEqual({ sentiment: -0.75, confidence: 0.8 });
+    expect(sentimentFromPredictions([
+      { label: "negative", score: 0.05 }, { label: "neutral", score: 0.1 }, { label: "positive", score: 0.85 },
+    ]).sentiment).toBeCloseTo(0.8);
+    expect(sentimentFromPredictions([
+      { label: "negative", score: 0.05 }, { label: "neutral", score: 0.7 }, { label: "positive", score: 0.25 },
+    ])).toEqual({ sentiment: 0, confidence: 0.7 });
   });
-  it("keeps uncertain or invented places off the map", () => {
-    expect(parseLocalClassification(response({ confidence: 0.5 }), "story-1").location).toBeNull();
-    expect(parseLocalClassification(response({ eventLocationName: "Atlantis" }), "story-1").location).toBeNull();
+  it("rejects missing or invalid probabilities", () => {
+    expect(() => sentimentFromPredictions([{ label: "negative", score: 1 }])).toThrow();
+    expect(() => sentimentFromPredictions([
+      { label: "negative", score: -0.1 }, { label: "neutral", score: 0.5 }, { label: "positive", score: 0.6 },
+    ])).toThrow();
   });
-  it("rejects malformed, mismatched and extra model output", () => {
-    expect(() => parseLocalClassification("No JSON", "story-1")).toThrow();
-    expect(() => parseLocalClassification(response(), "story-2")).toThrow();
-    expect(() => parseLocalClassification(response({ coordinates: [1, 2] }), "story-1")).toThrow();
-    expect(() => parseLocalClassification(response({ severity: -1 }), "story-1")).toThrow();
-  });
-  it("accepts a valid classification after echoed input", () => {
-    expect(parseLocalClassification('{"title":"Earthquake in Japan"}\n' + response(), "story-1").location?.country).toBe("Japan");
+  it("keeps severity grounded in headline terms, regardless of location", () => {
+    expect(headlineSeverity("Earthquake kills residents")).toBe(0.8);
+    expect(headlineSeverity("Peace agreement signed")).toBe(0.3);
+    expect(headlineSeverity("Leaders meet for talks")).toBe(0.2);
   });
 });
