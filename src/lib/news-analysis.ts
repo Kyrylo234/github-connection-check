@@ -69,6 +69,17 @@ export function calculateTensionIndex(events: AnalyzedNewsEvent[]): TensionReadi
   return { score, band, totalArticles, negativeEvents };
 }
 
+/** Global recent-news reading; map filters must not affect this source selection. */
+export function calculateRecentTension(events: AnalyzedNewsEvent[], snapshotAt: string) {
+  const end = Date.parse(snapshotAt);
+  const start = end - TIME_RANGE_HOURS["24h"] * 60 * 60 * 1000;
+  const recentEvents = events.filter((event) => {
+    const timestamp = Date.parse(event.occurredAt);
+    return timestamp >= start && timestamp <= end;
+  });
+  return { reading: calculateTensionIndex(recentEvents), eventCount: recentEvents.length };
+}
+
 export function formatDemoTime(isoDate: string) {
   const elapsedHours = Math.max(
     0,

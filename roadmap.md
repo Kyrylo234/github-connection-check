@@ -31,3 +31,8 @@
 
 - [x] Isolate HTML hotspot presses from deferred globe dismissal
 - [x] Test pointer isolation and verify hotspot opening and click-off dismissal
+
+## Recent global tension
+
+- [x] Separate recent-news tension from map filters and explain its 24-hour demo window
+- [x] Verify severity and other map filters leave the tension reading unchanged

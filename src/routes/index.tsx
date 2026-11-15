@@ -13,7 +13,7 @@ import { LocationPanel } from "@/components/world-pulse/LocationPanel";
 import { SentimentDot } from "@/components/world-pulse/SentimentBadge";
 import { TensionIndex } from "@/components/world-pulse/TensionIndex";
 import { DEMO_SNAPSHOT_AT, demoNewsEvents } from "@/data/demoNews";
-import { calculateTensionIndex, filterNewsEvents } from "@/lib/news-analysis";
+import { calculateRecentTension, filterNewsEvents } from "@/lib/news-analysis";
 import type { SentimentFilter, TimeRange } from "@/types/news";
 
 const WorldGlobe = lazy(() => import("@/components/world-pulse/WorldGlobe"));
@@ -60,7 +60,7 @@ function Index() {
     () => filterNewsEvents(demoNewsEvents, sentiment, timeRange, undefined, minimumSeverity),
     [sentiment, timeRange, minimumSeverity],
   );
-  const tension = useMemo(() => calculateTensionIndex(filteredEvents), [filteredEvents]);
+  const tension = useMemo(() => calculateRecentTension(demoNewsEvents, DEMO_SNAPSHOT_AT), []);
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
 
   const selectEvent = (eventId: string) => setSelectedEventId(eventId);
@@ -92,7 +92,7 @@ function Index() {
 
           <div className="ml-auto flex items-center gap-4">
             <div className="hidden h-8 w-px bg-border sm:block" />
-            <TensionIndex reading={tension} eventCount={filteredEvents.length} />
+            <TensionIndex reading={tension.reading} eventCount={tension.eventCount} />
           </div>
         </div>
       </header>

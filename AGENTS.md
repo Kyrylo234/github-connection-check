@@ -34,7 +34,7 @@ use the editor.
 - Keep `NewsArticle` and `AnalyzedNewsEvent` provider-independent so live news can replace the typed demo fixtures without changing the UI.
 - Keep globe rendering lazy and client-only behind `ClientOnly`; `react-globe.gl` must never enter the SSR import graph.
 - Keep filtering, hotspot intensity and tension calculations in pure TypeScript modules with regression tests, separate from React and Three.js.
-- Keep the collapsible globe filters in a dedicated control component; apply minimum severity inclusively in the shared pure filtering function so the globe and tension reading stay aligned.
+- Keep the collapsible globe filters in a dedicated control component; apply minimum severity inclusively to map events, and calculate global recent tension separately from the unfiltered source with an explicit snapshot time.
 - Crossfade the aligned calm/fiery Earth assets using a tested pure tension-to-intensity function; visual changes must not alter the tension calculation.
 - Keep the briefing-room image as a non-interactive backdrop behind the transparent globe canvas; room styling must not intercept globe interaction.
 - Detect new live hotspots against the unfiltered source snapshot in pure logic; defer camera focus during event reading or pause, and never treat filter changes as arrivals.

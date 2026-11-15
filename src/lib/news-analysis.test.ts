@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { demoNewsEvents } from "@/data/demoNews";
 import {
   calculateTensionIndex,
+  calculateRecentTension,
   filterNewsEvents,
   getHotspotIntensity,
   getSentiment,
@@ -94,6 +95,17 @@ describe("hotspot intensity", () => {
 });
 
 describe("experimental World Tension Index", () => {
+  it("uses only recent news, including the 24-hour boundary and excluding older or future events", () => {
+    const result = calculateRecentTension([
+      event({ occurredAt: "2026-11-15T09:00:00.000Z" }),
+      event({ occurredAt: "2026-11-14T10:00:00.000Z" }),
+      event({ occurredAt: "2026-11-14T09:59:59.000Z", sentiment: -1 }),
+      event({ occurredAt: "2026-11-15T10:00:01.000Z", sentiment: -1 }),
+    ], "2026-11-15T10:00:00.000Z");
+    expect(result.eventCount).toBe(2);
+    expect(result.reading.score).toBe(68);
+  });
+
   it("is zero for an empty selected event set", () => {
     expect(calculateTensionIndex([])).toEqual({
       score: 0,
