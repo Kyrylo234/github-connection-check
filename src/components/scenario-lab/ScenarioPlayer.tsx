@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { ClientOnly, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -163,7 +163,9 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
   const displayNode = session.status === "debrief" && previousNode ? previousNode : node;
   const hasActiveEvent = ["reading", "decision", "debrief", "situation-report"].includes(session.status);
 
-  const mapEvents = useMemo<ScenarioMapEvent[]>(() => {
+  // Derive this small event list without a hook: briefing/restoration/completion
+  // return above, so a hook here would change hook order during transitions.
+  const mapEvents: ScenarioMapEvent[] = (() => {
     const nextEvents: ScenarioMapEvent[] = [];
     const seen = new Set<string>();
     for (const record of session.history) {
@@ -182,7 +184,7 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
       nextEvents.push({ id: displayNode.id, title: displayNode.title, location: displayNode.event.location, severity: displayNode.event.severity, active: true });
     }
     return nextEvents;
-  }, [displayNode, hasActiveEvent, scenario, session.history]);
+  })();
 
   const progress = session.status === "situation-report"
     ? 90
