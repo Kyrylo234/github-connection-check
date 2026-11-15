@@ -19,7 +19,7 @@ import { ScenarioShell } from "@/components/scenario-lab/ScenarioShell";
 import type { ScenarioMapEvent } from "@/components/scenario-lab/ScenarioGlobe";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
+import { SituationReportFields } from "@/components/scenario-lab/SituationReportFields";
 import { useScenarioSession } from "@/hooks/use-scenario-session";
 import {
   MAXIMUM_SITUATION_REPORT_CHARACTERS,
@@ -27,6 +27,7 @@ import {
   SCENARIO_EVENT_DELAY_MS,
 } from "@/lib/scenario-session";
 import type { Scenario, ScenarioNode } from "@/types/scenario";
+import { reportBody } from "@/lib/situation-report-draft";
 
 const ScenarioGlobe = lazy(() => import("@/components/scenario-lab/ScenarioGlobe"));
 
@@ -189,8 +190,9 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
   const progress = session.status === "situation-report"
     ? 90
     : Math.round(((session.history.length + (hasActiveEvent ? 0.35 : 0)) / scenario.decisionCount) * 80);
-  const reportLength = session.situationReport.trim().length;
-  const wordCount = session.situationReport.trim() ? session.situationReport.trim().split(/\s+/).length : 0;
+  const writtenBody = reportBody(session.situationReport).trim();
+  const reportLength = writtenBody.length;
+  const wordCount = writtenBody ? writtenBody.split(/\s+/).length : 0;
 
   const submitWrittenReport = () => {
     if (submitReport()) void navigate({ to: "/results/$id", params: { id: scenario.id } });
@@ -322,14 +324,9 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
                   <p className="font-system text-[9px] font-bold uppercase text-muted-foreground">Fixed rubric · No AI</p>
                   <p className="mt-1 text-[10px] font-medium leading-4">Core situation · Priority risk · Decisions and next steps · Stakeholders · Uncertainty · Concise length</p>
                 </div>
-                <label htmlFor="situation-report" className="mt-5 block font-system text-[9px] font-bold uppercase">Your situation report</label>
-                <Textarea
-                  id="situation-report"
+                <SituationReportFields
                   value={session.situationReport}
-                  onChange={(event) => updateReportDraft(event.target.value)}
-                  maxLength={MAXIMUM_SITUATION_REPORT_CHARACTERS}
-                  placeholder="Situation: …\nPriority risk: …\nActions taken: …\nNext steps: …\nUncertainty: …"
-                  className="mt-2 min-h-56 resize-y rounded-none border-report-rule bg-transparent text-xs font-medium leading-6 text-foreground placeholder:text-muted-foreground"
+                  onChange={updateReportDraft}
                 />
                 <div className="mt-2 flex justify-between gap-3 font-system text-[9px] font-semibold text-muted-foreground">
                   <span>{wordCount} words · Target 60–140</span>

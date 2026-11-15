@@ -1,4 +1,5 @@
 import { calculateWeightedScore } from "@/lib/scenario-scoring-core";
+import { reportBody } from "@/lib/situation-report-draft";
 import type { DimensionScores, Scenario } from "@/types/scenario";
 
 export interface SituationReportCriterion {
@@ -36,7 +37,7 @@ function feedback(score: number, success: string, improvement: string): string {
 }
 
 export function assessSituationReport(scenario: Scenario, text: string): SituationReportAssessment {
-  const normalised = text.toLowerCase();
+  const normalised = reportBody(text).toLowerCase();
   const wordCount = normalised.trim() ? normalised.trim().split(/\s+/).length : 0;
   const situation = coverage(normalised, scenario.reportTask.situationTerms);
   const risk = coverage(normalised, scenario.reportTask.riskTerms);

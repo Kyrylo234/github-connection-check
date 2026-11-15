@@ -1,4 +1,5 @@
 import type { Scenario, ScenarioSession } from "@/types/scenario";
+import { reportBody } from "@/lib/situation-report-draft";
 
 export const SCENARIO_EVENT_DELAY_MS = 2400;
 export const MINIMUM_SITUATION_REPORT_CHARACTERS = 300;
@@ -69,7 +70,7 @@ export function submitSituationReport(
   session: ScenarioSession,
   completedAt = new Date().toISOString(),
 ): ScenarioSession | null {
-  const length = session.situationReport.trim().length;
+  const length = reportBody(session.situationReport).trim().length;
   if (
     session.status !== "situation-report" ||
     length < MINIMUM_SITUATION_REPORT_CHARACTERS ||

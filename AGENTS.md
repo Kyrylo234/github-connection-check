@@ -40,3 +40,4 @@ use the editor.
 - Detect new live hotspots against the unfiltered source snapshot in pure logic; defer camera focus during event reading or pause, and never treat filter changes as arrivals.
 - Ignore renderer pointer callbacks originating from HTML hotspots; the renderer defers pointer-up handling and can otherwise undo the hotspot's selection.
 - Keep Scenario Lab definitions, deterministic scoring and session transitions in pure TypeScript with regression tests; store progress only in tab-local browser storage and keep AI, authentication and hiring recommendations out of the exercise.
+- Keep guided report fields serialized into the existing report string with a pure round-trip parser; preserve older free-text drafts and exclude authored section labels from grading.
