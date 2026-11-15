@@ -57,3 +57,11 @@
 - [x] Replace keyword-derived hiring-style scores with deterministic decisions and ranking scores
 - [x] Add optional AI feedback on reasoning, separate from numeric scores
 - [x] Verify scoring rules and AI feedback through the completed exercise
+
+## GNews integration
+
+- [ ] Explain provider source coverage, free-plan limits and cache usage
+- [ ] Add secure GNews fetching with shared 30-minute cache and quota protection
+- [ ] Normalize headlines and test transparent location/scoring heuristics
+- [ ] Add source status, refresh, dates, links and compact news sidebar without changing the globe or exercises
+- [ ] Verify configured news, errors and labelled demo fallback
