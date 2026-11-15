@@ -42,22 +42,19 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
           </div>
           <h3 className="mt-3 font-mono text-[15px] font-medium leading-7 text-balance">
             {getPrimaryArticle(selectedEvent).title}
+            <span className="ml-2 font-system text-[10px] font-normal text-muted-foreground">— {selectedEvent.category}</span>
           </h3>
           </section>
 
           <section className="mt-5 border-t border-report-rule pt-3" aria-label="Assessment">
           <h4 className="font-display text-base font-bold uppercase text-signal">Assessment</h4>
           <div className="mt-3 grid grid-cols-2">
-            <div className="min-w-0 border-b border-r border-report-rule pb-3 pr-3">
+            <div className="col-span-2 min-w-0 border-b border-report-rule pb-3">
               <p className="font-system text-[8px] uppercase text-signal/80">Location</p>
               <p className="mt-2 text-[11px] leading-5 text-foreground/85">{selectedEvent.location.name}, {selectedEvent.location.country}</p>
               <p className="mt-1 font-system text-[9px] text-muted-foreground">
                 {Math.abs(selectedEvent.location.latitude).toFixed(2)}°{selectedEvent.location.latitude >= 0 ? "N" : "S"} · {Math.abs(selectedEvent.location.longitude).toFixed(2)}°{selectedEvent.location.longitude >= 0 ? "E" : "W"}
               </p>
-            </div>
-            <div className="min-w-0 border-b border-report-rule pb-3 pl-3">
-              <p className="font-system text-[8px] uppercase text-signal/80">Category</p>
-              <p className="mt-2 font-system text-xs uppercase text-foreground/85">{selectedEvent.category}</p>
             </div>
             <div className="min-w-0 border-r border-report-rule py-3 pr-3">
               <p className="font-system text-[8px] uppercase text-signal/80">Sentiment</p>
