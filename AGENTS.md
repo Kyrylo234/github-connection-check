@@ -46,3 +46,5 @@ use the editor.
 - Derive the final task's read-only action recap from actual decision history, never from authored defaults; keep it out of the candidate's graded response.
 
 - Keep optional reasoning feedback in a validated public server function using Lovable AI Gateway; treat report text as untrusted evidence, keep keys server-only, and never change scores on AI failure.
+- Fetch only fixed publisher RSS URLs in a public server function; coordinate a shared ten-minute snapshot with a service-role-only atomic database lease so visitors cannot amplify feed requests.
+- Normalize and deduplicate news by canonical URL in pure tested logic; pin only unambiguous explicit locative country phrases in headlines, never publisher metadata, and label national coordinates and keyword scores as approximate.

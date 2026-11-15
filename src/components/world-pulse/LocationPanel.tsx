@@ -9,6 +9,7 @@ import { getPrimaryArticle } from "@/data/demoNews";
 import { formatDemoTime, formatSentiment, getSentiment } from "@/lib/news-analysis";
 import type { AnalyzedNewsEvent } from "@/types/news";
 import { SentimentBadge } from "./SentimentBadge";
+import { newsDate } from "@/lib/publisher-news";
 
 interface LocationPanelProps {
   selectedEvent: AnalyzedNewsEvent;
@@ -38,7 +39,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
           <section aria-label="Situation">
           <div className="flex items-center justify-between gap-2">
             <h4 className="font-display text-base font-bold uppercase text-signal">Situation</h4>
-            <span className="font-system text-[10px] font-semibold text-muted-foreground">DEMO DATA</span>
+            <span className="font-system text-[10px] font-semibold text-muted-foreground">{selectedEvent.isDemo ? "DEMO DATA" : "PUBLISHER NEWS"}</span>
           </div>
           <h3 className="mt-3 font-mono text-[15px] font-medium leading-7 text-balance">
             {getPrimaryArticle(selectedEvent).title}
@@ -99,15 +100,15 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
               <article key={article.id} className="py-3 first:pt-0">
                 <div className="flex flex-wrap items-center justify-between gap-2 font-system text-[10px] font-semibold uppercase text-muted-foreground">
                   <span className="font-mono">{article.source}</span>
-                  <span className="shrink-0">{formatDemoTime(article.publishedAt)}</span>
+                  <span className="shrink-0">{article.isDemo ? formatDemoTime(article.publishedAt) : newsDate(article.publishedAt)}</span>
                 </div>
                 <h5 className="mt-2 text-xs font-semibold leading-5 text-foreground">{article.title}</h5>
-                <p className="mt-2 font-system text-[10px] font-semibold uppercase text-signal">Fictional demo article</p>
+                {article.url ? <a href={article.url} target="_blank" rel="noopener noreferrer" className="mt-2 block text-xs font-semibold text-signal underline">Read original · {article.source}</a> : <p className="mt-2 font-system text-[10px] font-semibold uppercase text-signal">Fictional demo article</p>}
               </article>
             ))}
           </div>
           <p className="mt-3 border-t border-report-rule pt-3 text-[11px] font-medium leading-5 text-muted-foreground">
-            Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher.
+            {selectedEvent.isDemo ? "Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher." : "Location is inferred from an explicit country phrase in the headline and is approximate. Sentiment and severity use transparent keywords, not AI or verified analysis. Publisher origin is never used as event location."}
           </p>
           </section>
         </div>

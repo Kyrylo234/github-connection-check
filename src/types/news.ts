@@ -15,6 +15,8 @@ export type TimeRange = "24h" | "72h" | "7d" | "30d";
 export interface NewsArticle {
   id: string;
   title: string;
+  description?: string;
+  category?: NewsCategory;
   source: string;
   publishedAt: string;
   url?: string;

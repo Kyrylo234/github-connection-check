@@ -62,8 +62,8 @@
 
 - [x] Explain provider source coverage, free-plan limits and cache usage
 - [x] Compare fresher providers; GNews setup paused at the user's request
-- [ ] Select provider and freshness interval — waiting for user decision
-- [ ] Add secure provider fetching with shared cache and quota protection — blocked by provider choice
-- [ ] Normalize headlines and test transparent location/scoring heuristics
-- [ ] Add source status, refresh, dates, links and compact news sidebar without changing the globe or exercises
-- [ ] Verify configured news, errors and labelled demo fallback
+- [x] Select publisher RSS feeds and a ten-minute shared refresh interval
+- [x] Add secure provider fetching with shared cache and refresh coordination
+- [x] Normalize headlines and test transparent location/scoring heuristics
+- [x] Add source status, refresh, dates, links and compact news sidebar without changing the globe or exercises
+- [x] Verify actual publisher news and preserved exercises in the browser; test failures, demo-fallback responses and refresh coordination

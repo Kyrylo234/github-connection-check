@@ -14,13 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      publisher_news_cache: {
+        Row: {
+          id: string
+          last_error: string | null
+          next_refresh_at: string
+          snapshot: Json | null
+        }
+        Insert: {
+          id?: string
+          last_error?: string | null
+          next_refresh_at?: string
+          snapshot?: Json | null
+        }
+        Update: {
+          id?: string
+          last_error?: string | null
+          next_refresh_at?: string
+          snapshot?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_publisher_news_refresh: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

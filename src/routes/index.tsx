@@ -15,21 +15,29 @@ import { TensionIndex } from "@/components/world-pulse/TensionIndex";
 import { DEMO_SNAPSHOT_AT, demoNewsEvents } from "@/data/demoNews";
 import { calculateRecentTension, filterNewsEvents } from "@/lib/news-analysis";
 import type { SentimentFilter, TimeRange } from "@/types/news";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { publisherNewsOptions } from "@/lib/publisher-news.query";
+import { locateNews } from "@/lib/publisher-news";
+import { NewsSidebar } from "@/components/world-pulse/NewsSidebar";
 
 const WorldGlobe = lazy(() => import("@/components/world-pulse/WorldGlobe"));
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publisherNewsOptions),
+  pendingComponent: () => <div className="p-6 text-foreground" role="status">Loading latest available news…</div>,
+  errorComponent: () => <div className="p-6 text-foreground" role="alert">News could not load. Please reload to try again.</div>,
+  notFoundComponent: () => <div className="p-6 text-foreground">SitRep page unavailable.</div>,
   head: () => ({
     meta: [
       { title: "SitRep — Global Situation Room" },
       {
         name: "description",
-        content: "Explore SitRep’s demo 3D globe of global news sentiment, regional events and an experimental World Tension Index.",
+        content: "Explore SitRep’s globe with latest available publisher headlines, transparent location heuristics and an experimental World Tension Index.",
       },
       { property: "og:title", content: "SitRep — Global Situation Room" },
       {
         property: "og:description",
-        content: "SitRep’s interactive demo globe of geographically located news sentiment and crisis signals.",
+        content: "Latest available publisher news on SitRep’s interactive globe, with clearly labelled demo fallback.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -51,16 +59,22 @@ function GlobeFallback() {
 }
 
 function Index() {
+  const { data: response, isFetching, refetch } = useSuspenseQuery(publisherNewsOptions);
+  const sourceEvents = useMemo(() => response.snapshot ? response.snapshot.articles.flatMap(article => {
+    const event = locateNews(article); return event ? [event] : [];
+  }) : demoNewsEvents, [response.snapshot]);
+  const snapshotAt = response.snapshot?.fetchedAt ?? DEMO_SNAPSHOT_AT;
+  const articles = response.snapshot?.articles ?? demoNewsEvents.flatMap(event => event.articles);
   const [sentiment, setSentiment] = useState<SentimentFilter>("all");
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
   const [minimumSeverity, setMinimumSeverity] = useState(0);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const filteredEvents = useMemo(
-    () => filterNewsEvents(demoNewsEvents, sentiment, timeRange, undefined, minimumSeverity),
-    [sentiment, timeRange, minimumSeverity],
+    () => filterNewsEvents(sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity),
+    [sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity],
   );
-  const tension = useMemo(() => calculateRecentTension(demoNewsEvents, DEMO_SNAPSHOT_AT), []);
+  const tension = useMemo(() => calculateRecentTension(sourceEvents, snapshotAt), [sourceEvents, snapshotAt]);
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
 
   const selectEvent = (eventId: string) => setSelectedEventId(eventId);
@@ -103,6 +117,7 @@ function Index() {
           onTimeRangeChange={(value) => { setTimeRange(value); setSelectedEventId(null); }}
           onSeverityChange={(value) => { setMinimumSeverity(value); setSelectedEventId(null); }} />
 
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <section className="briefing-display relative min-h-[540px] flex-1 overflow-hidden" aria-label="Interactive 3D news globe">
             <img src={briefingRoom} alt="" width={1920} height={1088} className="briefing-room-image" />
             <div className="briefing-room-shade pointer-events-none absolute inset-0" />
@@ -119,12 +134,12 @@ function Index() {
             <div className="absolute inset-0 isolate z-0">
               <ClientOnly fallback={<GlobeFallback />}>
                 <Suspense fallback={<GlobeFallback />}>
-                  <WorldGlobe sourceEvents={demoNewsEvents} events={filteredEvents} selectedEventId={selectedEventId} autoRotate={true} resetToken={0} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
+                  <WorldGlobe sourceEvents={sourceEvents} events={filteredEvents} selectedEventId={selectedEventId} autoRotate={true} resetToken={0} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
                 </Suspense>
               </ClientOnly>
             </div>
             <div className="pointer-events-none absolute bottom-7 left-7 z-20 hidden font-system text-[8px] uppercase text-muted-foreground lg:block">
-              Demo snapshot · {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(DEMO_SNAPSHOT_AT))} UTC
+              {response.snapshot ? "Publisher news · Keyword heuristic" : "DEMO snapshot"} · {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC
             </div>
             {selectedEvent && (
               <div className="absolute inset-x-3 bottom-3 top-auto z-30 max-h-[calc(100%-1.5rem)] sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:w-[360px] sm:max-h-none">
@@ -132,6 +147,8 @@ function Index() {
               </div>
             )}
         </section>
+        <NewsSidebar response={response} articles={articles} refreshing={isFetching} refresh={() => { void refetch(); }} select={selectEvent} />
+        </div>
       </main>
     </div>
   );
