@@ -170,7 +170,7 @@ function Index() {
             <div className="pointer-events-none absolute inset-x-8 top-0 z-20 h-px animate-scan bg-signal/30" />
             <div className="pointer-events-none absolute left-4 top-4 z-20">
               <p className="font-mono text-[9px] uppercase tracking-[0.17em] text-signal">Global orbit</p>
-              <p className="mt-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground">{filteredEvents.length} signals · Drag to rotate · Scroll to zoom</p>
+              <p className="mt-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground">{filteredEvents.length} signals</p>
             </div>
             <div className="pointer-events-none absolute right-4 top-4 z-20 rounded-lg border bg-background/55 p-3 backdrop-blur-md">
               <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.15em] text-muted-foreground">Sentiment</p>
