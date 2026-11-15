@@ -80,8 +80,30 @@ export default function WorldGlobe({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null);
   const [globeReady, setGlobeReady] = useState(false);
-  const [palette] = useState<GlobePalette>(() => readPalette());
+  const [palette, setPalette] = useState<GlobePalette>(() => readPalette());
   const focusedHotspot = useHotspotFocus(sourceEvents, events, autoRotate, selectedEventId, resetToken);
+
+  useEffect(() => {
+    const syncPalette = () => {
+      const next = readPalette();
+      setPalette(current =>
+        (Object.keys(next) as (keyof GlobePalette)[]).every(key => current[key] === next[key])
+          ? current : next,
+      );
+    };
+    // CSS updates do not remount the WebGL renderer; refresh its cached channels.
+    const observer = new MutationObserver(syncPalette);
+    observer.observe(document.head, { childList: true, subtree: true, characterData: true, attributes: true });
+    observer.observe(document.documentElement, { attributes: true });
+    document.head.addEventListener("load", syncPalette, true);
+    window.addEventListener("focus", syncPalette);
+    syncPalette();
+    return () => {
+      observer.disconnect();
+      document.head.removeEventListener("load", syncPalette, true);
+      window.removeEventListener("focus", syncPalette);
+    };
+  }, []);
 
   useEffect(() => {
     setWebGLSupported(browserSupportsWebGL());
