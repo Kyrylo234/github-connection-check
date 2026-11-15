@@ -23,7 +23,7 @@ export function GlobeFilters({ sentiment, timeRange, minimumSeverity, onSentimen
 
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="briefing-console relative z-30 shrink-0 px-4 py-2 sm:px-5">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-start">
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm" className="rounded-none font-system text-xs text-signal" aria-label={open ? "Collapse filters" : "Expand filters"} title={open ? "Collapse filters" : "Expand filters"}>
             {open ? <X aria-hidden="true" /> : <SlidersHorizontal aria-hidden="true" />}
