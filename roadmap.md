@@ -21,6 +21,7 @@
 - [x] Rename the app and apply the requested three font roles
 - [x] Verify fonts, event reading, navigation and phone layout
 - [x] Rename the event panel to The Briefing, retaining the Cold War styling
+- [x] Remove the header globe logo while retaining the SitRep name
 
 ## Compact globe filters
 

@@ -109,11 +109,7 @@ function Index() {
     <div className="briefing-dashboard flex flex-col bg-background text-foreground max-lg:h-auto! max-lg:overflow-visible!">
       <header className="briefing-header relative z-40 shrink-0 border-b">
         <div className="mx-auto flex h-[74px] w-full max-w-[1920px] items-center gap-2 px-4 sm:gap-5 sm:px-5">
-          <Link to="/" className="group flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="SitRep home">
-            <span className="relative hidden size-9 items-center justify-center rounded-sm border border-signal/40 bg-signal/8 sm:flex">
-              <Globe2 className="size-5 text-signal transition-transform duration-200 group-hover:rotate-12" aria-hidden="true" />
-              <span className="absolute right-1.5 top-1.5 size-1 rounded-full bg-sentiment-positive" />
-            </span>
+          <Link to="/" className="group flex shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" aria-label="SitRep home">
             <span>
               <span className="block font-display text-2xl font-bold leading-none sm:text-3xl">SitRep</span>
             </span>
