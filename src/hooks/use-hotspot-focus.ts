@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { findNewHotspot, HOTSPOT_FOCUS_HOLD_MS } from "@/lib/hotspot-focus";
 import type { AnalyzedNewsEvent } from "@/types/news";
+import { usePageActive } from "./use-page-active";
 
 export function useHotspotFocus(
   sourceEvents: AnalyzedNewsEvent[],
@@ -13,28 +14,7 @@ export function useHotspotFocus(
   const previousReset = useRef(resetToken);
   const [pending, setPending] = useState<AnalyzedNewsEvent | null>(null);
   const [focused, setFocused] = useState<AnalyzedNewsEvent | null>(null);
-  const [pageActive, setPageActive] = useState(() => document.visibilityState !== "hidden");
-
-  useEffect(() => {
-    let windowFocused = true;
-    const onBlur = () => {
-      windowFocused = false;
-      setPageActive(false);
-    };
-    const onFocus = () => {
-      windowFocused = true;
-      setPageActive(document.visibilityState !== "hidden");
-    };
-    const onVisibilityChange = () => setPageActive(windowFocused && document.visibilityState !== "hidden");
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => {
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("focus", onFocus);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, []);
+  const pageActive = usePageActive();
 
   useEffect(() => {
     const candidate = findNewHotspot(previous.current, sourceEvents);

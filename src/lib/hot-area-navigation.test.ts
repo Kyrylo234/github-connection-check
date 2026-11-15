@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { demoNewsEvents } from "@/data/demoNews";
 import { getHotspotIntensity } from "@/lib/news-analysis";
-import { nextHotArea, rankHotAreas } from "./hot-area-navigation";
+import { nextHotArea, rankHotAreas, rankVeryHotAreas } from "./hot-area-navigation";
 
 const base = demoNewsEvents[0];
 if (!base) throw new Error("Missing fixture");
@@ -22,5 +22,10 @@ describe("hot area navigation", () => {
     expect(nextHotArea(areas, areas[0]!.id)).toBe(areas[1]);
     expect(nextHotArea(areas, areas[1]!.id)).toBe(areas[0]);
     expect(nextHotArea([], null)).toBeNull();
+  });
+
+  it("limits the idle tour to very hot visible areas", () => {
+    const warm = { ...base, id: "warm", sentiment: 0.1, severity: 0.1, articleCount: 1 };
+    expect(rankVeryHotAreas([warm, base]).map((event) => event.id)).toEqual([base.id]);
   });
 });

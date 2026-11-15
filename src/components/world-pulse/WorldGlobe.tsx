@@ -6,8 +6,9 @@ import earthAsset from "@/assets/world-pulse-earth.asset.json";
 import { getPrimaryArticle } from "@/data/demoNews";
 import { getHotspotIntensity, getSentiment } from "@/lib/news-analysis";
 import { useHotspotFocus } from "@/hooks/use-hotspot-focus";
+import { useIdleHotAreaTour } from "@/hooks/use-idle-hot-area-tour";
 import { isHotspotPointerEvent } from "@/lib/globe-interaction";
-import { nextHotArea, rankHotAreas } from "@/lib/hot-area-navigation";
+import { nextHotArea, rankHotAreas, rankVeryHotAreas } from "@/lib/hot-area-navigation";
 import type { AnalyzedNewsEvent, Sentiment } from "@/types/news";
 
 interface WorldGlobeProps {
@@ -84,6 +85,12 @@ export default function WorldGlobe({
   const [palette, setPalette] = useState<GlobePalette>(() => readPalette());
   const focusedHotspot = useHotspotFocus(sourceEvents, events, autoRotate, selectedEventId, resetToken);
   const hotAreas = useMemo(() => rankHotAreas(events), [events]);
+  const veryHotAreas = useMemo(() => rankVeryHotAreas(events), [events]);
+  const { area: touredHotArea } = useIdleHotAreaTour(
+    veryHotAreas,
+    globeReady && autoRotate && !selectedEventId && !focusedHotspot
+      && !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   const navigatingHotAreas = hotAreas.some((event) => event.id === selectedEventId);
 
   const moveToNextHotArea = () => {
@@ -139,14 +146,14 @@ export default function WorldGlobe({
   useEffect(() => {
     if (!globeReady || !globeRef.current) return;
     const controls = globeRef.current.controls();
-    controls.autoRotate = autoRotate && !selectedEventId && !focusedHotspot;
+    controls.autoRotate = autoRotate && !selectedEventId && !focusedHotspot && !touredHotArea;
     controls.autoRotateSpeed = 0.38;
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
     controls.minDistance = 145;
     controls.maxDistance = 650;
-  }, [autoRotate, selectedEventId, focusedHotspot, globeReady]);
+  }, [autoRotate, selectedEventId, focusedHotspot, touredHotArea, globeReady]);
 
   useEffect(() => {
     if (!globeReady || !globeRef.current) return;
@@ -182,6 +189,16 @@ export default function WorldGlobe({
       altitude: Math.min(4.4, 1.75 * Math.max(1, aspect * 0.78)),
     }, reducedMotion ? 0 : 1000);
   }, [focusedHotspot, selectedEventId, autoRotate, globeReady, dimensions.height, dimensions.width]);
+
+  useEffect(() => {
+    if (!globeReady || !globeRef.current || !touredHotArea || focusedHotspot || selectedEventId) return;
+    const aspect = dimensions.height / Math.max(dimensions.width, 1);
+    globeRef.current.pointOfView({
+      lat: touredHotArea.location.latitude,
+      lng: touredHotArea.location.longitude,
+      altitude: Math.min(4.4, 1.75 * Math.max(1, aspect * 0.78)),
+    }, 1000);
+  }, [touredHotArea, focusedHotspot, selectedEventId, globeReady, dimensions.height, dimensions.width]);
 
   if (webGLSupported === false) {
     return (
