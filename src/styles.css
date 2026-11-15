@@ -246,7 +246,7 @@ aside[aria-label="The Briefing"] {
   --report-rule: var(--border);
   --sentiment-positive: oklch(0.48 0.13 240);
   --sentiment-negative: color-mix(in oklab, var(--alert-red) 85%, var(--bunker-green));
-  --sentiment-neutral: color-mix(in oklab, var(--radar-phosphor) 45%, var(--bunker-green));
+  --sentiment-neutral: oklch(0.48 0.12 151);
   --severity-low: color-mix(in oklab, var(--radar-phosphor) 45%, var(--bunker-green));
   --chart-4: oklch(0.52 0.10 80);
   color: var(--foreground);
