@@ -61,6 +61,7 @@
 ## GNews integration
 
 - [ ] Explain provider source coverage, free-plan limits and cache usage
+- [ ] Resolve freshness requirement: free delayed demo headlines versus a paid current-news feed
 - [ ] Add secure GNews fetching with shared 30-minute cache and quota protection
 - [ ] Normalize headlines and test transparent location/scoring heuristics
 - [ ] Add source status, refresh, dates, links and compact news sidebar without changing the globe or exercises
