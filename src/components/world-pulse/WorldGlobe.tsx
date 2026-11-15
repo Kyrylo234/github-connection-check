@@ -133,8 +133,8 @@ export default function WorldGlobe({
           <Globe2 className="mx-auto size-12 text-muted-foreground" aria-hidden="true" />
           <h2 className="mt-5 font-display text-xl font-semibold">3D view unavailable</h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Your browser couldn’t start WebGL. The demo news feed, filters and event details still work.
-            Try a WebGL-capable browser or enable hardware acceleration to see the globe.
+            Your browser couldn’t start WebGL. Try a WebGL-capable browser or enable hardware
+            acceleration to explore the demo globe and its event details.
           </p>
         </div>
       </div>

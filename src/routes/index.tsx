@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LocationPanel } from "@/components/world-pulse/LocationPanel";
-import { NewsFeed } from "@/components/world-pulse/NewsFeed";
 import { SentimentDot } from "@/components/world-pulse/SentimentBadge";
 import { TensionIndex } from "@/components/world-pulse/TensionIndex";
 import { DEMO_SNAPSHOT_AT, demoNewsEvents } from "@/data/demoNews";
@@ -80,12 +79,6 @@ function Index() {
     setSelectedEventId(null);
     setResetToken((token) => token + 1);
   };
-  const resetFilters = () => {
-    setSentiment("all");
-    setTimeRange("30d");
-    setSelectedEventId(null);
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground xl:flex xl:h-screen xl:flex-col xl:overflow-hidden">
       <header className="shrink-0 border-b bg-background/90 backdrop-blur-xl">
@@ -174,12 +167,7 @@ function Index() {
           </div>
         </section>
 
-        <div className="grid flex-1 gap-3 lg:grid-cols-[280px_minmax(0,1fr)] xl:min-h-0 xl:grid-cols-[290px_minmax(0,1fr)_310px] 2xl:grid-cols-[310px_minmax(0,1fr)_330px]">
-          <div className="h-[620px] lg:h-auto lg:min-h-0">
-            <NewsFeed events={filteredEvents} selectedEventId={selectedEventId} onSelect={selectEvent} onResetFilters={resetFilters} />
-          </div>
-
-          <section className="glass-panel globe-vignette relative min-h-[540px] overflow-hidden rounded-xl lg:min-h-0" aria-label="Interactive 3D news globe">
+        <section className="glass-panel globe-vignette relative min-h-[540px] flex-1 overflow-hidden rounded-xl xl:min-h-0" aria-label="Interactive 3D news globe">
             <div className="pointer-events-none absolute inset-x-8 top-0 z-20 h-px animate-scan bg-signal/30" />
             <div className="pointer-events-none absolute left-4 top-4 z-20">
               <p className="font-mono text-[9px] uppercase tracking-[0.17em] text-signal">Global orbit</p>
@@ -196,20 +184,22 @@ function Index() {
               </div>
               <p className="mt-2.5 max-w-28 border-t pt-2 text-[8px] leading-3 text-muted-foreground">Larger glow = stronger sentiment + more articles</p>
             </div>
-            <ClientOnly fallback={<GlobeFallback />}>
-              <Suspense fallback={<GlobeFallback />}>
-                <WorldGlobe events={filteredEvents} selectedEventId={selectedEventId} autoRotate={autoRotate} resetToken={resetToken} onSelect={selectEvent} />
-              </Suspense>
-            </ClientOnly>
+            <div className="absolute inset-0">
+              <ClientOnly fallback={<GlobeFallback />}>
+                <Suspense fallback={<GlobeFallback />}>
+                  <WorldGlobe events={filteredEvents} selectedEventId={selectedEventId} autoRotate={autoRotate} resetToken={resetToken} onSelect={selectEvent} />
+                </Suspense>
+              </ClientOnly>
+            </div>
             <div className="pointer-events-none absolute bottom-4 left-4 z-20 hidden font-mono text-[7px] uppercase tracking-[0.13em] text-muted-foreground md:block">
               Demo snapshot · {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(DEMO_SNAPSHOT_AT))} UTC
             </div>
-          </section>
-
-          <div className="h-[620px] lg:col-span-2 lg:h-[560px] xl:col-span-1 xl:h-auto xl:min-h-0">
-            <LocationPanel events={filteredEvents} selectedEvent={selectedEvent} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
-          </div>
-        </div>
+            {selectedEvent && (
+              <div className="absolute inset-x-3 bottom-3 top-auto z-30 max-h-[calc(100%-1.5rem)] sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:w-[360px] sm:max-h-none">
+                <LocationPanel selectedEvent={selectedEvent} onClose={() => setSelectedEventId(null)} />
+              </div>
+            )}
+        </section>
       </main>
     </div>
   );
