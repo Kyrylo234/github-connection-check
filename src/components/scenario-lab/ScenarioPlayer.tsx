@@ -244,7 +244,7 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
             </div>
           </section>
 
-          <div className={session.status === "reading" || session.status === "decision"
+          <div key={session.status} className={session.status === "reading" || session.status === "decision"
             ? "absolute inset-x-3 top-5 z-20 min-w-0 max-h-[65vh] overflow-y-auto sm:left-auto sm:right-5 sm:w-[380px] xl:sticky xl:inset-x-auto xl:top-5 xl:max-h-none xl:w-auto xl:overflow-visible"
             : "min-w-0 xl:sticky xl:top-5"}>
             {session.status === "standby" && (
@@ -269,16 +269,14 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
                 <h1 className="mt-5 font-display text-4xl font-bold leading-none">{node.title}</h1>
                 <p className="mt-4 text-xs font-medium leading-6">{node.situation}</p>
                 <div className="mt-5"><EventFacts node={node} /></div>
-                <Button onClick={() => acknowledgeEvent(node.id)} className="mt-6 w-full rounded-none font-system text-xs uppercase">Situation read — review decisions <ArrowRight /></Button>
-                <p className="mt-3 text-center text-[10px] font-semibold leading-4 text-muted-foreground">Decisions unlock after you acknowledge the briefing.</p>
+                <Button onClick={() => acknowledgeEvent(node.id)} className="mt-6 w-full rounded-none font-system text-xs uppercase">Next <ArrowRight /></Button>
               </aside>
             )}
 
             {session.status === "decision" && (
-              <aside aria-label="The Briefing" className="animate-fade-up border-report-rule bg-report-paper p-5 text-foreground sm:p-6">
+              <aside aria-label="Decisions" className="animate-fade-up border-report-rule bg-report-paper p-5 text-foreground sm:p-6">
                 <p className="font-system text-[10px] font-bold uppercase">Decision required / {String(node.step).padStart(2, "0")}</p>
                 <h1 className="mt-2 font-display text-3xl font-bold">{node.title}</h1>
-                <p className="mt-3 border-b border-report-rule pb-4 text-[11px] font-medium leading-5">{node.situation}</p>
                 <div className="mt-5 space-y-3" role="group" aria-label="Available decisions">
                   {node.choices.map((choice, index) => (
                     <button

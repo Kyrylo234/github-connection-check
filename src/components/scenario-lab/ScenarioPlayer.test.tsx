@@ -36,7 +36,11 @@ describe("ScenarioPlayer hook stability", () => {
       if (!choice) throw new Error("Missing decision");
       act(() => vi.advanceTimersByTime(SCENARIO_EVENT_DELAY_MS));
       expect(screen.getByRole("heading", { name: node.title })).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: /Situation read/i }));
+      expect(screen.getByRole("complementary", { name: "The Briefing" })).toBeInTheDocument();
+      expect(screen.queryByRole("group", { name: "Available decisions" })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      expect(screen.queryByRole("complementary", { name: "The Briefing" })).not.toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "Available decisions" })).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: new RegExp(choice.label) }));
       if (choice.nextNodeId) {
         expect(screen.getByRole("heading", { name: choice.label })).toBeInTheDocument();
