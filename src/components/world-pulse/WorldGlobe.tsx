@@ -7,7 +7,7 @@ import { getPrimaryArticle } from "@/data/demoNews";
 import { getHotspotIntensity, getSentiment } from "@/lib/news-analysis";
 import { useHotspotFocus } from "@/hooks/use-hotspot-focus";
 import { useIdleHotAreaTour } from "@/hooks/use-idle-hot-area-tour";
-import { isHotspotPointerEvent, shouldIgnoreGlobeClick } from "@/lib/globe-interaction";
+import { isHotspotPointerEvent, selectHotspotOnPointerUp, shouldIgnoreGlobeClick } from "@/lib/globe-interaction";
 import { nextHotArea, rankHotAreas, rankVeryHotAreas } from "@/lib/hot-area-navigation";
 import type { AnalyzedNewsEvent, Sentiment } from "@/types/news";
 
@@ -290,6 +290,10 @@ export default function WorldGlobe({
             button.setAttribute("aria-label", `Open globe event: ${getPrimaryArticle(event).title}`);
             button.title = `${event.location.name} · ${event.isDemo ? "Demo data" : "Publisher news"}`;
             button.addEventListener("pointerdown", () => { lastHotspotPressAt.current = Date.now(); });
+            button.addEventListener("pointerup", (pointerEvent) => {
+              lastHotspotPressAt.current = Date.now();
+              selectHotspotOnPointerUp(pointerEvent, event.id, onSelect);
+            });
             button.addEventListener("click", (clickEvent) => {
               lastHotspotPressAt.current = Date.now();
               clickEvent.stopPropagation();

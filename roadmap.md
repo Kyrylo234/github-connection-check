@@ -31,6 +31,7 @@
 
 - [x] Isolate HTML hotspot presses from deferred globe dismissal
 - [x] Test pointer isolation and verify hotspot opening and click-off dismissal
+- [x] Make a single hotspot press open and retain the briefing; verify repeated selection
 
 ## Recent global tension
 
