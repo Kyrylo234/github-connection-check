@@ -49,7 +49,7 @@ describe("ScenarioPlayer hook stability", () => {
       nodeId = choice.nextNodeId ?? nodeId;
     }
 
-    fireEvent.change(screen.getByLabelText("Situation", { exact: true }), {
+    fireEvent.change(screen.getByLabelText("Next steps and uncertainty", { exact: true }), {
       target: { value: "Situation: The incident is contained. Priority risk remains service disruption. We preserved evidence, informed leadership and customers, and will verify recovery with the team. Further exposure is uncertain and requires investigation. Next steps: Confirm the scope, maintain monitoring and send leadership another update after the recovery checks." },
     });
     fireEvent.click(screen.getByRole("button", { name: /Submit report & complete exercise/i }));

@@ -319,18 +319,22 @@ export function ScenarioPlayer({ scenario }: { scenario: Scenario }) {
               <aside aria-label="The Briefing" className="animate-fade-up border-report-rule bg-report-paper p-5 text-foreground sm:p-6">
                 <p className="font-system text-[10px] font-bold uppercase">Final task / Written situation report</p>
                 <h1 className="mt-2 font-display text-4xl font-bold">Brief leadership</h1>
-                <p className="mt-3 text-[11px] font-semibold leading-5">{scenario.reportTask.prompt}</p>
+                <p className="mt-3 text-[11px] font-semibold leading-5">Rank your priorities, identify affected people, and give leadership a short response on next steps and uncertainty.</p>
                 <div className="mt-4 border-y border-report-rule py-3">
                   <p className="font-system text-[9px] font-bold uppercase text-muted-foreground">Fixed rubric · No AI</p>
                   <p className="mt-1 text-[10px] font-medium leading-4">Core situation · Priority risk · Decisions and next steps · Stakeholders · Uncertainty · Concise length</p>
                 </div>
                 <SituationReportFields
                   scenarioId={scenario.id}
+                  actions={session.history.flatMap((record) => {
+                    const choice = scenario.nodes[record.nodeId]?.choices.find((item) => item.id === record.choiceId);
+                    return choice ? [choice.label] : [];
+                  })}
                   value={session.situationReport}
                   onChange={updateReportDraft}
                 />
                 <div className="mt-2 flex justify-between gap-3 font-system text-[9px] font-semibold text-muted-foreground">
-                  <span>{wordCount} words · Target 60–140</span>
+                  <span>{wordCount} words total · Target 60–140</span>
                   <span>{reportLength} / {MAXIMUM_SITUATION_REPORT_CHARACTERS} characters</span>
                 </div>
                 {reportLength < MINIMUM_SITUATION_REPORT_CHARACTERS && <p className="mt-3 text-[10px] font-semibold leading-4 text-muted-foreground">Add {MINIMUM_SITUATION_REPORT_CHARACTERS - reportLength} more characters to submit a substantive brief.</p>}
