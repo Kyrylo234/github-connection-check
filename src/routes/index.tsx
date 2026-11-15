@@ -4,14 +4,9 @@ import {
   ArrowUpRight,
   FlaskConical,
   Globe2,
-  Pause,
-  Play,
   Radio,
-  RotateCcw,
-  SlidersHorizontal,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import briefingRoom from "@/assets/briefing-room.jpg";
 import {
   Select,
@@ -65,8 +60,6 @@ function Index() {
   const [sentiment, setSentiment] = useState<SentimentFilter>("all");
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [autoRotate, setAutoRotate] = useState(true);
-  const [resetToken, setResetToken] = useState(0);
 
   const filteredEvents = useMemo(
     () => filterNewsEvents(demoNewsEvents, sentiment, timeRange),
@@ -76,10 +69,6 @@ function Index() {
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
 
   const selectEvent = (eventId: string) => setSelectedEventId(eventId);
-  const resetView = () => {
-    setSelectedEventId(null);
-    setResetToken((token) => token + 1);
-  };
   return (
     <div className="briefing-dashboard flex flex-col bg-background text-foreground">
       <header className="briefing-header relative z-40 shrink-0 border-b">
@@ -107,10 +96,6 @@ function Index() {
           </nav>
 
           <div className="ml-auto flex items-center gap-4">
-            <div className="hidden items-center gap-2 rounded-sm border border-signal/30 bg-secondary/30 px-3 py-1.5 lg:flex">
-              <span className="size-1.5 animate-pulse-soft rounded-full bg-sentiment-positive" />
-              <span className="font-system text-[9px] uppercase text-signal">Demo data</span>
-            </div>
             <div className="hidden h-8 w-px bg-border sm:block" />
             <TensionIndex reading={tension} eventCount={filteredEvents.length} />
           </div>
@@ -119,17 +104,6 @@ function Index() {
 
       <main className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1 flex-col">
         <section className="briefing-console relative z-30 flex shrink-0 flex-col gap-3 px-5 py-3 lg:flex-row lg:items-center lg:justify-between" aria-label="Globe filters and controls">
-          <div className="flex items-center gap-3">
-            <div className="flex size-8 items-center justify-center rounded-sm border bg-secondary/40">
-              <SlidersHorizontal className="size-3.5 text-signal" aria-hidden="true" />
-            </div>
-            <div>
-              <p className="font-mono text-xs uppercase leading-5 text-muted-foreground" aria-live="polite">
-                DEMO DATA · {filteredEvents.length} fictional events · {tension.totalArticles} sample articles
-              </p>
-            </div>
-          </div>
-
           <div className="flex flex-wrap items-center gap-2">
             <Select value={sentiment} onValueChange={(value) => { setSentiment(value as SentimentFilter); setSelectedEventId(null); }}>
               <SelectTrigger aria-label="Filter by sentiment" className="h-8 w-[142px] border-border bg-background/40 font-system text-[10px] shadow-none">
@@ -155,14 +129,6 @@ function Index() {
               </SelectContent>
             </Select>
 
-            <div className="mx-1 hidden h-5 w-px bg-border sm:block" />
-            <Button variant="outline" size="sm" onClick={() => setAutoRotate((value) => !value)} className="h-8 border-border bg-background/40 px-3 font-system text-[9px] uppercase tracking-wider shadow-none" aria-pressed={!autoRotate}>
-              {autoRotate ? <Pause className="size-3" /> : <Play className="size-3" />}
-              {autoRotate ? "Pause rotation" : "Resume rotation"}
-            </Button>
-            <Button variant="outline" size="sm" onClick={resetView} className="h-8 border-border bg-background/40 px-3 font-system text-[9px] uppercase tracking-wider shadow-none">
-              <RotateCcw className="size-3" /> Reset view
-            </Button>
           </div>
         </section>
 
@@ -182,7 +148,7 @@ function Index() {
             <div className="absolute inset-0 isolate z-0">
               <ClientOnly fallback={<GlobeFallback />}>
                 <Suspense fallback={<GlobeFallback />}>
-                  <WorldGlobe sourceEvents={demoNewsEvents} events={filteredEvents} selectedEventId={selectedEventId} autoRotate={autoRotate} resetToken={resetToken} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
+                  <WorldGlobe sourceEvents={demoNewsEvents} events={filteredEvents} selectedEventId={selectedEventId} autoRotate={true} resetToken={0} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
                 </Suspense>
               </ClientOnly>
             </div>
