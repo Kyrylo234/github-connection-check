@@ -182,7 +182,7 @@ function Index() {
             <div className="absolute inset-0">
               <ClientOnly fallback={<GlobeFallback />}>
                 <Suspense fallback={<GlobeFallback />}>
-                  <WorldGlobe events={filteredEvents} selectedEventId={selectedEventId} autoRotate={autoRotate} resetToken={resetToken} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
+                  <WorldGlobe sourceEvents={demoNewsEvents} events={filteredEvents} selectedEventId={selectedEventId} autoRotate={autoRotate} resetToken={resetToken} onSelect={selectEvent} onClose={() => setSelectedEventId(null)} />
                 </Suspense>
               </ClientOnly>
             </div>

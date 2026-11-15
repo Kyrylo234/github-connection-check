@@ -5,10 +5,12 @@ import { Globe2, MousePointer2 } from "lucide-react";
 import earthAsset from "@/assets/world-pulse-earth.asset.json";
 import { getPrimaryArticle } from "@/data/demoNews";
 import { getHotspotIntensity, getSentiment } from "@/lib/news-analysis";
+import { useHotspotFocus } from "@/hooks/use-hotspot-focus";
 import type { AnalyzedNewsEvent, Sentiment } from "@/types/news";
 
 interface WorldGlobeProps {
   events: AnalyzedNewsEvent[];
+  sourceEvents: AnalyzedNewsEvent[];
   selectedEventId: string | null;
   autoRotate: boolean;
   resetToken: number;
@@ -65,6 +67,7 @@ export function GlobeLoading() {
 
 export default function WorldGlobe({
   events,
+  sourceEvents,
   selectedEventId,
   autoRotate,
   resetToken,
@@ -77,6 +80,7 @@ export default function WorldGlobe({
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null);
   const [globeReady, setGlobeReady] = useState(false);
   const [palette] = useState<GlobePalette>(() => readPalette());
+  const focusedHotspot = useHotspotFocus(sourceEvents, events, autoRotate, selectedEventId, resetToken);
 
   useEffect(() => {
     setWebGLSupported(browserSupportsWebGL());
@@ -96,14 +100,14 @@ export default function WorldGlobe({
   useEffect(() => {
     if (!globeReady || !globeRef.current) return;
     const controls = globeRef.current.controls();
-    controls.autoRotate = autoRotate && !selectedEventId;
+    controls.autoRotate = autoRotate && !selectedEventId && !focusedHotspot;
     controls.autoRotateSpeed = 0.38;
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
     controls.minDistance = 145;
     controls.maxDistance = 650;
-  }, [autoRotate, selectedEventId, globeReady]);
+  }, [autoRotate, selectedEventId, focusedHotspot, globeReady]);
 
   useEffect(() => {
     if (!globeReady || !globeRef.current) return;
@@ -127,6 +131,17 @@ export default function WorldGlobe({
       750,
     );
   }, [selectedEventId, events, globeReady, dimensions.height, dimensions.width]);
+
+  useEffect(() => {
+    if (!globeReady || !globeRef.current || !focusedHotspot || selectedEventId || !autoRotate) return;
+    const aspect = dimensions.height / Math.max(dimensions.width, 1);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    globeRef.current.pointOfView({
+      lat: focusedHotspot.location.latitude,
+      lng: focusedHotspot.location.longitude,
+      altitude: Math.min(4.4, 1.75 * Math.max(1, aspect * 0.78)),
+    }, reducedMotion ? 0 : 1000);
+  }, [focusedHotspot, selectedEventId, autoRotate, globeReady, dimensions.height, dimensions.width]);
 
   if (webGLSupported === false) {
     return (
