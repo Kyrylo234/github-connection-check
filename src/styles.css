@@ -123,6 +123,8 @@
   --sentiment-positive: oklch(0.77 0.17 155);
   --sentiment-neutral: oklch(0.68 0.16 240);
   --sentiment-negative: oklch(0.68 0.21 25);
+  --tension-flame-red: oklch(0.64 0.24 27);
+  --tension-flame-orange: oklch(0.79 0.18 60);
   --signal: oklch(0.72 0.14 225);
   --surface-raised: oklch(0.205 0.03 255);
   --sentiment-positive-rgb: 61 227 158;
@@ -142,8 +144,8 @@
 
 .tension-earth-glow {
   inset: 16%;
-  background: color-mix(in oklab, var(--signal), var(--sentiment-negative) var(--tension-heat));
-  box-shadow: 0 0 12px 5px color-mix(in oklab, var(--signal), var(--sentiment-negative) var(--tension-heat));
+  background: color-mix(in oklab, var(--tension-flame-red), var(--tension-flame-orange) var(--tension-heat));
+  box-shadow: 0 0 12px 5px color-mix(in oklab, var(--tension-flame-red), var(--tension-flame-orange) var(--tension-heat));
   filter: blur(7px);
   opacity: var(--tension-glow-opacity);
   transition: opacity 700ms var(--ease-out-soft), background 700ms var(--ease-out-soft), box-shadow 700ms var(--ease-out-soft);
