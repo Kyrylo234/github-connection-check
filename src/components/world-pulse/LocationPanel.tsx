@@ -16,7 +16,7 @@ interface LocationPanelProps {
 
 export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
   return (
-    <aside className="flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-none border border-report-rule bg-report-paper" aria-label="The Briefing">
+    <aside className="briefing-document flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-none border border-report-rule bg-report-paper" aria-label="The Briefing">
       <div className="flex shrink-0 items-center justify-between border-b border-report-rule px-4 py-4">
         <div className="flex items-center gap-2.5">
           <Layers3 className="size-4 text-signal" aria-hidden="true" />

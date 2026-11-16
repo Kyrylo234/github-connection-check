@@ -248,7 +248,7 @@
   box-shadow: var(--bunker-edge-shadow);
 }
 
-aside[aria-label="The Briefing"] {
+.briefing-document {
   --report-paper: var(--document-ivory);
   --foreground: var(--bunker-green);
   --background: var(--document-ivory);
@@ -269,7 +269,7 @@ aside[aria-label="The Briefing"] {
   box-shadow: var(--bunker-edge-shadow);
 }
 
-aside[aria-label="The Briefing"] > div:first-child {
+.briefing-document > div:first-child {
   border-bottom-width: 2px;
   background-color: color-mix(in oklab, var(--document-ivory) 94%, var(--bunker-green));
   box-shadow: inset 0 1px 0 var(--border);
