@@ -9,7 +9,8 @@ export type NewsCategory =
 
 export type Sentiment = "positive" | "neutral" | "negative";
 export type SentimentFilter = "all" | Sentiment;
-export type TimeRange = "24h" | "72h" | "7d" | "30d";
+/** Rolling lookback duration in minutes. */
+export type TimeRange = number;
 
 /** Stable article shape: live providers can replace demo fixtures without changing the UI. */
 export interface NewsArticle {
@@ -39,7 +40,7 @@ export interface AnalyzedNewsEvent {
   articles: NewsArticle[];
   articleCount: number;
   isDemo: boolean;
-  analysisMethod?: "Local sentiment" | "Heuristic fallback";
+  analysisMethod?: "Gemini AI" | "Heuristic fallback";
   confidence?: number;
   rationale?: string;
 }

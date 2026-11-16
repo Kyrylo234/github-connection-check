@@ -153,20 +153,34 @@
   color-scheme: dark;
 }
 
-.severity-display {
-  --severity-colour: color-mix(
-    in oklab,
-    color-mix(in oklab, var(--severity-low), var(--chart-4) clamp(0%, calc(var(--severity-position) * 2), 100%)),
-    var(--sentiment-negative) clamp(0%, calc(var(--severity-position) * 2 - 100%), 100%)
-  );
+.signal-slider--sentiment {
+  --scale-gradient: linear-gradient(to right, var(--sentiment-negative), var(--sentiment-neutral) 50%, var(--sentiment-positive));
 }
 
-.severity-meter > div {
-  background: var(--severity-colour);
+.signal-slider--severity {
+  --scale-gradient: linear-gradient(to right, var(--sentiment-positive), var(--sentiment-neutral) 50%, var(--sentiment-negative));
 }
 
-.severity-number {
-  color: var(--severity-colour);
+.signal-slider--sentiment [data-slot="slider-track"],
+.signal-slider--severity [data-slot="slider-track"] {
+  background: var(--scale-gradient);
+}
+
+.signal-slider--sentiment [data-radix-slider-range],
+.signal-slider--severity [data-radix-slider-range] {
+  background: transparent;
+}
+
+.signal-slider--sentiment [data-slot="slider-thumb"],
+.signal-slider--severity [data-slot="slider-thumb"] {
+  background: var(--scale-thumb-color);
+  border-color: var(--report-paper);
+  box-shadow: 0 0 0 1px var(--scale-thumb-color);
+}
+
+.signal-slider--sentiment .signal-slider-value,
+.signal-slider--severity .signal-slider-value {
+  color: var(--scale-thumb-color);
 }
 
 .tension-earth {

@@ -13,7 +13,8 @@ export interface NewsSnapshot {
   articles: NewsArticle[];
   fetchedAt: string;
   errors: string[];
-  validators?: Record<string, { etag?: string; lastModified?: string }>;
+  unmappedSignals?: Pick<AnalyzedNewsEvent, "occurredAt" | "sentiment" | "severity" | "articleCount">[];
+  archiveVersion?: number;
 }
 
 /** A content version shared by the status check and the full news query. */
@@ -36,6 +37,11 @@ export function newsSnapshotVersion(snapshot: NewsSnapshot | null): string | nul
   for (const error of snapshot.errors) {
     for (let index = 0; index < error.length; index++) {
       hash = Math.imul(hash ^ error.charCodeAt(index), 16777619);
+    }
+  }
+  for (const signal of snapshot.unmappedSignals ?? []) {
+    for (const character of `${signal.occurredAt}:${signal.sentiment}:${signal.severity}`) {
+      hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
     }
   }
   return `${articleVersion}:${(hash >>> 0).toString(16)}`;
@@ -101,9 +107,34 @@ export function deduplicateNews(articles: NewsArticle[]): NewsArticle[] {
 }
 
 export function headlineSeverity(title: string): number {
-  if (/\b(attack|war|killed|deaths|missile|flood|earthquake|crisis|outbreak|breach)\b/i.test(title)) return 0.8;
-  if (/\b(peace|ceasefire|agreement|rescued|recovery|aid)\b/i.test(title)) return 0.3;
+  const impact = headlineEventImpact(title);
+  if (impact === -0.7) return 0.8;
+  if (impact === 0.5) return 0.3;
   return 0.2;
+}
+
+/** A short RSS summary can supply direct evidence when the title is vague. */
+export function articleEventImpact(article: Pick<NewsArticle, "title" | "description">): number | null {
+  const titleImpact = headlineEventImpact(article.title);
+  if (titleImpact !== null) return titleImpact;
+  const summary = (article.description ?? "").slice(0, 240);
+  const harm = /\b(killed|died|dead|injured|wounded|bodies|casualties|fatalities|trapped under (?:the )?rubble|mass funeral)\b/i.test(summary);
+  const recovery = /\b(rescued|saved|recovered|released from captivity)\b/i.test(summary);
+  return harm === recovery ? null : harm ? -0.7 : 0.5;
+}
+
+export function articleSeverity(article: Pick<NewsArticle, "title" | "description">): number {
+  const titleSeverity = headlineSeverity(article.title);
+  if (titleSeverity !== 0.2) return titleSeverity;
+  const impact = articleEventImpact(article);
+  return impact === -0.7 ? 0.8 : impact === 0.5 ? 0.3 : 0.2;
+}
+
+/** An explicit harm or recovery event takes precedence over neutral-sounding reporting language. */
+export function headlineEventImpact(title: string): number | null {
+  const harm = /\b(attack(?:s|ed)?|war|kill(?:s|ed|ing)?|death(?:s)?|dead|behead(?:ed|ing)?|execution|executed|missile(?:s)?|strike(?:s)?|flood(?:s|ed|ing)?|earthquake|crisis|outbreak|breach|crash|collision|disaster|fire|injur(?:y|ies|ed)|funeral(?:s)?|casualt(?:y|ies)|fatalit(?:y|ies)|rubble)\b/i.test(title);
+  const recovery = /\b(peace|ceasefire|agreement|rescu(?:e|ed|es)|recover(?:y|ed|ing)?|aid|relief|reopen(?:s|ed)?|saved|cured)\b/i.test(title);
+  return harm === recovery ? null : harm ? -0.7 : 0.5;
 }
 
 // Approximate national centres, not capitals or publisher headquarters. Only explicit
@@ -130,10 +161,8 @@ export function locateNews(article: NewsArticle): AnalyzedNewsEvent | null {
   const place = matches[0];
   if (!place) return null;
   const [, country, latitude, longitude] = place;
-  const negative = /\b(attack|war|killed|deaths|missile|flood|earthquake|crisis|outbreak|breach)\b/i.test(article.title);
-  const positive = /\b(peace|ceasefire|agreement|rescued|recovery|aid)\b/i.test(article.title);
-  const sentiment = negative && !positive ? -0.7 : positive && !negative ? 0.5 : 0;
+  const sentiment = articleEventImpact(article) ?? 0;
   return { id: article.id, location: { name: "Approximate national location", country, latitude, longitude },
-    category: article.category ?? "Society", sentiment, severity: headlineSeverity(article.title),
+    category: article.category ?? "Society", sentiment, severity: articleSeverity(article),
     occurredAt: article.publishedAt, articles: [article], articleCount: 1, isDemo: false };
 }

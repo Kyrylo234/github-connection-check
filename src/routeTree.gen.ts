@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as ScenariosRouteImport } from './routes/scenarios'
 import { Route as ResultsIdRouteImport } from './routes/results.$id'
 import { Route as ScenariosIndexRouteImport } from './routes/scenarios.index'
@@ -18,6 +19,11 @@ import { Route as ScenariosIdRouteImport } from './routes/scenarios.$id'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchiveRoute = ArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScenariosRoute = ScenariosRouteImport.update({
@@ -43,6 +49,7 @@ const ScenariosIdRoute = ScenariosIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/archive': typeof ArchiveRoute
   '/scenarios': typeof ScenariosRouteWithChildren
   '/results/$id': typeof ResultsIdRoute
   '/scenarios/$id': typeof ScenariosIdRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/archive': typeof ArchiveRoute
   '/results/$id': typeof ResultsIdRoute
   '/scenarios/$id': typeof ScenariosIdRoute
   '/scenarios': typeof ScenariosIndexRoute
@@ -57,6 +65,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/archive': typeof ArchiveRoute
   '/scenarios': typeof ScenariosRouteWithChildren
   '/results/$id': typeof ResultsIdRoute
   '/scenarios/$id': typeof ScenariosIdRoute
@@ -65,12 +74,18 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/scenarios' | '/results/$id' | '/scenarios/$id' | '/scenarios/'
+    | '/'
+    | '/archive'
+    | '/scenarios'
+    | '/results/$id'
+    | '/scenarios/$id'
+    | '/scenarios/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/results/$id' | '/scenarios/$id' | '/scenarios'
+  to: '/' | '/archive' | '/results/$id' | '/scenarios/$id' | '/scenarios'
   id:
     | '__root__'
     | '/'
+    | '/archive'
     | '/scenarios'
     | '/results/$id'
     | '/scenarios/$id'
@@ -79,6 +94,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArchiveRoute: typeof ArchiveRoute
   ScenariosRoute: typeof ScenariosRouteWithChildren
   ResultsIdRoute: typeof ResultsIdRoute
 }
@@ -90,6 +106,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/archive': {
+      id: '/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof ArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scenarios': {
@@ -139,6 +162,7 @@ const ScenariosRouteWithChildren = ScenariosRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArchiveRoute: ArchiveRoute,
   ScenariosRoute: ScenariosRouteWithChildren,
   ResultsIdRoute: ResultsIdRoute,
 }

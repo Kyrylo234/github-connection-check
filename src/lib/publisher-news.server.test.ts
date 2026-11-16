@@ -1,12 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ rpc: vi.fn(), read: vi.fn(), update: vi.fn() }));
-vi.mock("@/integrations/supabase/client.server", () => ({ supabaseAdmin: {
+const mocks = vi.hoisted(() => ({ rpc: vi.fn(), read: vi.fn(), update: vi.fn(), readAnalysis: vi.fn(), analyze: vi.fn(), archive: vi.fn(), reconcile: vi.fn() }));
+vi.mock("./supabase-admin.server", () => ({ supabaseAdmin: {
   from: () => ({ select: () => ({ eq: () => ({ maybeSingle: mocks.read }) }), update: (value: unknown) => { mocks.update(value); return { eq: async () => ({ error: null }) }; } }),
   rpc: mocks.rpc,
 } }));
+vi.mock("./news-classification.server", () => ({ readNewsAnalysis: mocks.readAnalysis, analyzeNewsBatch: mocks.analyze }));
+vi.mock("./news-archive.server", () => ({ archivePublisherArticles: mocks.archive, reconcileLiveArchive: mocks.reconcile }));
 import { fetchPublisherNews } from "./publisher-news.server";
 describe("shared publisher cache", () => {
-  beforeEach(() => { vi.clearAllMocks(); mocks.read.mockResolvedValue({ data: null, error: null }); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.read.mockResolvedValue({ data: null, error: null });
+    mocks.readAnalysis.mockResolvedValue({ results: [], error: null, lastUpdatedAt: null });
+    mocks.reconcile.mockResolvedValue(undefined);
+    mocks.archive.mockResolvedValue(undefined);
+  });
   it("never fetches publishers when another visitor owns the shared lease", async () => {
     mocks.rpc.mockResolvedValue({ data: false, error: null });
     const fetchMock = vi.fn(); vi.stubGlobal("fetch", fetchMock);
@@ -16,19 +24,16 @@ describe("shared publisher cache", () => {
     expect(result.error).toContain("in progress");
     vi.unstubAllGlobals();
   });
-  it("reuses cached articles when publishers return not modified", async () => {
-    const cached = {
-      articles: [{ id: "bbc-story", title: "World report", description: "", source: "BBC News", publishedAt: "2026-11-15T10:00:00Z", isDemo: false }],
-      errors: [], fetchedAt: "2026-11-15T10:00:00Z", validators: { "BBC News": { etag: '"bbc-v1"' } },
-    };
-    mocks.read.mockResolvedValue({ data: { snapshot: cached, next_refresh_at: "2026-11-15T10:00:00Z" }, error: null });
+  it("stores and archives only stories with a reliable map location", async () => {
     mocks.rpc.mockResolvedValue({ data: true, error: null });
-    const fetchMock = vi.fn().mockResolvedValue({ status: 304 });
-    vi.stubGlobal("fetch", fetchMock);
+    const xml = '<rss><channel><item><title>Flood in Japan</title><link>https://example.com/located</link><pubDate>Sun, 15 Nov 2026 10:00:00 GMT</pubDate></item><item><title>Markets recover</title><link>https://example.com/vague</link><pubDate>Sun, 15 Nov 2026 10:01:00 GMT</pubDate></item></channel></rss>';
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, text: async () => xml }));
     const result = await fetchPublisherNews();
-    expect(fetchMock).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ headers: expect.objectContaining({ "If-None-Match": '"bbc-v1"' }) }));
-    expect(result.snapshot?.articles).toEqual(cached.articles);
-    expect(result.snapshot?.validators?.["BBC News"]?.etag).toBe('"bbc-v1"');
+    expect(result.snapshot?.articles.map(article => article.id)).toEqual(["https://example.com/located"]);
+    const saved = mocks.update.mock.calls.find(([value]) => value.snapshot)?.[0];
+    expect(saved.snapshot.articles.map((article: { id: string }) => article.id)).toEqual(["https://example.com/located"]);
+    expect(mocks.archive).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ id: "https://example.com/located" })]));
+    expect(mocks.reconcile).toHaveBeenCalledOnce();
     vi.unstubAllGlobals();
   });
   it("exposes total publisher failure and keeps the demo fallback available", async () => {

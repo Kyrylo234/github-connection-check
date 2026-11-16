@@ -1,1 +1,0 @@
-ALTER TABLE public.publisher_news_cache ADD COLUMN last_error text;

@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { validateClassification, classifiedEvents, clusterNews, storySignals, type Classification } from "./news-classification";
+import { validateClassification, classifiedEvents, clusterNews, mappableArticles, storySignals, type Classification } from "./news-classification";
 import { resolveNewsLocation } from "./news-location";
 import { calculateRecentTension } from "./news-analysis";
 import type { NewsArticle } from "@/types/news";
 const article: NewsArticle = { id: "a", title: "Attack in Japan", description: "Report", source: "BBC", publishedAt: "2026-11-15T10:00:00Z", isDemo: false };
 const classification: Classification = { articleId: "a", eventLocationName: "Japan", countryCode: "JP", sentiment: -1, severity: 1, confidence: 0.9, rationale: "Event harms people", location: resolveNewsLocation("Japan", "JP"), analyzedAt: "2026-11-15T12:00:00Z" };
-describe("local news classification", () => {
+describe("hosted news classification", () => {
   it("clamps finite AI numbers and rejects mismatched IDs and invalid JSON", () => {
     const row = { articleId: "a", eventLocationName: null, countryCode: null, sentiment: -4, severity: 2, confidence: 3, rationale: "Test" };
     expect(validateClassification({ results: [row] }, ["a"])[0]).toMatchObject({ sentiment: -1, severity: 1, confidence: 1 });
+    expect(validateClassification([row], ["a"])[0]).toMatchObject({ sentiment: -1, severity: 1, confidence: 1 });
     expect(() => validateClassification({ results: [row] }, ["b"])).toThrow();
     expect(() => validateClassification("not json", ["a"])).toThrow();
     expect(() => validateClassification({ results: [{ ...row, sentiment: NaN }] }, ["a"])).toThrow();
@@ -18,7 +19,7 @@ describe("local news classification", () => {
     expect(resolveNewsLocation("Atlantis", "FR")).toBeNull();
     expect(resolveNewsLocation("France", null)).toBeNull();
   });
-  it("uses local effects for tension even when location is unclear", () => {
+  it("uses classified effects for tension even when location is unclear", () => {
     const unknown = { ...classification, location: null };
     expect(classifiedEvents([article], [unknown])).toEqual([]);
     expect(calculateRecentTension(storySignals([article], [unknown]), "2026-11-15T12:00:00Z").reading.score).toBe(100);
@@ -26,6 +27,12 @@ describe("local news classification", () => {
   it("falls back only for unanalysed stories and never pins low-confidence AI", () => {
     expect(classifiedEvents([article], [])[0]?.analysisMethod).toBe("Heuristic fallback");
     expect(classifiedEvents([article], [{ ...classification, confidence: 0.5 }])).toEqual([]);
+  });
+  it("keeps only stories with verified map locations for storage", () => {
+    const vague = { ...article, id: "b", title: "Diplomatic talks continue" };
+    expect(mappableArticles([article, vague], [])).toEqual([article]);
+    expect(mappableArticles([article, vague], [{ ...classification, articleId: "b" }])).toEqual([article, vague]);
+    expect(mappableArticles([article], [{ ...classification, location: null }])).toEqual([]);
   });
   it("clusters colocated stories using actual article count", () => {
     const events = classifiedEvents([article, { ...article, id: "b" }], [classification, { ...classification, articleId: "b" }]);

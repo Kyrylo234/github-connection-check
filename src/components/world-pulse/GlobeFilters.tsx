@@ -4,8 +4,9 @@ import { SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { SentimentDot } from "@/components/world-pulse/SentimentBadge";
+import { SignalSlider } from "@/components/world-pulse/SignalSlider";
+import { formatTimeRange, MAX_TIME_RANGE_MINUTES, minutesToSliderPosition, sliderPositionToMinutes, TIME_RANGE_SLIDER_MAX } from "@/lib/time-range";
 import type { SentimentFilter, TimeRange } from "@/types/news";
 
 interface GlobeFiltersProps {
@@ -19,7 +20,7 @@ interface GlobeFiltersProps {
 
 export function GlobeFilters({ sentiment, timeRange, minimumSeverity, onSentimentChange, onTimeRangeChange, onSeverityChange }: GlobeFiltersProps) {
   const [open, setOpen] = useState(false);
-  const activeCount = Number(sentiment !== "all") + Number(timeRange !== "30d") + Number(minimumSeverity > 0);
+  const activeCount = Number(sentiment !== "all") + Number(timeRange < MAX_TIME_RANGE_MINUTES) + Number(minimumSeverity > 0);
 
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="briefing-console relative z-30 flex shrink-0 flex-wrap items-center gap-x-5 gap-y-3 px-4 py-2 sm:flex-nowrap sm:px-5">
@@ -33,7 +34,7 @@ export function GlobeFilters({ sentiment, timeRange, minimumSeverity, onSentimen
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent className="w-full min-w-0 sm:w-auto sm:max-w-[620px] sm:flex-1">
-        <div className="grid grid-cols-2 items-end gap-4 border-t border-border pt-3 sm:grid-cols-[1fr_1fr_1.3fr] sm:border-t-0 sm:pt-0">
+        <div className="grid grid-cols-2 items-start gap-4 border-t border-border pt-3 sm:grid-cols-[1fr_1fr_1.3fr] sm:border-t-0 sm:pt-0">
           <div className="space-y-2">
             <p className="font-system text-[10px] uppercase text-muted-foreground">Sentiment</p>
             <Select value={sentiment} onValueChange={(value) => onSentimentChange(value as SentimentFilter)}>
@@ -46,27 +47,29 @@ export function GlobeFilters({ sentiment, timeRange, minimumSeverity, onSentimen
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <p className="font-system text-[10px] uppercase text-muted-foreground">Time range</p>
-            <Select value={timeRange} onValueChange={(value) => onTimeRangeChange(value as TimeRange)}>
-              <SelectTrigger aria-label="Filter by time range" className="h-8 w-full min-w-0 rounded-none border-border bg-background/40 font-system text-xs shadow-none"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="24h">Last 24 hours</SelectItem>
-                <SelectItem value="72h">Last 72 hours</SelectItem>
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="col-span-2 space-y-2 sm:col-span-1">
-            <div className="flex justify-between gap-2 font-system text-[10px] uppercase">
-              <span className="text-muted-foreground">Minimum severity</span>
-              <span className="text-signal">{Math.round(minimumSeverity * 100)}%</span>
-            </div>
-            <div className="flex h-8 items-center px-2">
-              <Slider aria-label="Minimum severity" aria-valuetext={`${Math.round(minimumSeverity * 100)} percent`} min={0} max={100} step={5} value={[Math.round(minimumSeverity * 100)]} onValueChange={([value]) => { if (value !== undefined) onSeverityChange(value / 100); }} />
-            </div>
-          </div>
+          <SignalSlider
+            label="Time range"
+            displayValue={formatTimeRange(timeRange)}
+            ariaValueText={`Last ${formatTimeRange(timeRange)}`}
+            min={0}
+            max={TIME_RANGE_SLIDER_MAX}
+            step={1}
+            value={minutesToSliderPosition(timeRange)}
+            marks={["10m", "30d"]}
+            onValueChange={(position) => onTimeRangeChange(sliderPositionToMinutes(position))}
+          />
+          <SignalSlider
+            className="col-span-2 sm:col-span-1"
+            label="Minimum severity"
+            displayValue={`${Math.round(minimumSeverity * 100)}%`}
+            ariaValueText={`${Math.round(minimumSeverity * 100)} percent`}
+            min={0}
+            max={100}
+            step={5}
+            value={Math.round(minimumSeverity * 100)}
+            marks={["0%", "100%"]}
+            onValueChange={(value) => onSeverityChange(value / 100)}
+          />
         </div>
       </CollapsibleContent>
     </Collapsible>

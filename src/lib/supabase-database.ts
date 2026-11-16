@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      news_archive: {
+        Row: {
+          id: string
+          url: string
+          title: string
+          description: string
+          source: string
+          published_at: string
+          category: string
+          collection: string
+          sentiment: number | null
+          severity: number | null
+          location_name: string | null
+          location_country: string | null
+          latitude: number | null
+          longitude: number | null
+          analysis_method: string | null
+          analysis_confidence: number | null
+          analysis_rationale: string | null
+          first_seen_at: string
+          last_seen_at: string
+        }
+        Insert: {
+          id: string
+          url: string
+          title: string
+          description?: string
+          source: string
+          published_at: string
+          category: string
+          collection?: string
+          sentiment?: number | null
+          severity?: number | null
+          location_name?: string | null
+          location_country?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          analysis_method?: string | null
+          analysis_confidence?: number | null
+          analysis_rationale?: string | null
+          first_seen_at?: string
+          last_seen_at?: string
+        }
+        Update: {
+          id?: string
+          url?: string
+          title?: string
+          description?: string
+          source?: string
+          published_at?: string
+          category?: string
+          collection?: string
+          sentiment?: number | null
+          severity?: number | null
+          location_name?: string | null
+          location_country?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          analysis_method?: string | null
+          analysis_confidence?: number | null
+          analysis_rationale?: string | null
+          first_seen_at?: string
+          last_seen_at?: string
+        }
+        Relationships: []
+      }
       news_analysis_budget: {
         Row: {
           budget_day: string

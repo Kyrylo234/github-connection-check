@@ -10,6 +10,7 @@ import {
   type TensionReading,
 } from "@/lib/news-analysis";
 import type { AnalyzedNewsEvent } from "@/types/news";
+import { MAX_TIME_RANGE_MINUTES } from "@/lib/time-range";
 
 function event(overrides: Partial<AnalyzedNewsEvent> = {}): AnalyzedNewsEvent {
   return {
@@ -58,13 +59,13 @@ describe("World Pulse demo fixture", () => {
 describe("sentiment and time filters", () => {
   it("includes the minimum severity boundary and excludes lower severity", () => {
     const events = [event({ id: "below", severity: 0.49 }), event({ id: "boundary", severity: 0.5 }), event({ id: "above", severity: 0.9 })];
-    expect(filterNewsEvents(events, "all", "30d", undefined, 0.5).map((item) => item.id)).toEqual(["boundary", "above"]);
+    expect(filterNewsEvents(events, "all", MAX_TIME_RANGE_MINUTES, undefined, 0.5).map((item) => item.id)).toEqual(["boundary", "above"]);
   });
 
   it("keeps all severities at zero and combines severity with sentiment and time", () => {
     const events = [event({ id: "zero", severity: 0 }), event({ id: "severe", severity: 1 }), event({ id: "positive", severity: 1, sentiment: 0.8 }), event({ id: "old", severity: 1, occurredAt: "2026-11-14T08:00:00.000Z" })];
-    expect(filterNewsEvents(events, "all", "30d", undefined, 0)).toHaveLength(4);
-    expect(filterNewsEvents(events, "negative", "24h", undefined, 1).map((item) => item.id)).toEqual(["severe"]);
+    expect(filterNewsEvents(events, "all", MAX_TIME_RANGE_MINUTES, undefined, 0)).toHaveLength(4);
+    expect(filterNewsEvents(events, "negative", 24 * 60, undefined, 1).map((item) => item.id)).toEqual(["severe"]);
   });
 
   it("uses positive, neutral and negative bands around zero", () => {
@@ -80,9 +81,19 @@ describe("sentiment and time filters", () => {
       event({ id: "old-negative", occurredAt: "2026-11-14T08:00:00.000Z" }),
       event({ id: "recent-positive", sentiment: 0.8 }),
     ];
-    expect(filterNewsEvents(events, "negative", "24h").map((item) => item.id)).toEqual([
+    expect(filterNewsEvents(events, "negative", 24 * 60).map((item) => item.id)).toEqual([
       "recent-negative",
     ]);
+  });
+
+  it("includes the ten-minute boundary but excludes older and future events", () => {
+    const events = [
+      event({ id: "inside", occurredAt: "2026-11-15T09:59:00.000Z" }),
+      event({ id: "boundary", occurredAt: "2026-11-15T09:50:00.000Z" }),
+      event({ id: "older", occurredAt: "2026-11-15T09:49:59.999Z" }),
+      event({ id: "future", occurredAt: "2026-11-15T10:00:01.000Z" }),
+    ];
+    expect(filterNewsEvents(events, "all", 10).map((item) => item.id)).toEqual(["inside", "boundary"]);
   });
 });
 

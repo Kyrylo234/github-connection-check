@@ -1,14 +1,12 @@
 import { Layers3, X } from "lucide-react";
-import type { CSSProperties } from "react";
 
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Slider } from "@/components/ui/slider";
 import { getPrimaryArticle } from "@/data/demoNews";
-import { formatDemoTime, formatSentiment, getSentiment } from "@/lib/news-analysis";
+import { formatDemoTime, formatSentiment } from "@/lib/news-analysis";
 import type { AnalyzedNewsEvent } from "@/types/news";
 import { SentimentBadge } from "./SentimentBadge";
+import { SignalSlider } from "./SignalSlider";
 import { newsDate } from "@/lib/publisher-news";
 
 interface LocationPanelProps {
@@ -17,11 +15,6 @@ interface LocationPanelProps {
 }
 
 export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
-  const sliderColour = {
-    negative: "[&_[data-radix-slider-range]]:bg-sentiment-negative [&_[role=slider]]:border-sentiment-negative [&_[role=slider]]:bg-sentiment-negative",
-    neutral: "[&_[data-radix-slider-range]]:bg-sentiment-neutral [&_[role=slider]]:border-sentiment-neutral [&_[role=slider]]:bg-sentiment-neutral",
-    positive: "[&_[data-radix-slider-range]]:bg-sentiment-positive [&_[role=slider]]:border-sentiment-positive [&_[role=slider]]:bg-sentiment-positive",
-  }[getSentiment(selectedEvent.sentiment)];
   return (
     <aside className="flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-none border border-report-rule bg-report-paper" aria-label="The Briefing">
       <div className="flex shrink-0 items-center justify-between border-b border-report-rule px-4 py-4">
@@ -49,7 +42,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
 
           <section className="mt-5 border-t border-report-rule pt-3" aria-label="Assessment">
           <h4 className="font-display text-base font-bold uppercase text-signal">Assessment</h4>
-          {!selectedEvent.isDemo && <p className="mt-2 text-xs text-signal">{selectedEvent.analysisMethod ?? "Heuristic fallback"}{selectedEvent.confidence !== undefined ? ` · ${Math.round(selectedEvent.confidence * 100)}% confidence` : ""}</p>}
+          {!selectedEvent.isDemo && <p className="mt-2 text-xs text-signal">{selectedEvent.analysisMethod ?? "Heuristic fallback"}</p>}
           {selectedEvent.rationale && <p className="mt-2 text-xs leading-5 text-muted-foreground">{selectedEvent.rationale}</p>}
           <div className="mt-3 grid grid-cols-2">
             <div className="col-span-2 min-w-0 border-b border-report-rule pb-3">
@@ -60,35 +53,33 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
               </p>
             </div>
             <div className="min-w-0 border-r border-report-rule py-3 pr-3">
-              <p className="font-system text-[10px] font-semibold uppercase text-signal">Sentiment</p>
-              <div className="mt-2">
-                <SentimentBadge score={selectedEvent.sentiment} />
-              </div>
-              <Slider
-                aria-label="Event sentiment"
-                aria-valuetext={formatSentiment(selectedEvent.sentiment)}
+              <SignalSlider
+                label="Sentiment"
+                displayValue={formatSentiment(selectedEvent.sentiment)}
+                ariaValueText={formatSentiment(selectedEvent.sentiment)}
                 min={-1}
                 max={1}
                 step={0.01}
-                value={[selectedEvent.sentiment]}
-                disabled
-                className={`mt-3 [&_[role=slider]]:opacity-100 ${sliderColour}`}
+                value={selectedEvent.sentiment}
+                marks={["−1", "+1"]}
+                colorScale="sentiment"
               />
-              <div className="mt-2 flex justify-between font-system text-[11px] font-semibold text-muted-foreground">
-                <span>−1</span>
-                <span>{formatSentiment(selectedEvent.sentiment)}</span>
-                <span>+1</span>
+              <div className="mt-2">
+                <SentimentBadge score={selectedEvent.sentiment} />
               </div>
             </div>
-            <div className="severity-display min-w-0 py-3 pl-3" style={{ "--severity-position": `${selectedEvent.severity * 100}%` } as CSSProperties}>
-              <p className="font-system text-[10px] font-semibold uppercase text-signal">Severity</p>
-              <p className="severity-number mt-1.5 font-system text-lg font-normal">{Math.round(selectedEvent.severity * 100)}<span className="text-xs">%</span></p>
-              <Progress
-                value={selectedEvent.severity * 100}
-                aria-label="Event severity"
-                className="severity-meter mt-2 h-0.5 bg-secondary"
-              />
-            </div>
+            <SignalSlider
+              className="py-3 pl-3"
+              label="Severity"
+              displayValue={`${Math.round(selectedEvent.severity * 100)}%`}
+              ariaValueText={`${Math.round(selectedEvent.severity * 100)} percent`}
+              min={0}
+              max={100}
+              step={1}
+              value={selectedEvent.severity * 100}
+              marks={["0%", "100%"]}
+              colorScale="severity"
+            />
           </div>
           </section>
 
@@ -110,7 +101,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
             ))}
           </div>
           <p className="mt-3 border-t border-report-rule pt-3 text-[11px] font-medium leading-5 text-muted-foreground">
-            {selectedEvent.isDemo ? "Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher." : selectedEvent.analysisMethod === "Local sentiment" ? "A browser-local model scores sentiment. Headline rules estimate severity and require an explicit country phrase for this approximate map location. Scores are not verified facts." : "Location is inferred from an explicit country phrase in the headline and is approximate. Sentiment and severity use transparent keywords, not AI or verified analysis. Publisher origin is never used as event location."}
+            {selectedEvent.isDemo ? "Sample sentiment and severity are illustrative. Location refers to the fictional event, not a publisher." : selectedEvent.analysisMethod === "Gemini AI" ? "Gemini assesses event impact and suggests a place name. An exact country-scoped gazetteer match supplies coordinates; uncertain places stay unpinned. AI assessments can be wrong." : "Location is inferred from an explicit country phrase in the headline and is approximate. Sentiment and severity use transparent keywords, not AI or verified analysis. Publisher origin is never used as event location."}
           </p>
           </section>
         </div>

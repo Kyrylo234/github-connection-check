@@ -1,10 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { fetchPublisherNews } from "./publisher-news.server";
+import { readNewsAnalysis } from "./news-classification.server";
 import { newsSnapshotVersion } from "./publisher-news";
 
 /** Public read: fixed, allowlisted feeds only, no visitor-controlled URL or cache writes. */
 export const getPublisherNews = createServerFn({ method: "GET" }).handler(async () => {
-  return fetchPublisherNews();
+  const response = await fetchPublisherNews();
+  return { ...response, ...(response.snapshot ? { analysis: await readNewsAnalysis(response.snapshot.articles) } : {}) };
 });
 
 /** Small response for frequent visible-tab checks; it also triggers a due shared refresh. */
@@ -12,6 +14,7 @@ export const getPublisherNewsVersion = createServerFn({ method: "GET" }).handler
   const response = await fetchPublisherNews();
   return {
     version: newsSnapshotVersion(response.snapshot),
+    analysisUpdatedAt: response.snapshot ? (await readNewsAnalysis(response.snapshot.articles)).lastUpdatedAt : null,
     fetchedAt: response.snapshot?.fetchedAt ?? null,
     nextRefreshAt: response.nextRefreshAt,
     stale: response.stale,

@@ -9,11 +9,12 @@ export const analysisSchema = z.object({ results: z.array(z.object({
 export type Classification = z.infer<typeof analysisSchema>["results"][number] & {
   location: AnalyzedNewsEvent["location"] | null;
   analyzedAt: string;
+  locationConfidence?: number;
 };
 export interface AnalysisState { results: Classification[]; error: string | null; lastUpdatedAt: string | null }
 
 export function validateClassification(value: unknown, ids: string[]) {
-  const parsed = analysisSchema.parse(value);
+  const parsed = analysisSchema.parse(Array.isArray(value) ? { results: value } : value);
   const resultIds = parsed.results.map(result => result.articleId);
   if (resultIds.length !== ids.length || new Set(resultIds).size !== ids.length || resultIds.some(id => !ids.includes(id))) throw new Error("AI results did not match the submitted articles");
   return parsed.results.map(result => ({ ...result,
@@ -39,12 +40,18 @@ export function classifiedEvents(articles: NewsArticle[], results: Classificatio
       const event = locateNews(article);
       return event ? [{ ...event, analysisMethod: "Heuristic fallback" as const }] : [];
     }
-    if (!classified.location || classified.confidence < 0.6) return [];
+    if (!classified.location || (classified.locationConfidence ?? classified.confidence) < 0.6) return [];
     return [{ id: article.id, location: classified.location, category: article.category ?? "Society",
       occurredAt: article.publishedAt, articles: [article], articleCount: 1, isDemo: false,
       sentiment: classified.sentiment, severity: classified.severity, confidence: classified.confidence,
-      rationale: classified.rationale, analysisMethod: "Local sentiment" as const }];
+      rationale: classified.rationale, analysisMethod: "Gemini AI" as const }];
   });
+}
+
+/** The shared headline cache and live archive only retain stories that can be pinned. */
+export function mappableArticles(articles: NewsArticle[], results: Classification[]): NewsArticle[] {
+  const mappedIds = new Set(classifiedEvents(articles, results).map(event => event.id));
+  return articles.filter(article => mappedIds.has(article.id));
 }
 
 export function clusterNews(events: AnalyzedNewsEvent[]): AnalyzedNewsEvent[] {

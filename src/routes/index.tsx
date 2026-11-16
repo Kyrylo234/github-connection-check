@@ -14,15 +14,14 @@ import { SentimentDot } from "@/components/world-pulse/SentimentBadge";
 import { TensionIndex } from "@/components/world-pulse/TensionIndex";
 import { calculateRecentTension, filterNewsEvents } from "@/lib/news-analysis";
 import type { SentimentFilter, TimeRange } from "@/types/news";
+import { MAX_TIME_RANGE_MINUTES } from "@/lib/time-range";
 import { useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { publisherNewsOptions, publisherNewsVersionOptions } from "@/lib/publisher-news.query";
 import { newsArticlesVersion, newsSnapshotVersion } from "@/lib/publisher-news";
-import { classifiedEvents, clusterNews, storySignals, type Classification } from "@/lib/news-classification";
+import { classifiedEvents, clusterNews, storySignals } from "@/lib/news-classification";
 import { NewsSidebar } from "@/components/world-pulse/NewsSidebar";
-import type { NewsArticle } from "@/types/news";
 
 const WorldGlobe = lazy(() => import("@/components/world-pulse/WorldGlobe"));
-const analysisKey = (article: NewsArticle) => JSON.stringify([article.id, article.title, article.description ?? ""]);
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publisherNewsOptions),
@@ -66,7 +65,8 @@ function Index() {
   const queryClient = useQueryClient();
   useEffect(() => {
     if (!version) return;
-    if (version.version !== newsSnapshotVersion(response.snapshot)) {
+    if (version.version !== newsSnapshotVersion(response.snapshot)
+      || version.analysisUpdatedAt !== (response.analysis?.lastUpdatedAt ?? null)) {
       void queryClient.invalidateQueries({ queryKey: publisherNewsOptions.queryKey });
     } else if (version.nextRefreshAt !== response.nextRefreshAt
       || version.fetchedAt !== (response.snapshot?.fetchedAt ?? null)
@@ -81,18 +81,17 @@ function Index() {
         } : current);
     }
   }, [version, response, queryClient]);
-  const [localAnalysis, setLocalAnalysis] = useState<Record<string, Classification>>({});
-  const [attemptedAnalysis, setAttemptedAnalysis] = useState<Set<string>>(() => new Set());
-  const [analysisBusy, setAnalysisBusy] = useState(false);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
-  const [analysisProgress, setAnalysisProgress] = useState<number | null>(null);
   const articles = useMemo(() => response.snapshot?.articles ?? [], [response.snapshot]);
-  const results = useMemo(() => articles.flatMap((article) => localAnalysis[analysisKey(article)] ?? []), [articles, localAnalysis]);
+  const results = response.analysis?.results ?? [];
   const sourceEvents = useMemo(() => response.snapshot ? clusterNews(classifiedEvents(response.snapshot.articles, results)) : [], [response.snapshot, results]);
+  const mappedArticles = useMemo(() => {
+    const mappedIds = new Set(sourceEvents.flatMap(event => event.articles.map(article => article.id)));
+    return articles.filter(article => mappedIds.has(article.id));
+  }, [articles, sourceEvents]);
   const [emptySnapshotAt] = useState(() => new Date().toISOString());
   const snapshotAt = response.snapshot?.fetchedAt ?? emptySnapshotAt;
   const [sentiment, setSentiment] = useState<SentimentFilter>("all");
-  const [timeRange, setTimeRange] = useState<TimeRange>("30d");
+  const [timeRange, setTimeRange] = useState<TimeRange>(MAX_TIME_RANGE_MINUTES);
   const [minimumSeverity, setMinimumSeverity] = useState(0);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
@@ -100,34 +99,10 @@ function Index() {
     () => filterNewsEvents(sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity),
     [sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity],
   );
-  const tension = useMemo(() => calculateRecentTension(response.snapshot ? storySignals(response.snapshot.articles, results) : [], snapshotAt), [response.snapshot, results, snapshotAt]);
+  const tension = useMemo(() => calculateRecentTension(response.snapshot ? [...storySignals(response.snapshot.articles, results), ...(response.snapshot.unmappedSignals ?? [])] : [], snapshotAt), [response.snapshot, results, snapshotAt]);
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
 
   const selectEvent = (eventId: string) => setSelectedEventId(eventId);
-  const analyze = async () => {
-    if (analysisBusy) return;
-    setAnalysisBusy(true);
-    setAnalysisError(null);
-    setAnalysisProgress(null);
-    try {
-      const { classifyLocally } = await import("@/lib/local-news-classification");
-      let failed = 0;
-      for (const article of articles.filter((item) => !attemptedAnalysis.has(analysisKey(item))).slice(0, 3)) {
-        const key = analysisKey(article);
-        try {
-          const result = await classifyLocally(article, setAnalysisProgress);
-          setLocalAnalysis((current) => ({ ...current, [key]: result }));
-          setAttemptedAnalysis((current) => new Set(current).add(key));
-        } catch { failed++; break; }
-      }
-      if (failed) setAnalysisError(`${failed} stories could not be analysed locally; heuristic locations remain available.`);
-    } catch (failure) {
-      setAnalysisError(failure instanceof Error ? failure.message : "Local analysis failed. Existing headlines remain available.");
-    } finally {
-      setAnalysisBusy(false);
-      setAnalysisProgress(null);
-    }
-  };
   return (
     <div className="briefing-dashboard flex flex-col bg-background text-foreground max-lg:h-auto! max-lg:overflow-visible!">
       <header className="briefing-header relative z-40 shrink-0 border-b">
@@ -148,6 +123,7 @@ function Index() {
               <span className="hidden md:inline">Scenario Lab</span><span className="md:hidden">Lab</span>
               <ArrowUpRight className="hidden size-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:block" aria-hidden="true" />
             </Link>
+            <Link to="/archive" search={{ page: 1 }} className="flex h-full items-center border-b border-transparent px-2 text-xs text-muted-foreground hover:text-foreground sm:px-3">Archive</Link>
           </nav>
 
           <div className="ml-auto flex items-center gap-4">
@@ -185,7 +161,7 @@ function Index() {
               </ClientOnly>
             </div>
             <div className="pointer-events-none absolute bottom-7 left-7 z-20 hidden font-system text-[8px] uppercase text-muted-foreground lg:block">
-              {response.snapshot ? results.length ? `Local sentiment · ${results.length} analysed stories` : "Publisher news · Heuristic fallback" : "Publisher news unavailable"}{response.snapshot ? ` · ${new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC` : ""}
+              {response.snapshot ? results.length ? `Gemini AI · ${results.length} analysed stories` : "Publisher news · Heuristic fallback" : "Publisher news unavailable"}{response.snapshot ? ` · ${new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC` : ""}
             </div>
             {selectedEvent && (
               <div className="absolute inset-x-3 bottom-3 top-auto z-30 max-h-[calc(100%-1.5rem)] sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:w-[360px] sm:max-h-none">
@@ -193,8 +169,7 @@ function Index() {
               </div>
             )}
         </section>
-        <NewsSidebar response={{ ...response, analysis: { results, error: null, lastUpdatedAt: null } }} articles={articles} events={sourceEvents} analysisRemaining={articles.filter((article) => !attemptedAnalysis.has(analysisKey(article))).length} analysing={analysisBusy}
-          analysisError={analysisError} analysisProgress={analysisProgress} analyze={() => { void analyze(); }}
+        <NewsSidebar response={response} articles={mappedArticles} events={sourceEvents}
           refreshing={isFetching} refresh={() => { void refetch(); }} select={selectEvent} />
         </div>
       </main>

@@ -5,13 +5,7 @@ import type {
   SentimentFilter,
   TimeRange,
 } from "@/types/news";
-
-export const TIME_RANGE_HOURS: Record<TimeRange, number> = {
-  "24h": 24,
-  "72h": 72,
-  "7d": 24 * 7,
-  "30d": 24 * 30,
-};
+import { clampTimeRangeMinutes } from "@/lib/time-range";
 
 export function getSentiment(score: number): Sentiment {
   if (score > 0.2) return "positive";
@@ -26,11 +20,13 @@ export function filterNewsEvents(
   snapshotAt = DEMO_SNAPSHOT_AT,
   minimumSeverity = 0,
 ) {
-  const oldestTimestamp = Date.parse(snapshotAt) - TIME_RANGE_HOURS[timeRange] * 60 * 60 * 1000;
+  const snapshotTimestamp = Date.parse(snapshotAt);
+  const oldestTimestamp = snapshotTimestamp - clampTimeRangeMinutes(timeRange) * 60 * 1000;
 
   return events.filter((event) => {
     const matchesSentiment = sentiment === "all" || getSentiment(event.sentiment) === sentiment;
-    return matchesSentiment && Date.parse(event.occurredAt) >= oldestTimestamp && event.severity >= minimumSeverity;
+    const occurredAt = Date.parse(event.occurredAt);
+    return matchesSentiment && occurredAt >= oldestTimestamp && occurredAt <= snapshotTimestamp && event.severity >= minimumSeverity;
   });
 }
 
@@ -73,7 +69,7 @@ export function calculateTensionIndex(events: EventSignal[]): TensionReading {
 /** Global recent-news reading; map filters must not affect this source selection. */
 export function calculateRecentTension(events: EventSignal[], snapshotAt: string) {
   const end = Date.parse(snapshotAt);
-  const start = end - TIME_RANGE_HOURS["24h"] * 60 * 60 * 1000;
+  const start = end - 24 * 60 * 60 * 1000;
   const recentEvents = events.filter((event) => {
     const timestamp = Date.parse(event.occurredAt);
     return timestamp >= start && timestamp <= end;
