@@ -1,15 +1,58 @@
 # SitRep
 
-SitRep shows live publisher headlines on a globe, estimates event impact with Gemini when available, and includes a Scenario Lab. The app uses TanStack Start and an independent Supabase database for shared news state.
+**Global news. On the map.**
 
-## Independent deployment
+SitRep is an interactive globe for exploring the latest available headlines from established news publishers. It maps stories to their locations, uses Gemini to estimate sentiment and event severity when available, and includes a **Scenario Lab** for decision-based simulations.
 
-1. Create a Supabase project in your own account. Run [the schema migration](supabase/migrations/20261116000000_sitrep_schema.sql), then [the archive assessment migration](supabase/migrations/20261116000001_archive_assessments.sql), in its SQL Editor. These create the shared RSS lease, Gemini analysis cache and budget, and permanent `news_archive` table with per-story assessment fields. Existing projects only need the second migration.
-2. Import this repository into Vercel as a new project. Use `bun run build` as the build command. Set `SUPABASE_URL` and the new `SUPABASE_SECRET_KEY` (`sb_secret_…`) from **your new Supabase project** as server environment variables. The legacy `service_role` key also works under `SUPABASE_SERVICE_ROLE_KEY`, but a publishable key cannot write this server-only archive. Set `GEMINI_API_KEY` from Google AI Studio for AI analysis. Do not use a `VITE_` prefix for secrets.
-3. Deploy. The first visitor triggers the shared feed refresh. Further visitors share its results. New stories are checked for a supported map location before any headline is saved to the shared snapshot or `news_archive`. Unlocatable headlines are discarded after the refresh; cached classification metadata prevents repeated Gemini calls. The globe still uses the bounded live snapshot. On the first successful refresh after this change, older unlocatable rows in the live archive are removed.
+## Features
 
-For local work, install dependencies and copy `.env.example` to `.env` with your own server values, then run `bun run dev`. Local development can display RSS without Supabase credentials, but the archive and shared analysis cache require the database. The `.env` file is ignored by Git.
+- **News globe** — Explore geolocated headlines and open the original publisher reports.
+- **AI-assisted analysis** — Gemini estimates story sentiment, severity, and location; a clearly labelled heuristic fallback is used when AI is unavailable.
+- **Shared live feed** — RSS updates and analysis results are cached in Supabase and reused across visitors.
+- **Scenario Lab** — A space for interactive, decision-based simulations *(in development)*.
+- **News archive** — Persistently stores mapped stories for future exploration.
 
-The live archive stores only mappable headlines, short RSS summaries, links, sentiment, severity, resolved location, and analysis provenance, not full publisher articles. The first shared refresh after the assessment migration backfills existing live rows. `collection` separates live stories from future curated historical collections. The archive grows until you choose a retention policy; monitor database size on the Supabase dashboard. Existing stories in an older database do **not** transfer automatically to a new project. Export and import them before retiring the old project if you want to preserve them.
+## Roadmap
 
-Gemini analyses new stories during shared refreshes, in batches of up to three with a 60-story daily database budget. Results are cached across visitors. Scenario Lab feedback runs on request and never changes deterministic scores. If Gemini is unavailable, news retains a labelled heuristic reading.
+![SitRep Development Roadmap](docs/media/sitrep-roadmap.svg)
+
+
+## Tech stack
+
+**TanStack Start** · **Supabase** · **Gemini** · **RSS** · **Vercel** · **Bun**
+
+## Run locally
+
+```bash
+bun install
+cp .env.example .env
+bun run dev
+```
+
+Add your server-side credentials to `.env` (which is ignored by Git). Local development can show RSS headlines without Supabase; shared analysis caching and the persistent archive require it.
+
+## Deploy independently
+
+1. **Set up Supabase.** Create your own project and run these migrations in its SQL Editor, in order:
+   - `supabase/migrations/20261116000000_sitrep_schema.sql`
+   - `supabase/migrations/20261116000001_archive_assessments.sql`
+
+   If your project already has the first schema, run only the second migration.
+
+2. **Deploy to Vercel.** Import this repository and use `bun run build` as the build command.
+
+3. **Set server environment variables** in Vercel:
+
+   ```dotenv
+   SUPABASE_URL=your_project_url
+   SUPABASE_SECRET_KEY=your_sb_secret_key
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+
+   Get the Gemini key from Google AI Studio. A legacy Supabase `service_role` key can instead be supplied as `SUPABASE_SERVICE_ROLE_KEY`. A publishable key is **not** sufficient for server-side archive writes. Never expose secrets with a `VITE_` prefix.
+
+4. **Deploy.** The first visitor triggers a shared RSS refresh; subsequent visitors use the shared feed and cached analysis.
+
+---
+
+*SitRep links to publisher reporting. Headlines and summaries remain subject to the original publishers' terms.*
