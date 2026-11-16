@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { hottestVisibleHotspot, HOTSPOT_FOCUS_HOLD_MS } from "@/lib/hotspot-focus";
+import { findNewHotspot, HOTSPOT_FOCUS_HOLD_MS } from "@/lib/hotspot-focus";
 import type { AnalyzedNewsEvent } from "@/types/news";
 import { usePageActive } from "./use-page-active";
 
@@ -11,19 +11,19 @@ export function useHotspotFocus(
   resetToken: number,
   updateVersion: string | null,
 ) {
-  const previousVersion = useRef(updateVersion);
+  const previousSnapshot = useRef({ version: updateVersion, events: sourceEvents });
   const previousReset = useRef(resetToken);
   const [pending, setPending] = useState<AnalyzedNewsEvent | null>(null);
   const [focused, setFocused] = useState<AnalyzedNewsEvent | null>(null);
   const pageActive = usePageActive();
 
   useEffect(() => {
-    if (previousVersion.current === updateVersion) return;
-    previousVersion.current = updateVersion;
-    if (!updateVersion) return;
-    const candidate = hottestVisibleHotspot(sourceEvents, visibleEvents);
+    const previous = previousSnapshot.current;
+    previousSnapshot.current = { version: updateVersion, events: sourceEvents };
+    if (!previous.version || !updateVersion || previous.version === updateVersion) return;
+    const candidate = findNewHotspot(previous.events, sourceEvents);
     if (candidate) setPending({ ...candidate });
-  }, [updateVersion, sourceEvents, visibleEvents]);
+  }, [updateVersion, sourceEvents]);
 
   useEffect(() => {
     if (previousReset.current === resetToken) return;
