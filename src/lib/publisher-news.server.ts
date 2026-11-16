@@ -56,7 +56,8 @@ async function refreshPublisherFeeds(
           signal: AbortSignal.timeout(12000),
         });
         if (!response.ok) return { articles: [], error: `${feed.name}: HTTP ${response.status}` };
-        const articles = parsePublisherFeed(await response.text(), feed.name);
+        const articles = parsePublisherFeed(await response.text(), feed.name)
+          .filter((article) => !("articlePathPrefix" in feed) || Boolean(article.url && new URL(article.url).pathname.startsWith(feed.articlePathPrefix)));
         return {
           articles,
           error: articles.length ? null : `${feed.name}: no valid dated articles`,

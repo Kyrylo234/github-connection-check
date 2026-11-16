@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Archive, ExternalLink } from "lucide-react";
 import { z } from "zod";
 import { getNewsArchivePage } from "@/lib/news-archive.functions";
+import { NewsAttribution } from "@/components/world-pulse/NewsAttribution";
 
 export const Route = createFileRoute("/archive")({
   validateSearch: z.object({ page: z.coerce.number().int().min(1).max(10001).catch(1) }),
@@ -34,6 +35,7 @@ function ArchivePage() {
                 <span className="font-mono">{article.source}</span>
                 <time dateTime={article.publishedAt}>{new Date(article.publishedAt).toLocaleDateString("en-GB", { timeZone: "UTC" })}</time>
               </div>
+              <NewsAttribution article={article} />
               <h2 className="mt-3 font-mono text-base font-medium leading-7"><a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{article.title}<ExternalLink className="ml-2 inline size-3" aria-hidden="true" /></a></h2>
               {article.description && <p className="mt-2 text-sm leading-6 text-muted-foreground">{article.description}</p>}
             </article>

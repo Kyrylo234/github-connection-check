@@ -13,9 +13,9 @@ describe("local preview publisher cache", () => {
     vi.stubGlobal("fetch", fetchMock);
     const { fetchPublisherNews } = await import("./publisher-news.server");
     const responses = await Promise.all([fetchPublisherNews(), fetchPublisherNews(), fetchPublisherNews()]);
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
     expect(responses.every(response => response.snapshot?.articles.length === 1 && !response.error)).toBe(true);
     await fetchPublisherNews();
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
   });
 });

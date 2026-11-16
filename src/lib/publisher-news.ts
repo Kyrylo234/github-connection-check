@@ -8,6 +8,8 @@ export const PUBLISHER_FEEDS = [
   { name: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml" },
   { name: "The Guardian", url: "https://www.theguardian.com/world/rss" },
   { name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml" },
+  { name: "Global Voices", url: "https://globalvoices.org/feed/" },
+  { name: "UN Geneva", url: "https://www.ungeneva.org/news-media/press-items-list/rss.xml", articlePathPrefix: "/en/" },
 ] as const;
 
 export interface NewsSnapshot {
@@ -26,7 +28,7 @@ export function newsArticlesVersion(snapshot: NewsSnapshot | null): string | nul
   if (!snapshot) return null;
   let hash = 2166136261;
   for (const article of snapshot.articles) {
-    const content = `${article.id}\u0000${article.title}\u0000${article.description ?? ""}\u0000${article.publishedAt}\u0000`;
+    const content = `${article.id}\u0000${article.title}\u0000${article.description ?? ""}\u0000${article.author ?? ""}\u0000${article.publishedAt}\u0000`;
     for (let index = 0; index < content.length; index++) {
       hash = Math.imul(hash ^ content.charCodeAt(index), 16777619);
     }
@@ -76,6 +78,7 @@ export function cleanNewsText(value: unknown): string {
     .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&apos;/g, "'")
+    .replace(/&nbsp;|&#160;/gi, " ")
     .replace(/<[^>]*>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -106,7 +109,9 @@ export function parsePublisherFeed(xml: string, source: string): NewsArticle[] {
     const title = cleanNewsText(record["title"]);
     const published = record["pubDate"];
     const link = record["link"];
-    const date = typeof published === "string" ? Date.parse(published) : NaN;
+    const date = typeof published === "string"
+      ? Date.parse(published.replace(/\s(CET|CEST)$/i, (_, zone: string) => zone.toUpperCase() === "CET" ? " +0100" : " +0200"))
+      : NaN;
     if (!title || !Number.isFinite(date) || typeof link !== "string") return [];
     try {
       const url = new URL(link);
@@ -121,6 +126,9 @@ export function parsePublisherFeed(xml: string, source: string): NewsArticle[] {
           title,
           description: cleanNewsText(record["description"]).slice(0, 500),
           source,
+          ...(source === "Global Voices" && cleanNewsText(record["dc:creator"])
+            ? { author: cleanNewsText(record["dc:creator"]).slice(0, 120) }
+            : {}),
           publishedAt: new Date(date).toISOString(),
           category: categorizeNews(title),
           isDemo: false,

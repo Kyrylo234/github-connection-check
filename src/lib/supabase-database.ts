@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       news_archive: {
         Row: {
+          author: string | null
           id: string
           url: string
           title: string
@@ -37,6 +38,7 @@ export type Database = {
           last_seen_at: string
         }
         Insert: {
+          author?: string | null
           id: string
           url: string
           title: string
@@ -58,6 +60,7 @@ export type Database = {
           last_seen_at?: string
         }
         Update: {
+          author?: string | null
           id?: string
           url?: string
           title?: string

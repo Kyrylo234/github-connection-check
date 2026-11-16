@@ -32,6 +32,18 @@ describe("publisher news", () => {
   });
   it("refreshes the shared publisher snapshot at most every two minutes", () =>
     expect(NEWS_CACHE_MINUTES).toBe(2));
+  it("reads Global Voices creator credit and UN Geneva's European publication dates", () => {
+    const globalVoices = parsePublisherFeed(
+      '<rss><channel><item><title>Flood in Mozambique</title><link>https://globalvoices.org/story</link><dc:creator>Reporter Name</dc:creator><pubDate>Mon, 16 Nov 2026 08:38:21 +0000</pubDate></item></channel></rss>',
+      "Global Voices",
+    );
+    expect(globalVoices[0]).toMatchObject({ author: "Reporter Name", publishedAt: "2026-11-16T08:38:21.000Z" });
+    const unGeneva = parsePublisherFeed(
+      '<rss><channel><item><title>UN briefing in Geneva</title><link>https://www.ungeneva.org/en/news-media/story</link><pubDate>Fri, 13 Nov 2026 17:48:28 CET</pubDate></item><item><title>Summer update</title><link>https://www.ungeneva.org/en/news-media/summer</link><pubDate>Mon, 16 Nov 2026 17:48:28 CEST</pubDate></item></channel></rss>',
+      "UN Geneva",
+    );
+    expect(unGeneva.map(article => article.publishedAt)).toEqual(["2026-11-13T16:48:28.000Z", "2026-11-16T15:48:28.000Z"]);
+  });
   it("keeps the content version stable across unchanged refreshes", () => {
     const articles = [article("Flood in Japan")];
     const first = { articles, fetchedAt: "2026-11-15T10:00:00Z", errors: [] };

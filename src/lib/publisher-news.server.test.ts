@@ -51,6 +51,16 @@ describe("shared publisher cache", () => {
     expect(result.error).toContain("in progress");
     vi.unstubAllGlobals();
   });
+  it("includes English UN Geneva items and excludes French items from its mixed-language feed", async () => {
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
+    const xml = '<rss><channel><item><title>Flood in Japan</title><link>https://www.ungeneva.org/en/news-media/story</link><pubDate>Fri, 13 Nov 2026 17:48:28 CET</pubDate></item><item><title>Flood in France</title><link>https://www.ungeneva.org/fr/news-media/story</link><pubDate>Fri, 13 Nov 2026 17:48:28 CET</pubDate></item></channel></rss>';
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => url.includes("ungeneva.org")
+      ? { ok: true, text: async () => xml }
+      : { ok: false, status: 503 }));
+    const result = await fetchPublisherNews();
+    expect(result.snapshot?.articles.map(article => article.id)).toEqual(["https://www.ungeneva.org/en/news-media/story"]);
+    expect(result.snapshot?.articles[0]?.source).toBe("UN Geneva");
+  });
   it("stores and archives only stories with a reliable map location", async () => {
     mocks.rpc.mockResolvedValue({ data: true, error: null });
     const xml =

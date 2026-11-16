@@ -15,6 +15,7 @@ export function archiveRows(articles: NewsArticle[], results: Classification[]) 
       title: article.title,
       description: cleanNewsText(article.description),
       source: article.source,
+      author: article.author ?? null,
       published_at: article.publishedAt,
       category: article.category ?? "Society",
       collection: "live",
@@ -63,7 +64,7 @@ export async function reconcileLiveArchive(): Promise<void> {
   let afterId: string | null = null;
   while (true) {
     let query = supabaseAdmin.from("news_archive")
-      .select("id,url,title,description,source,published_at,category")
+      .select("id,url,title,description,source,author,published_at,category")
       .eq("collection", "live").order("id", { ascending: true }).limit(PAGE_SIZE);
     if (afterId) query = query.gt("id", afterId);
     const { data, error } = await query;
@@ -71,7 +72,7 @@ export async function reconcileLiveArchive(): Promise<void> {
     if (!data?.length) return;
     const articles = data.map(row => ({
       id: row.id, url: row.url, title: row.title, description: cleanNewsText(row.description),
-      source: row.source, publishedAt: row.published_at, category: row.category as NonNullable<NewsArticle["category"]>, isDemo: false,
+      source: row.source, ...(row.author ? { author: row.author } : {}), publishedAt: row.published_at, category: row.category as NonNullable<NewsArticle["category"]>, isDemo: false,
     }));
     const analysis = await readNewsAnalysis(articles);
     if (analysis.error?.startsWith("Hosted analysis cache unavailable")) throw new Error("Cannot verify archived locations while analysis cache is unavailable");
@@ -102,7 +103,7 @@ export async function readNewsArchive(page: number) {
   return {
     articles: (data ?? []).map(row => ({
       id: row.id, url: row.url, title: row.title, description: row.description,
-      source: row.source, publishedAt: row.published_at, category: row.category,
+      source: row.source, ...(row.author ? { author: row.author } : {}), publishedAt: row.published_at, category: row.category,
       sentiment: row.sentiment ?? null, severity: row.severity ?? null,
       location: row.location_name && row.location_country && row.latitude != null && row.longitude != null
         ? { name: row.location_name, country: row.location_country, latitude: row.latitude, longitude: row.longitude } : null,

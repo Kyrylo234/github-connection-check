@@ -19,6 +19,7 @@ export interface NewsArticle {
   description?: string;
   category?: NewsCategory;
   source: string;
+  author?: string;
   publishedAt: string;
   url?: string;
   isDemo: boolean;

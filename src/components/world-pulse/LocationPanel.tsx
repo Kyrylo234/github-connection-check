@@ -8,6 +8,7 @@ import type { AnalyzedNewsEvent } from "@/types/news";
 import { SentimentBadge } from "./SentimentBadge";
 import { SignalSlider } from "./SignalSlider";
 import { newsDate } from "@/lib/publisher-news";
+import { NewsAttribution } from "./NewsAttribution";
 
 interface LocationPanelProps {
   selectedEvent: AnalyzedNewsEvent;
@@ -95,6 +96,7 @@ export function LocationPanel({ selectedEvent, onClose }: LocationPanelProps) {
                   <span className="font-mono">{article.source}</span>
                   <span className="shrink-0">{article.isDemo ? formatDemoTime(article.publishedAt) : newsDate(article.publishedAt)}</span>
                 </div>
+                <NewsAttribution article={article} />
                 <h5 className="mt-2 text-xs font-semibold leading-5 text-foreground">{article.title}</h5>
                 {article.url ? <a href={article.url} target="_blank" rel="noopener noreferrer" className="mt-2 block text-xs font-semibold text-signal underline">Read original · {article.source}</a> : <p className="mt-2 font-system text-[10px] font-semibold uppercase text-signal">Fictional demo article</p>}
               </article>

@@ -16,7 +16,13 @@ describe("live archive assessments", () => {
       id: article.id, url: article.url, title: article.title, description: "Homes flooded",
       sentiment: -0.7, severity: 0.8, location_country: "Japan", latitude: 36, longitude: 138,
       analysis_method: "Heuristic fallback", analysis_confidence: null,
+      author: null,
     });
+  });
+
+  it("retains Global Voices author credit in archive rows", () => {
+    const rows = archiveRows([{ ...article, source: "Global Voices", author: "Reporter Name" }], []);
+    expect(rows[0]?.author).toBe("Reporter Name");
   });
 
   it("stores Gemini values and resolved coordinates without inventing AI coordinates", () => {

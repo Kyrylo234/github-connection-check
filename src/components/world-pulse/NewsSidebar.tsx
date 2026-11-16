@@ -1,8 +1,9 @@
 import { ExternalLink, Newspaper, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { newsDate, type NewsResponse } from "@/lib/publisher-news";
+import { newsDate, PUBLISHER_FEEDS, type NewsResponse } from "@/lib/publisher-news";
 import type { AnalyzedNewsEvent, NewsArticle } from "@/types/news";
 import { SentimentBadge } from "./SentimentBadge";
+import { NewsAttribution } from "./NewsAttribution";
 
 export function NewsSidebar({ response, articles, events, refreshing, refresh, select }: {
   response: NewsResponse; articles: NewsArticle[]; events: AnalyzedNewsEvent[]; refreshing: boolean; refresh: () => void; select: (id: string) => void;
@@ -33,6 +34,7 @@ export function NewsSidebar({ response, articles, events, refreshing, refresh, s
         const classification = response.analysis?.results.find(result => result.articleId === article.id);
         return <article key={article.id} className="p-4">
           <div className="flex flex-wrap items-center justify-between gap-2 font-system text-[10px] font-semibold uppercase text-muted-foreground"><span className="font-mono">{article.source}</span><time dateTime={article.publishedAt}>{newsDate(article.publishedAt)}</time></div>
+          <NewsAttribution article={article} />
           <h3 className="mt-3 font-mono text-[13px] font-medium leading-6">{article.url ? <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{article.title}<ExternalLink className="ml-1 inline size-3" /></a> : article.title}</h3>
           {article.description && <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{article.description}</p>}
           <p className="mt-2 text-[10px] text-signal">{article.isDemo ? "Fictional demo" : classification ? "Gemini AI" : "Heuristic fallback"}</p>
@@ -42,6 +44,6 @@ export function NewsSidebar({ response, articles, events, refreshing, refresh, s
         </article>;
       })}
     </div>
-    <p className="shrink-0 border-t border-report-rule p-3 text-[10px] leading-5 text-muted-foreground">Headlines via BBC News, The Guardian and Al Jazeera RSS. Rights remain with publishers. Gemini scores event impact and suggests place names; exact gazetteer matches supply coordinates. Uncertain places remain unpinned.</p>
+    <p className="shrink-0 border-t border-report-rule p-3 text-[10px] leading-5 text-muted-foreground">Headlines via {PUBLISHER_FEEDS.map(feed => feed.name).join(", ")} RSS. Rights remain with publishers under their respective terms. Gemini scores event impact and suggests place names; exact gazetteer matches supply coordinates. Uncertain places remain unpinned.</p>
   </aside>;
 }
