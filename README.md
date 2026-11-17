@@ -76,8 +76,12 @@ Add your own server-side credentials to `.env`. This file is ignored by Git. Loc
 1. **Create a Supabase project.** Run these migrations in the Supabase SQL Editor, in order:
    - [`20261116000000_sitrep_schema.sql`](supabase/migrations/20261116000000_sitrep_schema.sql)
    - [`20261116000001_archive_assessments.sql`](supabase/migrations/20261116000001_archive_assessments.sql)
+   - [`20261116000002_archive_authors.sql`](supabase/migrations/20261116000002_archive_authors.sql)
+   - [`20261116000003_news_location_cache.sql`](supabase/migrations/20261116000003_news_location_cache.sql)
+   - [`20261116000004_permanent_news_location_cache.sql`](supabase/migrations/20261116000004_permanent_news_location_cache.sql)
 
-   Existing projects with the first migration applied only need the second migration.
+   Existing projects should apply any later migrations that are not already
+   applied.
 
 2. **Import the repository into Vercel.** Use `bun run build` as the build command.
 
@@ -87,9 +91,15 @@ Add your own server-side credentials to `.env`. This file is ignored by Git. Loc
    SUPABASE_URL=your_project_url
    SUPABASE_SECRET_KEY=your_sb_secret_key
    GEMINI_API_KEY=your_gemini_api_key
+   GEOCODER_USER_AGENT=SitRep/1.0 (contact@example.com)
    ```
 
    Set `SUPABASE_SECRET_KEY` to your project's `sb_secret_…` key. Alternatively, use a legacy service-role key as `SUPABASE_SERVICE_ROLE_KEY`. Supabase publishable keys cannot perform the server-only archive writes. **Never expose secrets with a `VITE_` prefix.**
+   `GEOCODER_USER_AGENT` enables the optional server-side Nominatim-compatible
+   location fallback after local gazetteer lookup; use a descriptive value with
+   an operator contact. `GEOCODER_URL` can override the default endpoint.
+   Successful external coordinates are cached indefinitely and will not be
+   refreshed automatically.
 
 4. **Deploy.** The first visitor triggers a shared RSS refresh; later visitors reuse the shared feed and cached classifications.
 

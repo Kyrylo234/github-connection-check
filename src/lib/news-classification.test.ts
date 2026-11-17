@@ -8,7 +8,7 @@ import {
   storySignals,
   type Classification,
 } from "./news-classification";
-import { resolveNewsLocation } from "./news-location";
+import { resolveNewsLocation, validateExternalLocation } from "./news-location";
 import { calculateRecentTension } from "./news-analysis";
 import type { NewsArticle } from "@/types/news";
 const article: NewsArticle = {
@@ -65,6 +65,48 @@ describe("hosted news classification", () => {
     });
     expect(resolveNewsLocation("Atlantis", "FR")).toBeNull();
     expect(resolveNewsLocation("France", null)).toBeNull();
+  });
+  it("accepts only country-verified external coordinates within geographic bounds", () => {
+    expect(
+      validateExternalLocation(
+        {
+          lat: "48.85341",
+          lon: "2.3488",
+          name: "Paris",
+          display_name: "Paris, France",
+          address: { country: "France", country_code: "fr", city: "Paris" },
+        },
+        "Paris",
+        "FR",
+      ),
+    ).toMatchObject({
+      confidence: 0.85,
+      location: { country: "France", latitude: 48.85341, longitude: 2.3488 },
+    });
+    expect(
+      validateExternalLocation(
+        {
+          lat: "48.85341",
+          lon: "2.3488",
+          display_name: "Paris, France",
+          address: { country: "France", country_code: "fr" },
+        },
+        "Paris",
+        "US",
+      ),
+    ).toBeNull();
+    expect(
+      validateExternalLocation(
+        {
+          lat: "95",
+          lon: "2.3488",
+          display_name: "Paris, France",
+          address: { country: "France", country_code: "fr" },
+        },
+        "Paris",
+        "FR",
+      ),
+    ).toBeNull();
   });
   it("uses classified effects for tension even when location is unclear", () => {
     const unknown = { ...classification, location: null };
