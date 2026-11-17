@@ -173,9 +173,6 @@ function Index() {
                 </Suspense>
               </ClientOnly>
             </div>
-            <div className="pointer-events-none absolute bottom-7 left-7 z-20 hidden font-system text-[8px] uppercase text-muted-foreground lg:block">
-              {response.snapshot ? results.length ? `Gemini AI · ${results.length} analysed stories` : "Publisher news · Heuristic fallback" : "Publisher news unavailable"}{response.snapshot ? ` · ${new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }).format(new Date(snapshotAt))} UTC` : ""}
-            </div>
             {selectedEvent && (
               <div className="absolute inset-x-3 bottom-3 top-auto z-30 max-h-[calc(100%-1.5rem)] sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:w-[360px] sm:max-h-none">
                 <LocationPanel selectedEvent={selectedEvent} onClose={() => setSelectedEventId(null)} />
