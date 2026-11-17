@@ -1,6 +1,6 @@
 import { ExternalLink, Newspaper, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { newsDate, PUBLISHER_FEEDS, type NewsResponse } from "@/lib/publisher-news";
+import { newsDate, type NewsResponse } from "@/lib/publisher-news";
 import type { AnalyzedNewsEvent, NewsArticle } from "@/types/news";
 import { SentimentBadge } from "./SentimentBadge";
 import { NewsAttribution } from "./NewsAttribution";
@@ -13,15 +13,10 @@ export function NewsSidebar({ response, articles, events, refreshing, refresh, s
     <div className="shrink-0 border-b border-report-rule p-4">
       <div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2.5"><Newspaper className="size-4 shrink-0 text-signal" aria-hidden="true" /><h2 className="font-display text-lg font-bold uppercase">Latest available news</h2></div>
         <Button variant="ghost" size="icon" className="size-7 shrink-0 rounded-sm text-muted-foreground" disabled={refreshing} onClick={refresh} aria-label="Refresh news" title="Refresh news"><RefreshCw className={refreshing ? "size-4 animate-spin" : "size-4"} /></Button></div>
-      <p className="mt-2 text-xs text-signal">{unavailable ? "LIVE NEWS UNAVAILABLE" : response.stale ? "PUBLISHER RSS · Saved headlines" : "PUBLISHER RSS · Latest fetched headlines"}</p>
-      {response.snapshot && <p className="mt-2 text-[11px] text-muted-foreground">Fetched {newsDate(response.snapshot.fetchedAt)}</p>}
-      <p className="mt-2 text-[11px] leading-5 text-muted-foreground">Shared two-minute feed refresh. This page checks for changes every 60 seconds while open.</p>
-      {response.nextRefreshAt && <p className="mt-1 text-[11px] text-muted-foreground">Next provider check after {newsDate(response.nextRefreshAt)}</p>}
+      {unavailable && <p className="mt-2 text-xs text-signal">LIVE NEWS UNAVAILABLE</p>}
       {(response.error || response.snapshot?.errors.length) ? <p role="alert" className="mt-2 text-xs leading-5 text-sentiment-negative">{response.error || response.snapshot?.errors.join(" · ")}</p> : null}
       {!unavailable && <div className="mt-3 border-t border-report-rule pt-3">
-        <p role="status" className="text-xs text-signal">{response.analysis?.results.length ? "Gemini AI · Heuristic fallback for remaining stories" : "Heuristic fallback"}</p>
-        <p className="mt-2 text-[11px] text-muted-foreground">{articles.length} stories with map locations · {response.analysis?.results.length ?? 0} analysed</p>
-        <p className="mt-2 text-[10px] text-muted-foreground">New headlines are analysed automatically in small batches during shared feed refreshes. Only located stories are saved in the shared feed and live archive.</p>
+        <p className="mt-2 text-[11px] text-muted-foreground">{events.length} displayed map events</p>
 
         {response.analysis?.error && <p role="alert" className="mt-2 text-xs text-sentiment-negative">{response.analysis.error}</p>}
       </div>}
@@ -37,13 +32,12 @@ export function NewsSidebar({ response, articles, events, refreshing, refresh, s
           <NewsAttribution article={article} />
           <h3 className="mt-3 font-mono text-[13px] font-medium leading-6">{article.url ? <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{article.title}<ExternalLink className="ml-1 inline size-3" /></a> : article.title}</h3>
           {article.description && <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{article.description}</p>}
-          <p className="mt-2 text-[10px] text-signal">{article.isDemo ? "Fictional demo" : classification ? "Gemini AI" : "Heuristic fallback"}</p>
+          {(article.isDemo || classification) && <p className="mt-2 text-[10px] text-signal">{article.isDemo ? "Fictional demo" : "Gemini AI"}</p>}
           {classification && <div className="mt-1"><SentimentBadge score={classification.sentiment} showScore /></div>}
 
           {located && <Button variant="link" className="mt-1 h-auto p-0 text-xs" onClick={() => select(located.id)}>The Briefing · {located.location.country}</Button>}
         </article>;
       })}
     </div>
-    <p className="shrink-0 border-t border-report-rule p-3 text-[10px] leading-5 text-muted-foreground">Headlines via {PUBLISHER_FEEDS.map(feed => feed.name).join(", ")} RSS. Rights remain with publishers under their respective terms. Gemini scores event impact and suggests place names; exact gazetteer matches supply coordinates. Uncertain places remain unpinned.</p>
   </aside>;
 }

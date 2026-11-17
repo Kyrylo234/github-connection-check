@@ -26,14 +26,14 @@ export function SignalSlider({ label, displayValue, ariaValueText, value, min, m
 
   return (
     <div
-      className={cn("min-w-0 space-y-2", colorScale && `signal-slider--${colorScale}`, className)}
+      className={cn("min-w-0 space-y-1", colorScale && `signal-slider--${colorScale}`, className)}
       style={colorScale ? { "--scale-thumb-color": thumbColor } as CSSProperties : undefined}
     >
       <div className="flex items-baseline justify-between gap-2 font-system text-[10px] uppercase">
         <span className="text-muted-foreground">{label}</span>
         <span className="signal-slider-value text-right text-signal">{displayValue}</span>
       </div>
-      <div className="flex h-8 items-center px-2">
+      <div className="flex h-6 items-center px-2">
         <Slider
           aria-label={label}
           aria-valuetext={ariaValueText}
@@ -48,7 +48,7 @@ export function SignalSlider({ label, displayValue, ariaValueText, value, min, m
           }}
         />
       </div>
-      <div className="flex justify-between gap-1 font-system text-[9px] text-muted-foreground">
+      <div className="flex justify-between gap-1 font-system text-[9px] leading-none text-muted-foreground">
         {marks.map((mark) => <span key={mark}>{mark}</span>)}
       </div>
     </div>

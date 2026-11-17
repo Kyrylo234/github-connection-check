@@ -5,6 +5,7 @@ import {
   FlaskConical,
   Globe2,
   Radio,
+  Settings2,
 } from "lucide-react";
 
 import briefingRoom from "@/assets/briefing-room.jpg";
@@ -132,6 +133,10 @@ function Index() {
               <ArrowUpRight className="hidden size-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:block" aria-hidden="true" />
             </Link>
             <Link to="/archive" search={{ page: 1 }} className="flex h-full items-center border-b border-transparent px-2 text-xs text-muted-foreground hover:text-foreground sm:px-3">Archive</Link>
+            <Link to="/settings" className="flex h-full items-center gap-2 border-b border-transparent px-2 text-xs text-muted-foreground hover:text-foreground sm:px-3">
+              <Settings2 className="size-3.5" aria-hidden="true" />
+              <span>Settings</span>
+            </Link>
           </nav>
 
           <div className="ml-auto flex items-center gap-4">

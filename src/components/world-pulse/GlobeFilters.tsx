@@ -23,7 +23,7 @@ export function GlobeFilters({ sentiment, timeRange, minimumSeverity, onSentimen
   const activeCount = Number(sentiment !== "all") + Number(timeRange < MAX_TIME_RANGE_MINUTES) + Number(minimumSeverity > 0);
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className="briefing-console relative z-30 flex shrink-0 flex-wrap items-center gap-x-5 gap-y-3 px-4 py-2 sm:flex-nowrap sm:px-5">
+    <Collapsible open={open} onOpenChange={setOpen} className="briefing-console relative z-30 flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2 px-4 py-1.5 sm:flex-nowrap sm:px-5">
       <div className="flex shrink-0 items-center justify-start">
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm" className="rounded-none font-system text-xs text-signal" aria-label={open ? "Collapse filters" : "Expand filters"} title={open ? "Collapse filters" : "Expand filters"}>
@@ -34,8 +34,8 @@ export function GlobeFilters({ sentiment, timeRange, minimumSeverity, onSentimen
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent className="w-full min-w-0 sm:w-auto sm:max-w-[620px] sm:flex-1">
-        <div className="grid grid-cols-2 items-start gap-4 border-t border-border pt-3 sm:grid-cols-[1fr_1fr_1.3fr] sm:border-t-0 sm:pt-0">
-          <div className="space-y-2">
+        <div className="grid grid-cols-2 items-start gap-3 border-t border-border pt-2 sm:grid-cols-[1fr_1fr_1.3fr] sm:border-t-0 sm:pt-0">
+          <div className="space-y-1">
             <p className="font-system text-[10px] uppercase text-muted-foreground">Sentiment</p>
             <Select value={sentiment} onValueChange={(value) => onSentimentChange(value as SentimentFilter)}>
               <SelectTrigger aria-label="Filter by sentiment" className="h-8 w-full min-w-0 rounded-none border-border bg-background/40 font-system text-xs shadow-none"><SelectValue /></SelectTrigger>
