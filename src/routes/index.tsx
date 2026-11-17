@@ -16,7 +16,7 @@ import { calculateRecentTension, filterNewsEvents } from "@/lib/news-analysis";
 import type { SentimentFilter, TimeRange } from "@/types/news";
 import { MAX_TIME_RANGE_MINUTES } from "@/lib/time-range";
 import { useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { publisherNewsOptions, publisherNewsVersionOptions } from "@/lib/publisher-news.query";
+import { newsMapArchiveOptions, publisherNewsOptions, publisherNewsVersionOptions } from "@/lib/publisher-news.query";
 import { newsArticlesVersion, newsSnapshotVersion } from "@/lib/publisher-news";
 import { classifiedEvents, clusterNews, storySignals } from "@/lib/news-classification";
 import { NewsSidebar } from "@/components/world-pulse/NewsSidebar";
@@ -83,17 +83,25 @@ function Index() {
   }, [version, response, queryClient]);
   const articles = useMemo(() => response.snapshot?.articles ?? [], [response.snapshot]);
   const results = response.analysis?.results ?? [];
-  const sourceEvents = useMemo(() => response.snapshot ? clusterNews(classifiedEvents(response.snapshot.articles, results)) : [], [response.snapshot, results]);
+  const liveSourceEvents = useMemo(() => response.snapshot ? clusterNews(classifiedEvents(response.snapshot.articles, results)) : [], [response.snapshot, results]);
   const mappedArticles = useMemo(() => {
-    const mappedIds = new Set(sourceEvents.flatMap(event => event.articles.map(article => article.id)));
+    const mappedIds = new Set(liveSourceEvents.flatMap(event => event.articles.map(article => article.id)));
     return articles.filter(article => mappedIds.has(article.id));
-  }, [articles, sourceEvents]);
+  }, [articles, liveSourceEvents]);
   const [emptySnapshotAt] = useState(() => new Date().toISOString());
   const snapshotAt = response.snapshot?.fetchedAt ?? emptySnapshotAt;
   const [sentiment, setSentiment] = useState<SentimentFilter>("all");
   const [timeRange, setTimeRange] = useState<TimeRange>(MAX_TIME_RANGE_MINUTES);
   const [minimumSeverity, setMinimumSeverity] = useState(0);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const { data: archiveMap } = useQuery(newsMapArchiveOptions({
+    sentiment, timeRange, minimumSeverity, snapshotAt,
+  }));
+  const archiveEvents = archiveMap?.events;
+  const sourceEvents = useMemo(() => {
+    const events = archiveEvents ?? (response.snapshot ? classifiedEvents(response.snapshot.articles, results) : []);
+    return clusterNews(events);
+  }, [archiveEvents, response.snapshot, results]);
 
   const filteredEvents = useMemo(
     () => filterNewsEvents(sourceEvents, sentiment, timeRange, snapshotAt, minimumSeverity),

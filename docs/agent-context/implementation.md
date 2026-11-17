@@ -116,9 +116,21 @@ client and supports both the newer `SUPABASE_SECRET_KEY` and legacy
 ### Archive
 
 `src/lib/news-archive.server.ts` writes mappable live stories in batches and
-reads fixed-size archive pages. Archive rows retain source attribution and,
-when available, assessment fields (sentiment, severity, location, method,
-confidence, and rationale).
+reads fixed-size archive pages. The home map also reads every archived `live`
+row in the active time window in 1,000-row pages through
+`readNewsMapEvents`; it converts stored assessment/location fields directly
+into `AnalyzedNewsEvent` values, applies the same pure sentiment/time/severity
+filters, and leaves clustering to the client. This path never re-runs Gemini
+or geocoding. Rows missing any field required for map eligibility are
+explicitly excluded and counted as `skippedIncomplete`, rather than being
+silently re-analyzed.
+
+`src/lib/news-archive.functions.ts` exposes the validated server-function
+boundary for both archive pages and map events. `src/lib/publisher-news.query.ts`
+keys the map query by its active filters and snapshot time. The home route
+uses the archive result when available and falls back to the current publisher
+snapshot only when the archive query is unavailable (for example, local
+development without Supabase).
 
 Apply database changes in order from `supabase/migrations/`:
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { archiveRows } from "./news-archive.server";
+import { archiveRowToMapEvent, archiveRows, filterArchiveMapRows } from "./news-archive.server";
 import { resolveNewsLocation } from "./news-location";
 import type { NewsArticle } from "@/types/news";
 
@@ -18,6 +18,32 @@ describe("live archive assessments", () => {
       analysis_method: "Heuristic fallback", analysis_confidence: null,
       author: null,
     });
+  });
+
+  it("hydrates complete archive rows without re-running classification", () => {
+    const rows = archiveRows([article], []);
+    const event = archiveRowToMapEvent(rows[0]!);
+    expect(event).toMatchObject({
+      id: article.id,
+      occurredAt: article.publishedAt,
+      location: { name: "Approximate national location", country: "Japan", latitude: 36, longitude: 138 },
+      sentiment: -0.7,
+      severity: 0.8,
+    });
+  });
+
+  it("applies map filters to archived rows and excludes incomplete assessments", () => {
+    const rows = archiveRows([article], []);
+    expect(filterArchiveMapRows([
+      rows[0]!,
+      { ...rows[0]!, id: "incomplete", latitude: null },
+    ], {
+      sentiment: "negative",
+      timeRange: 24 * 60,
+      minimumSeverity: 0.8,
+      snapshotAt: "2026-11-15T12:00:00Z",
+    })).toHaveLength(1);
+    expect(archiveRowToMapEvent({ ...rows[0]!, latitude: null })).toBeNull();
   });
 
   it("retains Global Voices author credit in archive rows", () => {

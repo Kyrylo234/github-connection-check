@@ -3,8 +3,94 @@ import { cleanNewsText } from "./publisher-news";
 import { classifiedEvents } from "./news-classification";
 import type { Classification } from "./news-classification";
 import { readNewsAnalysis } from "./news-classification.server";
+import { filterNewsEvents } from "./news-analysis";
+import type { AnalyzedNewsEvent, SentimentFilter } from "@/types/news";
+import { clampTimeRangeMinutes } from "./time-range";
 
 const PAGE_SIZE = 50;
+const MAP_PAGE_SIZE = 1000;
+
+export interface NewsMapArchiveFilters {
+  sentiment: SentimentFilter;
+  timeRange: number;
+  minimumSeverity: number;
+  snapshotAt: string;
+}
+
+type NewsArchiveMapRow = {
+  id: string;
+  url: string | null;
+  title: string;
+  description: string | null;
+  source: string;
+  author: string | null;
+  published_at: string;
+  category: NewsArticle["category"] | null;
+  sentiment: number | null;
+  severity: number | null;
+  location_name: string | null;
+  location_country: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  analysis_method: string | null;
+  analysis_confidence: number | null;
+  analysis_rationale: string | null;
+};
+
+export function archiveRowToMapEvent(row: NewsArchiveMapRow): AnalyzedNewsEvent | null {
+  if (
+    row.sentiment == null ||
+    row.severity == null ||
+    !row.location_name ||
+    !row.location_country ||
+    row.latitude == null ||
+    row.longitude == null
+  ) return null;
+
+  return {
+    id: row.id,
+    location: {
+      name: row.location_name,
+      country: row.location_country,
+      latitude: row.latitude,
+      longitude: row.longitude,
+    },
+    category: row.category ?? "Society",
+    sentiment: row.sentiment,
+    severity: row.severity,
+    occurredAt: row.published_at,
+    articles: [{
+      id: row.id,
+      url: row.url ?? row.id,
+      title: row.title,
+      ...(row.description ? { description: row.description } : {}),
+      source: row.source,
+      ...(row.author ? { author: row.author } : {}),
+      publishedAt: row.published_at,
+      category: row.category ?? "Society",
+      isDemo: false,
+    }],
+    articleCount: 1,
+    isDemo: false,
+    analysisMethod: row.analysis_method === "Gemini AI" ? "Gemini AI" : "Heuristic fallback",
+    ...(row.analysis_confidence != null ? { confidence: row.analysis_confidence } : {}),
+    ...(row.analysis_rationale ? { rationale: row.analysis_rationale } : {}),
+  };
+}
+
+export function filterArchiveMapRows(rows: NewsArchiveMapRow[], filters: NewsMapArchiveFilters) {
+  const events = rows.flatMap(row => {
+    const event = archiveRowToMapEvent(row);
+    return event ? [event] : [];
+  });
+  return filterNewsEvents(
+    events,
+    filters.sentiment,
+    clampTimeRangeMinutes(filters.timeRange),
+    filters.snapshotAt,
+    filters.minimumSeverity,
+  );
+}
 
 export function archiveRows(articles: NewsArticle[], results: Classification[]) {
   return classifiedEvents(articles, results).map(event => {
@@ -114,5 +200,36 @@ export async function readNewsArchive(page: number) {
     count: count ?? 0,
     page,
     pageSize: PAGE_SIZE,
+  };
+}
+
+/** Read every stored live event in the active time window without re-running analysis or geocoding. */
+export async function readNewsMapEvents(filters: NewsMapArchiveFilters) {
+  const snapshotTimestamp = Date.parse(filters.snapshotAt);
+  if (!Number.isFinite(snapshotTimestamp)) throw new Error("Invalid map snapshot time");
+  const oldestTimestamp = snapshotTimestamp - clampTimeRangeMinutes(filters.timeRange) * 60 * 1000;
+  const { supabaseAdmin } = await import("./supabase-admin.server");
+  const rows: NewsArchiveMapRow[] = [];
+
+  for (let offset = 0; ; offset += MAP_PAGE_SIZE) {
+    const { data, error } = await supabaseAdmin.from("news_archive")
+      .select("id,url,title,description,source,author,published_at,category,sentiment,severity,location_name,location_country,latitude,longitude,analysis_method,analysis_confidence,analysis_rationale")
+      .eq("collection", "live")
+      .gte("published_at", new Date(oldestTimestamp).toISOString())
+      .lte("published_at", new Date(snapshotTimestamp).toISOString())
+      .order("published_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(offset, offset + MAP_PAGE_SIZE - 1);
+    if (error) throw new Error("News map archive unavailable");
+    const page = (data ?? []) as NewsArchiveMapRow[];
+    rows.push(...page);
+    if (page.length < MAP_PAGE_SIZE) break;
+  }
+
+  const completeRows = rows.filter(row => archiveRowToMapEvent(row));
+  return {
+    events: filterArchiveMapRows(completeRows, filters),
+    skippedIncomplete: rows.length - completeRows.length,
+    source: "archive" as const,
   };
 }

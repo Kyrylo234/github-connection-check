@@ -37,7 +37,7 @@ Create and explore decision-based scenarios. **In development.**
 - **Interactive news globe:** Browse headlines by geographic location and open the original publisher coverage.
 - **AI-assisted analysis:** Gemini estimates event locations, sentiment, and severity when available, with a labelled heuristic fallback.
 - **Shared news feed:** RSS refreshes and classification results are cached in Supabase for reuse across visitors.
-- **News archive:** Stores mapped headlines for future exploration.
+- **News archive:** Stores mapped headlines for future exploration; the home globe reads archived live stories matching its active time, sentiment, and severity filters instead of limiting the map to the latest feed snapshot.
 - **Scenario Lab:** Decision-based simulations and interactive stories *(in development)*.
 
 ## Roadmap
