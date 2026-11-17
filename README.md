@@ -80,8 +80,7 @@ Add your own server-side credentials to `.env`. This file is ignored by Git. Loc
    - [`20261116000003_news_location_cache.sql`](supabase/migrations/20261116000003_news_location_cache.sql)
    - [`20261116000004_permanent_news_location_cache.sql`](supabase/migrations/20261116000004_permanent_news_location_cache.sql)
 
-   Existing projects should apply any later migrations that are not already
-   applied.
+   Existing projects should apply any later migrations that are not already applied.
 
 2. **Import the repository into Vercel.** Use `bun run build` as the build command.
 
@@ -95,13 +94,23 @@ Add your own server-side credentials to `.env`. This file is ignored by Git. Loc
    ```
 
    Set `SUPABASE_SECRET_KEY` to your project's `sb_secret_…` key. Alternatively, use a legacy service-role key as `SUPABASE_SERVICE_ROLE_KEY`. Supabase publishable keys cannot perform the server-only archive writes. **Never expose secrets with a `VITE_` prefix.**
-   `GEOCODER_USER_AGENT` enables the optional server-side Nominatim-compatible
-   location fallback after local gazetteer lookup; use a descriptive value with
-   an operator contact. `GEOCODER_URL` can override the default endpoint.
-   Successful external coordinates are cached indefinitely and will not be
-   refreshed automatically.
+
+   `GEOCODER_USER_AGENT` enables the optional server-side Nominatim-compatible location fallback after local gazetteer lookup; use a descriptive value with an operator contact. `GEOCODER_URL` can override the default endpoint. Successful external coordinates are cached indefinitely and will not be refreshed automatically.
 
 4. **Deploy.** The first visitor triggers a shared RSS refresh; later visitors reuse the shared feed and cached classifications.
+
+---
+
+## Git Happens
+
+A little Git history transparency, powered by [Git Happens](https://github.com/Charlie-Bloomfield/Git_Happens), a separate hackathon project.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://git-happens-peach.vercel.app/api/charts/heatmap.svg?repo=Kyrylo234%2Fgithub-connection-check">
+    <img alt="Git Happens · Commit activity heatmap" src="https://git-happens-peach.vercel.app/api/charts/heatmap.svg?repo=Kyrylo234%2Fgithub-connection-check&theme=light" width="85%">
+  </picture>
+</p>
 
 ---
 
